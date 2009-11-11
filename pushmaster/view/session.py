@@ -1,10 +1,10 @@
 from google.appengine.api import users
 from google.appengine.ext.webapp import RequestHandler
-from taglib import Tag as T
-import page
-from model import *
-import logic
-from common import *
+from pushmaster.taglib import Tag as T
+from pushmaster.view import page
+from pushmaster.model import *
+from pushamster import logic
+from pushmaster.common import *
 
 __author__ = 'Jeremy Latt jeremy@jeremylatt.com'
 __all__ = ('Logout',)

@@ -1,8 +1,11 @@
 __author__ = 'Jeremy Latt <jeremy@jeremylatt.com>'
 
+# fix up the environment before anything else
+from pushmaster import tweaks
+
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
-from view import *
+from pushmaster.view import *
 
 application = webapp.WSGIApplication(
     [('/', Home),

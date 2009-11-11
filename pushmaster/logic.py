@@ -1,8 +1,8 @@
 from google.appengine.api import mail, users
 
-import config
-from model import *
-import timezone
+from pushmaster import config
+from pushmaster.model import *
+from pushmaster import timezone
 
 __author__ = 'Jeremy Latt <jeremy@jeremylatt.com>'
 

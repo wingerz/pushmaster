@@ -1,4 +1,4 @@
-from timezone import Pacific
+from pushmaster.timezone import Pacific
 
 timezone = Pacific
 

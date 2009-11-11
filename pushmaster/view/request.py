@@ -2,11 +2,11 @@ import logging
 
 from google.appengine.ext.webapp import RequestHandler
 
-from taglib import Tag as T
-import page
-from model import *
-import logic
-import common
+from pushmaster.taglib import Tag as T
+from pushmaster import logic
+from pushmaster.model import *
+from pushmaster.view import page
+from pushmaster.view import common
 
 __author__ = 'Jeremy Latt <jlatt@yelp.com>'
 __all__ = ('Requests', 'EditRequest')
