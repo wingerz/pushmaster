@@ -1,0 +1,13 @@
+application: yelp-pushmaster
+version: 1
+runtime: python
+api_version: 1
+
+handlers:
+- url: /(css|js|images)/(.+)
+  static_files: www/\1/\2
+  upload: www/(css|js|images)/(.+)
+
+- url: .*
+  script: main.py
+  login: required
