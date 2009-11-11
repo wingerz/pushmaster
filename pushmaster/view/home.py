@@ -6,7 +6,6 @@ from pushmaster.view import page
 
 class Home(RequestHandler):
     def get(self):
-        self.debug('saw a hit for the home page')
         self.redirect('/requests')
 
 __all__ = ['Home']

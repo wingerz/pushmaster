@@ -102,7 +102,6 @@ def request_display(request):
 
 class Requests(RequestHandler):
     def get(self):
-		self.log.info('yahoo, got a request!')
         requests = Request.current()
 
         body = T('body')(

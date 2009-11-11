@@ -6,8 +6,18 @@ from pushmaster import tweaks
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 from pushmaster.view import *
+from pushmaster.log import ClassLogger
 
-application = webapp.WSGIApplication(
+class LoggingWSGIApplication(webapp.WSGIApplication):
+
+    log = ClassLogger()
+
+    def __call__(self, environ, start_response):
+        request = self.REQUEST_CLASS(environ)
+        self.log.debug('incoming %s for %s' % (environ['REQUEST_METHOD'], request.uri))
+        return super(LoggingWSGIApplication, self).__call__(environ, start_response)
+
+application = LoggingWSGIApplication(
     [('/', Home),
      ('/requests', Requests),
      ('/pushes', Pushes),
