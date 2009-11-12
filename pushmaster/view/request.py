@@ -2,7 +2,7 @@ import logging
 
 from pushmaster.handler import RequestHandler
 
-from pushmaster.taglib import Tag as T
+from pushmaster.taglib import T
 from pushmaster import logic
 from pushmaster.model import *
 from pushmaster.view import page
@@ -12,24 +12,24 @@ __author__ = 'Jeremy Latt <jlatt@yelp.com>'
 __all__ = ('Requests', 'EditRequest')
 
 def new_request_form():
-    return T('form', action='/requests', method='post', class_='request')(
-        T('fieldset')(
-            T('legend')('New Request'),
-            T('div')(
-                T('label', for_='new-request-subject')('Subject'),
-                T('input', name='subject', id='new-request-subject'),
+    return T.form(action='/requests', method='post', class_='request')(
+        T.fieldset(
+            T.legend('New Request'),
+            T.div(
+                T.label(for_='new-request-subject')('Subject'),
+                T.input(name='subject', id='new-request-subject'),
                 ),
-            T('div')(
-                T('label', for_='new-request-message')('Message'),
-                T('textarea', name='message', id='new-request-message'),
+            T.div(
+                T.label(for_='new-request-message')('Message'),
+                T.textarea(name='message', id='new-request-message'),
                 ),
-            T('div')(
-                T('input', id='new-request-push-plans', type='checkbox', name='push_plans'),
-                T('label', class_='checkbox', for_='new-request-push-plans')('Push Plans'),
+            T.div(
+                T.input(id='new-request-push-plans', type='checkbox', name='push_plans'),
+                T.label(class_='checkbox', for_='new-request-push-plans')('Push Plans'),
                 ),
             ),
-        T('div')(
-            T('button', type='submit')('Create')
+        T.div(
+            T.button(type='submit')('Create')
             ),
         )
 

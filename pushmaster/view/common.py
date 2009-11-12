@@ -6,7 +6,7 @@ from google.appengine.api import users
 from pushmaster import config
 from pushmaster import logic
 from pushmaster import timezone
-from pushmaster.taglib import Literal, Tag as T
+from pushmaster.taglib import Literal, T
 
 linkify_re = re.compile(r'\b(https?://.+)', re.MULTILINE | re.IGNORECASE)
 http_re = re.compile(r'https?://', re.IGNORECASE)
