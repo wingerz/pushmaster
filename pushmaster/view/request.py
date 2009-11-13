@@ -47,7 +47,7 @@ def edit_request_form(request):
                 T('textarea', name='message', id='edit-request-message-'+request_id)(request.message or ''),
                 ),
             T('div')(
-                T('input', id='edit-request-push-plans-'+request_id, type='checkbox', name='push_plans', checked=request.push_plans),
+                T('input', id='edit-request-push-plans-'+request_id, type='checkbox', name='push_plans', checked=request.push_plans, class_='checkbox'),
                 T('label', for_='edit-request-push-plans-'+request_id, class_='checkbox')('Push Plans'),
                 ),
             ),
