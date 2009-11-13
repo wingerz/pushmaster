@@ -8,7 +8,7 @@ from pushmaster import logic
 from pushmaster import timezone
 from pushmaster.taglib import Literal, Tag as T
 
-linkify_re = re.compile(r'\b(https?://.+)', re.MULTILINE | re.IGNORECASE)
+linkify_re = re.compile(r'\b(https?://[^\s]+)', re.MULTILINE | re.IGNORECASE)
 http_re = re.compile(r'https?://', re.IGNORECASE)
 
 def linkify_repl(m):
