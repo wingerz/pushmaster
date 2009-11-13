@@ -19,7 +19,7 @@ def translate(attrs):
     return newattrs
 
 class Tag(object):
-    empty = ('link', 'input', 'hr')
+    empty = ('link', 'input', 'hr', 'meta')
 
     def __init__(self, tagname, **attrs):
         self.tagname = tagname

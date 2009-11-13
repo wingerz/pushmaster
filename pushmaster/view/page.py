@@ -14,13 +14,16 @@ def write(out, head, body):
 def stylesheet(href):
     return T('link', rel='stylesheet', href=href)
 
-def head(title='', css=[], scripts=[]):
+def head(title='', css=[], scripts=[], refresh=None):
     stylesheets = [stylesheet(href) for href in css]
     scripts = [T('script', type='text/javascript', src=src) for src in scripts]
-    return T('head')(
+    head_el = T('head')(
         T('title')(title),
         T('link', rel='shortcut icon', type='image/x-icon', href='http://static.px.yelp.com/favicon.ico'),
         stylesheet('/css/reset.css'),
         stylesheet('/css/pushmaster.css'),
         stylesheets, 
         scripts)
+    if refresh:
+        head_el(T('meta', **{'http-equiv': 'refresh', 'content': '5' }))
+    return head_el

@@ -144,7 +144,7 @@ class EditPush(RequestHandler):
                 push_pending_list(push, requests),
                 )
 
-        page.write(self.response.out, page.head(title='pushmaster: push: ' + logic.format_datetime(push.ctime)), body)
+        page.write(self.response.out, page.head(title='pushmaster: push: ' + logic.format_datetime(push.ctime), refresh=30), body)
 
     def post(self, push_id):
         push = Push.get(push_id)

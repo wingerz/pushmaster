@@ -103,7 +103,7 @@ def accept_request(push, request):
 
     mail.send_mail(
         sender=users.get_current_user().email(),
-        to=request.owner.email(),
+        to=config.mail_to,
         subject=request.subject,
         body='Please check this in.')
 
@@ -171,7 +171,7 @@ def send_to_live(push):
         
         mail.send_mail(
             sender=users.get_current_user().email(),
-            to=request.owner.email(),
+            to=config.mail_to,
             subject=request.subject,
             body='Please monitor live to verify your changes.')
 
