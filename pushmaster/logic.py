@@ -4,7 +4,7 @@ from pushmaster import config
 from pushmaster.model import *
 from pushmaster import timezone
 
-__author__ = 'Jeremy Latt <jeremy@jeremylatt.com>'
+__author__ = 'Jeremy Latt <jlatt@yelp.com>'
 
 strftime_format = '%a, %d %b %Y %I:%M %p'
 
@@ -104,7 +104,7 @@ def accept_request(push, request):
     mail.send_mail(
         sender=users.get_current_user().email(),
         to=request.owner.email(),
-        subject='[push] PCTI ' + request.subject,
+        subject='[push] ' + request.subject,
         body='Please check this in.')
 
     return request
@@ -122,7 +122,7 @@ def withdraw_request(request):
     mail.send_mail(
         sender=users.get_current_user().email(),
         to=config.mail_to,
-        subject='[push] request withdrawn: ' + request.subject,
+        subject='[push] ' + request.subject,
         body=request.message or '')
 
     return request
@@ -140,7 +140,7 @@ def send_to_stage(push):
             mail.send_mail(
                 sender=users.get_current_user().email(),
                 to=config.mail_to,
-                subject='[push] PCYC: ' + request.subject,
+                subject='[push] ' + request.subject,
                 body='Please check your changes on stage.')
 
     push.put()
@@ -154,7 +154,7 @@ def set_request_tested(request):
     mail.send_mail(
         sender=users.get_current_user().email(),
         to=config.mail_to,
-        subject='[push] LG2M: ' + request.subject,
+        subject='[push] ' + request.subject,
         body='Looks good to me.')
 
     return request
@@ -172,7 +172,7 @@ def send_to_live(push):
         mail.send_mail(
             sender=users.get_current_user().email(),
             to=request.owner.email(),
-            subject='[push] live: ' + request.subject,
+            subject='[push] ' + request.subject,
             body='Please monitor live to verify your changes.')
 
     push.state = 'live'
@@ -190,7 +190,7 @@ def set_request_checkedin(request):
     mail.send_mail(
         sender=users.get_current_user().email(),
         to=config.mail_to,
-        subject='[push] checked in: ' + request.subject,
+        subject='[push] ' + request.subject,
         body='My changes are checked in.')
 
     return request
