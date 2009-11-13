@@ -5,6 +5,7 @@ from google.appengine.api import users
 
 from pushmaster import config
 from pushmaster import logic
+from pushmaster import model
 from pushmaster import timezone
 from pushmaster.taglib import Literal, Tag as T
 
@@ -28,11 +29,23 @@ def datetime(dt):
     return T('span', class_='datetime')(logic.format_datetime(dt))
 
 def navbar(current=None):
-    return T('div', class_='nav')(
+    nav = T('div', class_='nav')(
         T('a', href='/requests')('Requests'),
         ' | ',
         T('a', href='/pushes')('Pushes'),
         )
+
+    current_push = model.Push.current()
+    if current_push:
+        nav(
+            ' | ',
+            T('a', href=current_push.uri)(
+                'Current Push: ',
+                datetime(current_push.ctime),
+                ),
+            )
+    
+    return nav
 
 def session():
     user = users.get_current_user()

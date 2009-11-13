@@ -42,6 +42,10 @@ class Push(db.Model):
         return self.requests.filter('state =', 'live')
 
     @classmethod
+    def current(cls):
+        return cls.all().filter('state in', ('accepting', 'onstage')).order('-mtime').get()
+
+    @classmethod
     def open(cls, limit=100):
         return cls.all().filter('state in', ('accepting', 'onstage', 'live')).order('-mtime').fetch(limit)
 
