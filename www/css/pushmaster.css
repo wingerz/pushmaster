@@ -128,10 +128,15 @@ form.request label {
 form.request label.checkbox {
 	padding: 0 0 0 0.5em;
 	float: none;
+	text-align: left;
 }
 
 form.request input {
 	width: 85%;
+}
+
+form.request input.checkbox {
+	width: auto;
 }
 
 form.request textarea {

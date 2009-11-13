@@ -24,7 +24,7 @@ def new_request_form():
                 T('textarea', name='message', id='new-request-message'),
                 ),
             T('div')(
-                T('input', id='new-request-push-plans', type='checkbox', name='push_plans'),
+                T('input', id='new-request-push-plans', type='checkbox', name='push_plans', class_='checkbox'),
                 T('label', class_='checkbox', for_='new-request-push-plans')('Push Plans'),
                 ),
             ),
