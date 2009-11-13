@@ -25,5 +25,5 @@ def head(title='', css=[], scripts=[], refresh=None):
         stylesheets, 
         scripts)
     if refresh:
-        head_el(T('meta', **{'http-equiv': 'refresh', 'content': '5' }))
+        head_el(T('meta', **{'http-equiv': 'refresh', 'content': str(refresh) }))
     return head_el
