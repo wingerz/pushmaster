@@ -26,8 +26,8 @@ def create_request(subject, message=None, push_plans=False):
     mail.send_mail(
         sender=users.get_current_user().email(),
         to=config.mail_to,
-        subject='[push] ' + request.subject,
-        body=request.message or '')
+        subject=request.subject,
+        body=request.message or '.')
 
     return request
 
@@ -45,7 +45,7 @@ def edit_request(request, subject, message=None, push_plans=False):
     email = mail.EmailMessage(
         sender=users.get_current_user().email(),
         to=config.mail_to,
-        subject='[push] ' + subject)
+        subject=subject)
     if request.message:
         email.body = request.message
 
@@ -86,7 +86,7 @@ def abandon_push(push):
     mail.send_mail(
         sender=users.get_current_user().email(),
         to=config.mail_to,
-        subject='[push] %s abandoned' % format_datetime(push.ctime),
+        subject='push %s abandoned' % format_datetime(push.ctime),
         body='The push was abandoned.')
 
     return push
@@ -104,7 +104,7 @@ def accept_request(push, request):
     mail.send_mail(
         sender=users.get_current_user().email(),
         to=request.owner.email(),
-        subject='[push] ' + request.subject,
+        subject=request.subject,
         body='Please check this in.')
 
     return request
@@ -122,7 +122,7 @@ def withdraw_request(request):
     mail.send_mail(
         sender=users.get_current_user().email(),
         to=config.mail_to,
-        subject='[push] ' + request.subject,
+        subject=request.subject,
         body=request.message or '')
 
     return request
@@ -140,7 +140,7 @@ def send_to_stage(push):
             mail.send_mail(
                 sender=users.get_current_user().email(),
                 to=config.mail_to,
-                subject='[push] ' + request.subject,
+                subject=request.subject,
                 body='Please check your changes on stage.')
 
     push.put()
@@ -154,7 +154,7 @@ def set_request_tested(request):
     mail.send_mail(
         sender=users.get_current_user().email(),
         to=config.mail_to,
-        subject='[push] ' + request.subject,
+        subject=request.subject,
         body='Looks good to me.')
 
     return request
@@ -172,7 +172,7 @@ def send_to_live(push):
         mail.send_mail(
             sender=users.get_current_user().email(),
             to=request.owner.email(),
-            subject='[push] ' + request.subject,
+            subject=request.subject,
             body='Please monitor live to verify your changes.')
 
     push.state = 'live'
@@ -190,7 +190,7 @@ def set_request_checkedin(request):
     mail.send_mail(
         sender=users.get_current_user().email(),
         to=config.mail_to,
-        subject='[push] ' + request.subject,
+        subject=request.subject,
         body='My changes are checked in.')
 
     return request
