@@ -1,5 +1,5 @@
 html {
-	background: #FFF url(/images/drinking_coffee.png) repeat fixed;
+	background: #FFF url(/images/drinking_coffee.png) no-repeat fixed bottom right;
 }
 
 body {
