@@ -2,7 +2,7 @@ import logging
 
 from pushmaster.handler import RequestHandler
 
-from pushmaster.taglib import Tag as T
+from pushmaster.taglib import T
 from pushmaster import logic
 from pushmaster.model import *
 from pushmaster.view import page
@@ -12,84 +12,84 @@ __author__ = 'Jeremy Latt <jlatt@yelp.com>'
 __all__ = ('Requests', 'EditRequest')
 
 def new_request_form():
-    return T('form', action='/requests', method='post', class_='request')(
-        T('fieldset')(
-            T('legend')('New Request'),
-            T('div')(
-                T('label', for_='new-request-subject')('Subject'),
-                T('input', name='subject', id='new-request-subject'),
+    return T.form(action='/requests', method='post', class_='request')(
+        T.fieldset(
+            T.legend('New Request'),
+            T.div(
+                T.label(for_='new-request-subject')('Subject'),
+                T.input(name='subject', id='new-request-subject'),
                 ),
-            T('div')(
-                T('label', for_='new-request-message')('Message'),
-                T('textarea', name='message', id='new-request-message'),
+            T.div(
+                T.label(for_='new-request-message')('Message'),
+                T.textarea(name='message', id='new-request-message'),
                 ),
-            T('div')(
-                T('input', id='new-request-push-plans', type='checkbox', name='push_plans', class_='checkbox'),
-                T('label', class_='checkbox', for_='new-request-push-plans')('Push Plans'),
+            T.div(
+                T.input(id='new-request-push-plans', type='checkbox', name='push_plans', class_='checkbox'),
+                T.label(class_='checkbox', for_='new-request-push-plans')('Push Plans'),
                 ),
             ),
-        T('div')(
-            T('button', type='submit')('Create')
+        T.div(
+            T.button(type='submit')('Create')
             ),
         )
 
 def edit_request_form(request):
     request_id = str(request.key())
-    return T('form', action=request.uri, method='post', class_='request')(
-        T('fieldset')(
-            T('legend')('Edit Request'),
-            T('div')(
-                T('label', for_='edit-request-subject-'+request_id)('Subject'),
-                T('input', name='subject', id='edit-request-subject-'+request_id, value=request.subject),
+    return T.form(action=request.uri, method='post', class_='request')(
+        T.fieldset(
+            T.legend('Edit Request'),
+            T.div(
+                T.label(for_='edit-request-subject-'+request_id)('Subject'),
+                T.input(name='subject', id='edit-request-subject-'+request_id, value=request.subject),
                 ),
-            T('div')(
-                T('label', for_='edit-request-message-'+request_id)('Message'),
-                T('textarea', name='message', id='edit-request-message-'+request_id)(request.message or ''),
+            T.div(
+                T.label(for_='edit-request-message-'+request_id)('Message'),
+                T.textarea(name='message', id='edit-request-message-'+request_id)(request.message or ''),
                 ),
-            T('div')(
-                T('input', id='edit-request-push-plans-'+request_id, type='checkbox', name='push_plans', checked=request.push_plans, class_='checkbox'),
-                T('label', for_='edit-request-push-plans-'+request_id, class_='checkbox')('Push Plans'),
+            T.div(
+                T.input(id='edit-request-push-plans-'+request_id, type='checkbox', name='push_plans', checked=request.push_plans, class_='checkbox'),
+                T.label(for_='edit-request-push-plans-'+request_id, class_='checkbox')('Push Plans'),
                 ),
             ),
-        T('div')(
-            T('button', type='submit', name='action', value='edit')('Save'),
+        T.div(
+            T.button(type='submit', name='action', value='edit')('Save'),
             ' ',
-            T('button', type='submit', name='action', value='abandon')('Abandon'),
+            T.button(type='submit', name='action', value='abandon')('Abandon'),
             ),
         )
 
 def request_actions_form(request):
-    form = T('form', action=request.uri, method='post', class_='withdraw-request')
+    form = T.form(action=request.uri, method='post', class_='withdraw-request')
 
     if request.state == 'accepted':
-        form(T('button', type='submit', name='action', value='markcheckedin')('Mark Checked In'))
+        form(T.button(type='submit', name='action', value='markcheckedin')('Mark Checked In'))
 
     elif request.state == 'onstage':
-        form(T('button', type='submit', name='action', value='marktested')('Mark Tested'))
+        form(T.button(type='submit', name='action', value='marktested')('Mark Tested'))
 
     if request.state in ('accepted', 'checkedin', 'onstage', 'tested'):
-        form(T('button', type='submit', name='action', value='withdraw')('Withdraw'))
+        form(T.button(type='submit', name='action', value='withdraw')('Withdraw'))
 
     return form
 
 def request_display(request):
-    div = T('div', class_='request')(
-        T('h2', class_='subject')(
+    div = T.div(class_='request')(
+        T.h2(class_='subject')(
             request.subject,
             ' (',
             common.user_email(request.owner),
             ')'
             ),
-        T('div', class_='message')(common.linkify(request.message or '')),
-        T('h3', class_='push-plans')('This request has push plans.') if request.push_plans else '',
+        T.div(class_='message')(common.linkify(request.message or '')),
+        T.h3(class_='push-plans')('This request has push plans.') if request.push_plans else '',
         )
 
     push = request.push
     if push:
         div(
-            T('h3', class_='push')(
+            T.h3(class_='push')(
                 'Push: ',
-                T('a', href=push.uri)(
+                T.a(href=push.uri)(
                     common.datetime(push.ctime),
                     ),
                 ' (',

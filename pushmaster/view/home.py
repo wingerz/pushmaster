@@ -1,7 +1,7 @@
 __author__ = 'Jeremy Latt jeremy@jeremylatt.com'
 
 from pushmaster.handler import RequestHandler
-from pushmaster.taglib import Tag as T
+from pushmaster.taglib import T
 from pushmaster.view import page
 
 class Home(RequestHandler):

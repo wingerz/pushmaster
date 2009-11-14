@@ -1,5 +1,5 @@
 from google.appengine.ext.webapp import RequestHandler
-from pushmaster.taglib import Tag as T
+from pushmaster.taglib import T
 
 from pushmaster import logic
 from pushmaster.view import page
