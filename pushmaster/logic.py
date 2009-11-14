@@ -168,12 +168,6 @@ def send_to_live(push):
     for request in requests:
         request.state = 'live'
         request.put()
-        
-        mail.send_mail(
-            sender=users.get_current_user().email(),
-            to=config.mail_to,
-            subject=request.subject,
-            body='Please monitor live to verify your changes.')
 
     push.state = 'live'
     push.put()
