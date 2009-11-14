@@ -163,7 +163,7 @@ def send_to_live(push):
     assert push.state == 'onstage'
     requests = list(push.requests)
     for request in requests:
-        assert request.state == 'tested'
+        assert request.state in ('tested', 'live')
 
     for request in requests:
         request.state = 'live'
