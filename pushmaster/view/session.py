@@ -1,6 +1,6 @@
 from google.appengine.api import users
 from google.appengine.ext.webapp import RequestHandler
-from pushmaster.taglib import Tag as T
+from pushmaster.taglib import T
 from pushmaster.view import page
 from pushmaster.model import *
 from pushamster import logic

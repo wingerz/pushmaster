@@ -1,4 +1,5 @@
 import cgi
+from functools import partial
 
 __author__ = 'Jeremy Latt <jeremy@jeremylatt.com>'
 
@@ -18,7 +19,7 @@ def translate(attrs):
         newattrs[key] = value
     return newattrs
 
-class Tag(object):
+class _Tag(object):
     empty = ('link', 'input', 'hr', 'meta')
 
     def __init__(self, tagname, **attrs):
@@ -28,7 +29,9 @@ class Tag(object):
         self.tail = ''
         self.children = []
 
-    def __call__(self, *args):
+    def __call__(self, *args, **kwargs):
+        if kwargs:
+            self.attrs = translate(kwargs)
         for arg in iterflat(args):
             if isinstance(arg, basestring):
                 if self.children:
@@ -82,6 +85,21 @@ class Tag(object):
         f.write(cgi.escape(self.tail))
 
         return f
+
+class TagFactory(object):
+    """Tag wrapper that lets you use normal Tag syntax (i.e. T('head')(...)) as
+    well as "manifested" syntax like T.head(...).
+    """
+
+    tag_cls = _Tag
+
+    def __getattr__(self, name):
+        return self.tag_cls(name)
+
+    def __call__(self, *args, **kwargs):
+        return self.tag_cls(*args, **kwargs)
+
+T = TagFactory()
 
 class Literal(object):
     def __init__(self, html):
