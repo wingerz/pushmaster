@@ -43,11 +43,11 @@ class Push(db.Model):
 
     @classmethod
     def current(cls):
-        return cls.all().filter('state in', ('accepting', 'onstage')).order('-mtime').get()
+        return cls.all().filter('state in', ('accepting', 'onstage')).order('-ctime').get()
 
     @classmethod
     def open(cls, limit=100):
-        return cls.all().filter('state in', ('accepting', 'onstage', 'live')).order('-mtime').fetch(limit)
+        return cls.all().filter('state in', ('accepting', 'onstage', 'live')).order('-ctime').fetch(limit)
 
 class Request(db.Model):
     ctime = db.DateTimeProperty(auto_now_add=True)
