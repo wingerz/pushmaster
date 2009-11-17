@@ -106,7 +106,7 @@ def accept_request(push, request):
         sender=users.get_current_user().email(),
         to=request.owner.email(),
         cc=config.mail_to,
-        subject=request.subject,
+        subject='Re: ' + request.subject,
         body='Please check this in.\n' + config.url(request.uri))
 
     return request
@@ -137,7 +137,7 @@ def send_to_stage(push):
                 sender=users.get_current_user().email(),
                 to=request.owner.email(),
                 cc=config.mail_to,
-                subject=request.subject,
+                subject='Re: ' + request.subject,
                 body='Please check your changes on stage.\n' + config.url(request.uri))
 
     push.put()
@@ -154,7 +154,7 @@ def set_request_tested(request):
         sender=users.get_current_user().email(),
         to=request.push.owner.email(),
         cc=config.mail_to,
-        subject=request.subject,
+        subject='Re: ' + request.subject,
         body='Looks good to me.\n' + config.url(request.push.uri))
 
     return request
@@ -185,7 +185,7 @@ def set_request_checkedin(request):
         sender=users.get_current_user().email(),
         to=request.push.owner.email(),
         cc=config.mail_to,
-        subject=request.subject,
+        subject='Re: ' + request.subject,
         body='My changes are checked in.\n' + config.url(request.push.uri))
 
     return request
