@@ -27,7 +27,7 @@ def create_request(subject, message=None, push_plans=False):
         sender=users.get_current_user().email(),
         to=config.mail_to,
         subject=request.subject,
-        body=(request.message or request.subject))
+        body='\n'.join(request.message or request.subject, config.url(request.uri)))
 
     return request
 
@@ -47,7 +47,7 @@ def edit_request(request, subject, message=None, push_plans=False):
         sender=users.get_current_user().email(),
         to=config.mail_to,
         subject=request.subject,
-        body=(request.message or request.subject))
+        body='\n'.join(request.message or request.subject, config.url(request.uri)))
 
     return request
 
@@ -68,6 +68,7 @@ def create_push(parent=None):
             request.push = push
             request.put()
         parent.state = 'abandoned'
+        parent.put()
 
     push.put()
     return push
@@ -106,7 +107,7 @@ def accept_request(push, request):
         to=request.owner.email(),
         cc=config.mail_to,
         subject=request.subject,
-        body='Please check this in.')
+        body='Please check this in.\n' + config.url(request.uri))
 
     return request
 
@@ -137,7 +138,7 @@ def send_to_stage(push):
                 to=request.owner.email(),
                 cc=config.mail_to,
                 subject=request.subject,
-                body='Please check your changes on stage.')
+                body='Please check your changes on stage.\n' + config.url(request.uri))
 
     push.put()
     return push
@@ -154,7 +155,7 @@ def set_request_tested(request):
         to=request.push.owner.email(),
         cc=config.mail_to,
         subject=request.subject,
-        body='Looks good to me.')
+        body='Looks good to me.\n' + config.url(request.push.uri))
 
     return request
 
@@ -185,6 +186,6 @@ def set_request_checkedin(request):
         to=request.push.owner.email(),
         cc=config.mail_to,
         subject=request.subject,
-        body='My changes are checked in.')
+        body='My changes are checked in.\n' + config.url(request.push.uri))
 
     return request
