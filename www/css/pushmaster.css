@@ -38,6 +38,7 @@ button {
 input, textarea, select {
 	padding: 0.2em;
 	border: 1px solid #CCC;
+	background-color: transparent;
 }
 
 textarea {
@@ -145,6 +146,10 @@ form.request input.checkbox {
 form.request textarea {
 	width: 85%;
 	height: 10em;
+}
+
+form.request div.edit-request-content {
+	display: none;
 }
 
 form.accept-request {

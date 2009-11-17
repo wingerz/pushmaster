@@ -1,5 +1,6 @@
 import logging
 
+from pushmaster import config
 from pushmaster.handler import RequestHandler
 
 from pushmaster.taglib import T
@@ -37,24 +38,26 @@ def edit_request_form(request):
     request_id = str(request.key())
     return T.form(action=request.uri, method='post', class_='request')(
         T.fieldset(
-            T.legend('Edit Request'),
-            T.div(
-                T.label(for_='edit-request-subject-'+request_id)('Subject'),
-                T.input(name='subject', id='edit-request-subject-'+request_id, value=request.subject),
+            T.legend(T.a(class_='edit-request-toggle')('Edit Request')),
+            T.div(class_='edit-request-content')(
+                T.div(
+                    T.label(for_='edit-request-subject-'+request_id)('Subject'),
+                    T.input(name='subject', id='edit-request-subject-'+request_id, value=request.subject),
+                    ),
+                T.div(
+                    T.label(for_='edit-request-message-'+request_id)('Message'),
+                    T.textarea(name='message', id='edit-request-message-'+request_id)(request.message or ''),
+                    ),
+                T.div(
+                    T.input(id='edit-request-push-plans-'+request_id, type='checkbox', name='push_plans', checked=request.push_plans, class_='checkbox'),
+                    T.label(for_='edit-request-push-plans-'+request_id, class_='checkbox')('Push Plans'),
+                    ),
+                T.div(
+                    T.button(type='submit', name='action', value='edit')('Save'),
+                    ' ',
+                    T.button(type='submit', name='action', value='abandon')('Abandon'),
+                    ),
                 ),
-            T.div(
-                T.label(for_='edit-request-message-'+request_id)('Message'),
-                T.textarea(name='message', id='edit-request-message-'+request_id)(request.message or ''),
-                ),
-            T.div(
-                T.input(id='edit-request-push-plans-'+request_id, type='checkbox', name='push_plans', checked=request.push_plans, class_='checkbox'),
-                T.label(for_='edit-request-push-plans-'+request_id, class_='checkbox')('Push Plans'),
-                ),
-            ),
-        T.div(
-            T.button(type='submit', name='action', value='edit')('Save'),
-            ' ',
-            T.button(type='submit', name='action', value='abandon')('Abandon'),
             ),
         )
 
@@ -140,6 +143,8 @@ class EditRequest(RequestHandler):
             common.navbar(),
             request_display(request),
             maybe_request_form,
+            page.script(config.jquery),
+            page.script('/js/request.js'),
             )
 
         page.write(self.response.out, page.head(title='pushmaster: request: ' + request.subject), body)
