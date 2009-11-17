@@ -23,7 +23,7 @@ def linkify(text):
             parts.append('<a href="%s">%s</a>' % (cgi.escape(part, quote=True), cgi.escape(part)))
         else:
             parts.append(cgi.escape(part))
-    return Literal(''.join(parts))
+    return Literal(''.join(parts).replace('\n', '<br/>'))
 
 def datetime(dt):
     return T('span', class_='datetime')(logic.format_datetime(dt))

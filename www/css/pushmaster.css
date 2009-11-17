@@ -87,7 +87,6 @@ div.owner {
 }
 
 div.message {
-	white-space: pre;
 	border: 1px solid #CCC;
 	padding: 0.25em;
 	margin-bottom: 0.5em;
