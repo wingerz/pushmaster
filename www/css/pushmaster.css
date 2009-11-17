@@ -3,7 +3,8 @@ html {
 }
 
 body {
-	margin: 1em 1em 0 1em;
+	max-width: 60em;
+	margin: 1em auto;
 	font-family: "Helvetica", "Arial", sans;
 	font-size: 14px;
 	color: #333;
