@@ -1,11 +1,18 @@
-__author__ = 'Jeremy Latt jeremy@jeremylatt.com'
+__author__ = 'Jeremy Latt <jlatt@yelp.com>'
 
+from pushmaster import config
 from pushmaster.handler import RequestHandler
 from pushmaster.taglib import T
 from pushmaster.view import page
 
-class Home(RequestHandler):
+class RedirectHandler(RequestHandler):
     def get(self):
-        self.redirect('/requests')
+        self.redirect(self.url)
 
-__all__ = ['Home']
+class Home(RedirectHandler):
+    url = '/requests'
+
+class Favicon(RedirectHandler):
+    url = config.favicon
+
+__all__ = ['Home', 'Favicon']

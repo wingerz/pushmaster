@@ -1,3 +1,4 @@
+from pushmaster import config
 from pushmaster.taglib import T
 
 XHTML_STRICT_DOCTYPE = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'
@@ -22,7 +23,7 @@ def head(title='', css=[], scripts=[], refresh=None):
     scripts = map(script, scripts)
     head_el = T('head')(
         T('title')(title),
-        T('link', rel='shortcut icon', type='image/x-icon', href='http://static.px.yelp.com/favicon.ico'),
+        T('link', rel='shortcut icon', type='image/x-icon', href=config.favicon),
         stylesheet('/css/reset.css'),
         stylesheet('/css/pushmaster.css'),
         stylesheets,

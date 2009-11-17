@@ -1,4 +1,4 @@
-__author__ = 'Jeremy Latt <jeremy@jeremylatt.com>'
+__author__ = 'Jeremy Latt <jlatt@yelp.com>'
 
 # fix up the environment before anything else
 from pushmaster import tweaks
@@ -19,6 +19,7 @@ class LoggingWSGIApplication(webapp.WSGIApplication):
 
 application = LoggingWSGIApplication(
     [('/', Home),
+     ('/favicon.ico', Favicon),
      ('/requests', Requests),
      ('/pushes', Pushes),
      ('/request/([^/]+)', EditRequest),
