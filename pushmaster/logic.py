@@ -84,12 +84,6 @@ def abandon_push(push):
 
     push.put()
 
-    mail.send_mail(
-        sender=users.get_current_user().email(),
-        to=config.mail_to,
-        subject='push %s abandoned' % format_datetime(push.ctime),
-        body='The push was abandoned.')
-
     return push
 
 def accept_request(push, request):
