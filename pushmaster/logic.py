@@ -47,7 +47,7 @@ def edit_request(request, subject, message=None, push_plans=False):
         sender=users.get_current_user().email(),
         to=config.mail_to,
         subject=request.subject,
-        body='\n'.join(request.message or request.subject, config.url(request.uri)))
+        body='\n'.join([request.message or request.subject, config.url(request.uri)]))
 
     return request
 
