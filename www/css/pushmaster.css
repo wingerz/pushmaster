@@ -5,6 +5,7 @@ html {
 body {
 	max-width: 60em;
 	margin: 1em auto;
+	padding: 0 1em;
 	font-family: "Helvetica", "Arial", sans;
 	font-size: 14px;
 	color: #333;
