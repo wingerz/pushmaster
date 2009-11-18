@@ -18,13 +18,13 @@ class LoggingWSGIApplication(webapp.WSGIApplication):
         return super(LoggingWSGIApplication, self).__call__(environ, start_response)
 
 application = LoggingWSGIApplication(
-    [('/', Home),
-     ('/favicon.ico', Favicon),
-     ('/requests', Requests),
+    [('/requests', Requests),
      ('/pushes', Pushes),
      ('/request/([^/]+)', EditRequest),
      ('/push/([^/]+)/request/([^/]+)', EditPushRequest),
-     ('/push/(.+)', EditPush)],
+     ('/push/(.+)', EditPush),
+     ('/favicon.ico', Favicon),
+     ('.*', Home)],
     debug=True)
 
 def main():
