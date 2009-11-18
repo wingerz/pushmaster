@@ -1,5 +1,6 @@
-from google.appengine.api import mail, users
-
+from google.appengine.api import mail
+from google.appengine.api import users
+from google.appengine.runtime.apiproxy_errors import OverQuotaError
 from pushmaster import config
 from pushmaster.model import *
 from pushmaster import timezone
@@ -98,8 +99,7 @@ def accept_request(push, request):
 
     mail.send_mail(
         sender=users.get_current_user().email(),
-        to=request.owner.email(),
-        cc=config.mail_to,
+        to=config.mail_to,
         subject='Re: ' + request.subject,
         body='Please check this in.\n' + config.url(request.uri))
 
@@ -119,22 +119,24 @@ def withdraw_request(request):
 
 def send_to_stage(push):
     assert push.state in ('accepting', 'onstage')
+
     push.state = 'onstage'
+    push.put()
 
     for request in push.requests:
         if request.state == 'checkedin':
-            request.state = 'onstage'
-            
-            request.put()
+            try:
+                mail.send_mail(
+                    sender=users.get_current_user().email(),
+                    to=config.mail_to,
+                    subject='Re: ' + request.subject,
+                    body='Please check your changes on stage.\n' + config.url(request.uri))
 
-            mail.send_mail(
-                sender=users.get_current_user().email(),
-                to=request.owner.email(),
-                cc=config.mail_to,
-                subject='Re: ' + request.subject,
-                body='Please check your changes on stage.\n' + config.url(request.uri))
+                request.state = 'onstage'
+                request.put()
+            except OverQuotaError:
+                break
 
-    push.put()
     return push
 
 def set_request_tested(request):
@@ -146,8 +148,7 @@ def set_request_tested(request):
     
     mail.send_mail(
         sender=users.get_current_user().email(),
-        to=request.push.owner.email(),
-        cc=config.mail_to,
+        to=config.mail_to,
         subject='Re: ' + request.subject,
         body='Looks good to me.\n' + config.url(request.push.uri))
 
@@ -177,8 +178,7 @@ def set_request_checkedin(request):
         
     mail.send_mail(
         sender=users.get_current_user().email(),
-        to=request.push.owner.email(),
-        cc=config.mail_to,
+        to=config.mail_to,
         subject='Re: ' + request.subject,
         body='My changes are checked in.\n' + config.url(request.push.uri))
 
