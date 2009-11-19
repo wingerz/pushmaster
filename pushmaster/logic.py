@@ -27,6 +27,7 @@ def create_request(subject, message=None, push_plans=False):
     body = [request.message or request.subject]
     if request.push_plans:
         body.append('This request has push plans.')
+        body.append(config.push_plans_url)
     body.append(config.url(request.uri))
 
     mail.send_mail(
