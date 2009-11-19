@@ -33,8 +33,10 @@ legend, button, input, textarea, select {
 
 button {
 	cursor: pointer;
-	padding: 0.25em;
 	margin-right: 0.5em;
+	border: 1px solid #777;
+	background-color: #EEE;
+	-moz-border-radius: 4px;
 }
 
 input, textarea, select {
