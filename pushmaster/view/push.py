@@ -96,7 +96,7 @@ def push_actions_form(push):
     form = T('form', action=push.uri, method='post')
 
     if push.state in ('accepting', 'onstage') and push.checkedin_requests.fetch(1):
-        form(T('button', type='submit', name='action', value='sendtostage')('Mark Deployed Stage'))
+        form(T('button', type='submit', name='action', value='sendtostage')('Mark Deployed to Stage'))
 
     if push.state == 'onstage' and push.tested:
         form(T('button', type='submit', name='action', value='sendtolive')('Mark Live'))
