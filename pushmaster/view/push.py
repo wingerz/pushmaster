@@ -1,12 +1,13 @@
 from google.appengine.ext.webapp import RequestHandler
 from pushmaster.taglib import T
 
+from pushmaster import config
 from pushmaster import logic
 from pushmaster.view import page
 from pushmaster.model import *
 from pushmaster.view import common
 
-__author__ = 'Jeremy Latt jeremy@jeremylatt.com'
+__author__ = 'Jeremy Latt <jlatt@yelp.com>'
 __all__ = ('Pushes', 'EditPush', 'EditPushRequest')
 
 def new_push_form():
@@ -95,10 +96,10 @@ def push_actions_form(push):
     form = T('form', action=push.uri, method='post')
 
     if push.state in ('accepting', 'onstage') and push.checkedin_requests.fetch(1):
-        form(T('button', type='submit', name='action', value='sendtostage')('Send to Stage'))
+        form(T('button', type='submit', name='action', value='sendtostage')('Mark Deployed Stage'))
 
     if push.state == 'onstage' and push.tested:
-        form(T('button', type='submit', name='action', value='sendtolive')('Send to Live'))
+        form(T('button', type='submit', name='action', value='sendtolive')('Mark Live'))
 
     if push.state in ('accepting', 'onstage'):
         form(T('button', type='submit', name='action', value='abandon')('Abandon'))
@@ -143,6 +144,11 @@ class EditPush(RequestHandler):
                 T('h2')('Pending Requests'),
                 push_pending_list(push, requests),
                 )
+
+        body(
+            page.script(config.jquery),
+            page.script('/js/push.js'),
+            )
 
         page.write(self.response.out, page.head(title='pushmaster: push: ' + logic.format_datetime(push.ctime)), body)
 

@@ -164,6 +164,10 @@ div.requests {
 	margin-bottom: 0.5em;
 }
 
+ol.accepted.requests li.request span.datetime {
+	display: none;
+}
+
 span.push-plans {
 	cursor: help;
 	color: #F00;

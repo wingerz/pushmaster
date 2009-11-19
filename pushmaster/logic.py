@@ -24,11 +24,16 @@ def create_request(subject, message=None, push_plans=False):
 
     request.put()
 
+    body = [request.message or request.subject]
+    if request.push_plans:
+        body.append('This request has push plans.')
+    body.append(config.url(request.uri))
+
     mail.send_mail(
         sender=users.get_current_user().email(),
         to=config.mail_to,
         subject=request.subject,
-        body='\n'.join([request.message or request.subject, config.url(request.uri)]))
+        body='\n'.join(body))
 
     return request
 
