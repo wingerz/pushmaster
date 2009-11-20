@@ -22,8 +22,6 @@ def create_request(subject, message=None, push_plans=False):
         assert len(message) > 0
         request.message = message
 
-    request.put()
-
     body = [request.message or request.subject]
     if request.push_plans:
         body.append('This request has push plans.')
@@ -35,6 +33,8 @@ def create_request(subject, message=None, push_plans=False):
         to=config.mail_to,
         subject=request.subject,
         body='\n'.join(body))
+
+    request.put()
 
     return request
 
@@ -48,13 +48,13 @@ def edit_request(request, subject, message=None, push_plans=False):
         assert len(message) > 0
         request.message = message
 
-    request.put()
-
     mail.send_mail(
         sender=users.get_current_user().email(),
         to=config.mail_to,
         subject=request.subject,
         body='\n'.join([request.message or request.subject, config.url(request.uri)]))
+
+    request.put()
 
     return request
 
@@ -64,6 +64,7 @@ def abandon_request(request):
     request.push = None
     
     request.put()
+
     return request
 
 def create_push(parent=None):
@@ -78,6 +79,7 @@ def create_push(parent=None):
         parent.put()
 
     push.put()
+
     return push
 
 def abandon_push(push):
@@ -101,13 +103,14 @@ def accept_request(push, request):
     request.push = push
     request.state = 'accepted'
 
-    request.put()
-
     mail.send_mail(
         sender=users.get_current_user().email(),
-        to=config.mail_to,
+        to=request.owner.email(),
+        cc=config.mail_to,
         subject='Re: ' + request.subject,
         body='Please check this in.\n' + config.url(request.uri))
+
+    request.put()
 
     return request
 
@@ -131,17 +134,16 @@ def send_to_stage(push):
 
     for request in push.requests:
         if request.state == 'checkedin':
-            try:
-                mail.send_mail(
-                    sender=users.get_current_user().email(),
-                    to=config.mail_to,
-                    subject='Re: ' + request.subject,
-                    body='Please check your changes on stage.\n' + config.url(request.uri))
+            request.state = 'onstage'
 
-                request.state = 'onstage'
-                request.put()
-            except OverQuotaError:
-                break
+            mail.send_mail(
+                sender=users.get_current_user().email(),
+                to=request.owner.email(),
+                cc=config.mail_to,
+                subject='Re: ' + request.subject,
+                body='Please check your changes on stage.\n' + config.url(request.uri))
+            
+            request.put()
 
     return push
 
@@ -154,7 +156,8 @@ def set_request_tested(request):
     
     mail.send_mail(
         sender=users.get_current_user().email(),
-        to=config.mail_to,
+        to=request.push.owner.email(),
+        cc=config.mail_to,
         subject='Re: ' + request.subject,
         body='Looks good to me.\n' + config.url(request.push.uri))
 
@@ -171,7 +174,9 @@ def send_to_live(push):
         request.put()
 
     push.state = 'live'
+
     push.put()
+
     return push
 
 def set_request_checkedin(request):
@@ -179,13 +184,14 @@ def set_request_checkedin(request):
     assert request.push
 
     request.state = 'checkedin'
-    
-    request.put()
         
     mail.send_mail(
         sender=users.get_current_user().email(),
-        to=config.mail_to,
+        to=request.push.owner.email(),
+        cc=config.mail_to,
         subject='Re: ' + request.subject,
         body='My changes are checked in.\n' + config.url(request.push.uri))
+
+    request.put()
 
     return request
