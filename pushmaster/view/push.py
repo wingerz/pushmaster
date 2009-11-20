@@ -1,6 +1,7 @@
+from django.utils import simplejson as json
 from google.appengine.ext.webapp import RequestHandler
-from pushmaster.taglib import T
 
+from pushmaster.taglib import T
 from pushmaster import config
 from pushmaster import logic
 from pushmaster.view import page
@@ -150,7 +151,17 @@ class EditPush(RequestHandler):
             page.script('/js/push.js'),
             )
 
-        page.write(self.response.out, page.head(title='pushmaster: push: ' + logic.format_datetime(push.ctime)), body)
+        head = page.head(title='pushmaster: push: ' + logic.format_datetime(push.ctime))(
+            T.script(type='text/javascript')(
+                'var push = ',
+                json.dumps({
+                        'key': str(push.key()),
+                        'state': push.state,
+                        }),
+                ';',
+                )
+            )
+        page.write(self.response.out, head, body)
 
     def post(self, push_id):
         push = Push.get(push_id)
