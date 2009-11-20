@@ -27,6 +27,12 @@ h4 {
 	font-size: 120%;
 }
 
+hr {
+	border: none;
+	height: 1px;
+	background-color: #CCC;
+}
+
 legend, button, input, textarea, select {
 	color: #333;
 }
