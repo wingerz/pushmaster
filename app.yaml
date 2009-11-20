@@ -11,3 +11,7 @@ handlers:
 - url: .*
   script: main.py
   login: required
+
+- url: /admin/.*
+  script: $PYTHON_LIB/google/appengine/ext/admin
+  login: admin
