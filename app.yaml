@@ -8,10 +8,11 @@ handlers:
   static_files: www/\1/\2
   upload: www/(css|js|images)/(.+)
 
+- url: /admin/.*
+  script: $PYTHON_LIB/google/appengine/ext/admin
+  login: admin
+
 - url: .*
   script: main.py
   login: required
 
-- url: /admin/.*
-  script: $PYTHON_LIB/google/appengine/ext/admin
-  login: admin
