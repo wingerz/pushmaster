@@ -21,7 +21,6 @@ application = LoggingWSGIApplication(
     [('/requests', Requests),
      ('/pushes', Pushes),
      ('/request/([^/]+)', EditRequest),
-     ('/push/([^/]+)/request/([^/]+)', EditPushRequest),
      ('/push/(.+)', EditPush),
      ('/favicon.ico', Favicon),
      ('.*', Home)],

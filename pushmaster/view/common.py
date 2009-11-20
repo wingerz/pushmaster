@@ -77,3 +77,9 @@ def request_list(requests):
     if requests:
         ol(map(request_item, requests))
     return ol
+
+def take_ownership_form(object):
+    form = T.form(class_='take-ownership', action=object.uri, method='post')(
+        T.button(type='submit', name='action', value='take_ownership')('Take Ownership'),
+        )
+    return form

@@ -195,3 +195,8 @@ def set_request_checkedin(request):
     request.put()
 
     return request
+
+def take_ownership(object):
+    object.owner = users.get_current_user()
+    object.put()
+    return object

@@ -189,3 +189,7 @@ span.push-plans {
 	font-weight: bold;
 	margin: 0 0.5em;
 }
+
+form.request-actions, form.take-ownership {
+	display: inline;
+}

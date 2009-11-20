@@ -10,7 +10,7 @@ from pushmaster.model import *
 from pushmaster.view import common
 
 __author__ = 'Jeremy Latt <jlatt@yelp.com>'
-__all__ = ('Pushes', 'EditPush', 'EditPushRequest')
+__all__ = ('Pushes', 'EditPush')
 
 def new_push_form():
     return T('form', action='/pushes', method='post', class_='new-push')(
@@ -40,13 +40,14 @@ class Pushes(RequestHandler):
         body = T('body')(
             common.session(),
             common.navbar(),
-            push_list, 
             new_push_form(),
+            push_list, 
             )
         page.write(self.response.out, page.head(title='pushmaster: pushes'), body)
 
     def post(self):
         action = self.request.get('action')
+        
         assert action == 'new_push'
 
         push = logic.create_push()
@@ -148,6 +149,8 @@ class EditPush(RequestHandler):
                     T('h2')('Pending Requests'),
                     push_pending_list(push, requests),
                     )
+        else:
+            body(common.take_ownership_form(push))
 
         body(
             page.script(config.jquery),
@@ -183,19 +186,9 @@ class EditPush(RequestHandler):
             logic.abandon_push(push)
             self.redirect('/pushes')
 
-        else:
+        elif action == 'take_ownership':
+            logic.take_ownership(push)
             self.redirect(push.uri)
 
-
-class EditPushRequest(RequestHandler):
-    def get(self, push_id, request_id):
-        push = Push.get(push_id)
-        request = Request.get(request_id)
-
-        assert request.state == 'requested'
-
-        body = T('body')(
-            common.navbar(),
-            )
-
-        page.write(self.response.out, page.head(title='pushmaster: push: add request'), body)
+        else:
+            self.redirect(push.uri)

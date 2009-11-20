@@ -56,17 +56,18 @@ def edit_request_form(request):
                     ),
                 T.div(
                     T.button(type='submit', name='action', value='edit')('Save'),
-                    ' ',
-                    T.button(type='submit', name='action', value='abandon')('Abandon'),
                     ),
                 ),
             ),
         )
 
 def request_actions_form(request):
-    form = T.form(action=request.uri, method='post', class_='withdraw-request')
+    form = T.form(action=request.uri, method='post', class_='request-actions')
 
-    if request.state == 'accepted':
+    if request.state == 'requested':
+        form(T.button(type='submit', name='action', value='abandon')('Abandon'))
+
+    elif request.state == 'accepted':
         form(T.button(type='submit', name='action', value='markcheckedin')('Mark Checked In'))
 
     elif request.state == 'onstage':
@@ -74,7 +75,7 @@ def request_actions_form(request):
 
     if request.state in ('accepted', 'checkedin', 'onstage', 'tested'):
         form(T.button(type='submit', name='action', value='withdraw')('Withdraw'))
-
+        
     return form
 
 def request_display(request):
@@ -101,8 +102,11 @@ def request_display(request):
                 common.user_email(push.owner),
                 ')',
                 ),
-            request_actions_form(request),
             )
+
+    if users.get_current_user() == request.owner:
+        div(request_actions_form(request))
+
     return div
 
 class Requests(RequestHandler):
@@ -137,15 +141,20 @@ class Requests(RequestHandler):
 class EditRequest(RequestHandler):
     def get(self, request_id):
         request = Request.get(request_id)
+        
+        rdisplay = request_display(request)
 
         body = T('body')(
             common.session(),
             common.navbar(),
-            request_display(request),
+            rdisplay,
             )
         
-        if request.state == 'requested' and users.get_current_user() == request.owner:
-            body(edit_request_form(request))
+        if users.get_current_user() == request.owner:
+            if request.state == 'requested':
+                body(edit_request_form(request))
+        else:
+            rdisplay(common.take_ownership_form(request))
 
         body(
             page.script(config.jquery),
@@ -188,6 +197,10 @@ class EditRequest(RequestHandler):
 
         elif action == 'marktested':
             logic.set_request_tested(request)
+            self.redirect(request.uri)
+
+        elif action == 'take_ownership':
+            logic.take_ownership(request)
             self.redirect(request.uri)
         
         else:
