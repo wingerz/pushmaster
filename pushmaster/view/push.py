@@ -1,4 +1,5 @@
 from django.utils import simplejson as json
+from google.appengine.api import users
 from google.appengine.ext.webapp import RequestHandler
 
 from pushmaster.taglib import T
@@ -136,15 +137,17 @@ class EditPush(RequestHandler):
                 T('h3')('Accepted'),
                 accepted_list(push.accepted_requests),
                 ),
-            push_actions_form(push),
             )
 
-        if push.state in ('accepting', 'onstage'):
-            body(
-                T('hr'),
-                T('h2')('Pending Requests'),
-                push_pending_list(push, requests),
-                )
+        if users.get_current_user() == push.owner:
+            body(push_actions_form(push))
+
+            if push.state in ('accepting', 'onstage'):
+                body(
+                    T('hr'),
+                    T('h2')('Pending Requests'),
+                    push_pending_list(push, requests),
+                    )
 
         body(
             page.script(config.jquery),

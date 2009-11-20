@@ -1,5 +1,7 @@
 import logging
 
+from google.appengine.api import users
+
 from pushmaster import config
 from pushmaster.handler import RequestHandler
 
@@ -129,20 +131,23 @@ class Requests(RequestHandler):
         request = logic.create_request(
             subject=subject, 
             message=message,
-            push_plans=push_plans == 'on')
+            push_plans=(push_plans == 'on'))
         self.redirect('/requests')
 
 class EditRequest(RequestHandler):
     def get(self, request_id):
         request = Request.get(request_id)
 
-        maybe_request_form = edit_request_form(request) if request.state == 'requested' else ''
-
         body = T('body')(
             common.session(),
             common.navbar(),
             request_display(request),
-            maybe_request_form,
+            )
+        
+        if request.state == 'requested' and users.get_current_user() == request.owner:
+            body(edit_request_form(request))
+
+        body(
             page.script(config.jquery),
             page.script('/js/request.js'),
             )

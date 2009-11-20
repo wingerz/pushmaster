@@ -22,6 +22,8 @@ def create_request(subject, message=None, push_plans=False):
         assert len(message) > 0
         request.message = message
 
+    request.put()
+
     body = [request.message or request.subject]
     if request.push_plans:
         body.append('This request has push plans.')
@@ -33,8 +35,6 @@ def create_request(subject, message=None, push_plans=False):
         to=config.mail_to,
         subject=request.subject,
         body='\n'.join(body))
-
-    request.put()
 
     return request
 
