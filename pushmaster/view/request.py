@@ -157,7 +157,7 @@ class EditRequest(RequestHandler):
             rdisplay(common.take_ownership_form(request))
 
         body(
-            page.script(config.jquery),
+            page.script(config.jquery, external=True),
             page.script('/js/request.js'),
             )
 

@@ -114,16 +114,20 @@ class EditPush(RequestHandler):
         push = Push.get(push_id)
         requests = Request.current()
 
-        body = T('body')(
-            common.session(),
-            common.navbar(),
-            T('h1')(
+        header = T.h1(
                 common.datetime(push.ctime),
                 ' (',
                 common.user_email(push.owner),
                 ') ',
                 T('span')(push.state),
-                ),
+                )
+        if any(map(lambda request: request.push_plans, push.requests)):
+            header(' ', T.a(href=config.push_plans_url)('Push Plans'))
+
+        body = T('body')(
+            common.session(),
+            common.navbar(),
+            header,
             T('hr'),
             T('h2')('Requests'),
             T('div', class_='requests')(
@@ -153,7 +157,7 @@ class EditPush(RequestHandler):
             body(common.take_ownership_form(push))
 
         body(
-            page.script(config.jquery),
+            page.script(config.jquery, external=True),
             page.script('/js/push.js'),
             )
 

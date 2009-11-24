@@ -12,22 +12,21 @@ def write(out, head, body):
     body.serialize(out)
     out.write(HTML_CLOSE)
 
-def stylesheet(href):
+def stylesheet(href, external=False):
+    if not external:
+        href = '/%s%s' % (config.static_serial, href)
     return T('link', rel='stylesheet', href=href)
 
-def script(src):
+def script(src, external=False):
+    if not external:
+        src = '/%s%s' % (config.static_serial, src)
     return T.script(type='text/javascript', src=src)
 
-def head(title='', css=[], scripts=[], refresh=None):
-    stylesheets = [stylesheet(href) for href in css]
-    scripts = map(script, scripts)
-    head_el = T('head')(
-        T('title')(title),
-        T('link', rel='shortcut icon', type='image/x-icon', href=config.favicon),
-        stylesheet('/css/reset.css'),
+def head(title='', stylesheets=[], scripts=[]):
+    return T.head(
+        T.title(title),
+        T.link(rel='shortcut icon', type='image/x-icon', href=config.favicon),
+        stylesheet('http://developer.yahoo.com/yui/build/reset/reset.css', external=True),
         stylesheet('/css/pushmaster.css'),
-        stylesheets,
-        scripts)
-    if refresh:
-        head_el(T('meta', **{'http-equiv': 'refresh', 'content': str(refresh) }))
-    return head_el
+        map(stylesheet, stylesheets),
+        map(script, scripts))

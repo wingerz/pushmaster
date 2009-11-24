@@ -4,9 +4,10 @@ runtime: python
 api_version: 1
 
 handlers:
-- url: /(css|js|images)/(.+)
-  static_files: www/\1/\2
+- url: /([^/]+/)?(css|js|images)/(.+)
+  static_files: www/\2/\3
   upload: www/(css|js|images)/(.+)
+  expiration: "365d"
 
 - url: /admin/.*
   script: $PYTHON_LIB/google/appengine/ext/admin
