@@ -200,3 +200,12 @@ def take_ownership(object):
     object.owner = users.get_current_user()
     object.put()
     return object
+
+def force_live(push):
+    for request in push.requests:
+        request.state = 'live'
+        request.put()
+
+    push.state = 'live'
+    push.put()
+    return push
