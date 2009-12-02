@@ -115,7 +115,7 @@ def accept_request(push, request):
     return request
 
 def withdraw_request(request):
-    assert request.state in ('accepted', 'checkedin', 'onstage')
+    assert request.state in ('accepted', 'checkedin', 'onstage', 'tested')
     assert request.push
     assert request.push.state in ('accepting', 'onstage')
 
