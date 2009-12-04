@@ -106,6 +106,12 @@ def request_display(request):
 
     if users.get_current_user() == request.owner:
         div(request_actions_form(request))
+    elif request.push and users.get_current_user() == request.push.owner:
+        div(
+            T.form(action=request.uri, method='post', class_='request-actions')(
+                T.button(type='submit', name='action', value='withdraw')('Kick')
+            )
+        )
 
     return div
 
