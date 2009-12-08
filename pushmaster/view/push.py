@@ -64,7 +64,7 @@ def accepted_item(request):
         ')',
         )
     if request.push_plans:
-        li(T('span', class_='push-plans', title='This request has push plans.')('P'))
+        li(T.a(class_='push-plans', href=config.push_plans_url)('P'))
     return li
 
 def accepted_list(accepted):
@@ -88,7 +88,7 @@ def push_pending_list(push, requests):
             ')',
             )
         if request.push_plans:
-            li(T('span', class_='push-plans', title='This request has push plans.')('P'))
+            li(T.a(class_='push-plans', href=config.push_plans_url)('P'))
         return li
     ol = T('ol', class_='requests')
     if requests:
@@ -115,22 +115,20 @@ class EditPush(RequestHandler):
         requests = Request.current()
 
         header = T.h1(
-                common.datetime(push.ctime),
-                ' (',
-                common.user_email(push.owner),
-                ') ',
-                T('span')(push.state),
-                )
-        if any(map(lambda request: request.push_plans, push.requests)):
-            header(' ', T.a(href=config.push_plans_url)('Push Plans'))
+            common.datetime(push.ctime),
+            ' (',
+            common.user_email(push.owner),
+            ') ',
+            T.span(push.state),
+        )
 
-        body = T('body')(
+        body = T.body(
             common.session(),
             common.navbar(),
             header,
-            T('hr'),
-            T('h2')('Requests'),
-            T('div', class_='requests')(
+            T.hr(),
+            T.h2('Requests'),
+            T.div(class_='requests')(
                 T('h3')('Live'),
                 accepted_list(push.live_requests),
                 T('h3')('Tested on Stage'),
@@ -149,8 +147,8 @@ class EditPush(RequestHandler):
 
             if push.state in ('accepting', 'onstage'):
                 body(
-                    T('hr'),
-                    T('h2')('Pending Requests'),
+                    T.hr(),
+                    T.h2('Pending Requests'),
                     push_pending_list(push, requests),
                     )
         else:

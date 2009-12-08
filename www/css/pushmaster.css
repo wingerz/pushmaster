@@ -183,11 +183,21 @@ ol.accepted.requests li.request span.datetime {
 	display: none;
 }
 
-span.push-plans {
-	cursor: help;
+a.push-plans {
 	color: #F00;
 	font-weight: bold;
 	margin: 0 0.5em;
+}
+
+a.push-plans:hover {
+	color: #F00;
+    text-decoration: none;
+}
+
+a.push-plans:hover:after {
+    color: #000;
+    font-weight: normal;
+    content: " This request has push plans.";
 }
 
 form.request-actions, form.take-ownership {

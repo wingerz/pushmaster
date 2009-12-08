@@ -69,7 +69,7 @@ def request_item(request):
         ')',
         )
     if request.push_plans:
-        li(T('span', class_='push-plans', title='This request has push plans.')('P'))
+        li(T.a(class_='push-plans', href=config.push_plans_url)('P'))
     return li
 
 def request_list(requests):
