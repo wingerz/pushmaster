@@ -73,12 +73,17 @@ def accepted_list(accepted):
         )
 
 def push_pending_list(push, requests):
+    is_push_owner = users.get_current_user() == push.owner
     def request_item(request):
-        li = T('li')(
-            T('form', action=request.uri, method='post', class_='accept-request')(
-                T('input', type='hidden', name='push', value=str(push.key())),
-                T('button', type='submit', name='action', value='accept')('Accept'),
-                ),
+        li = T.li()
+        if is_push_owner:
+            li(
+                T.form(action=request.uri, method='post', class_='accept-request')(
+                    T('input', type='hidden', name='push', value=str(push.key())),
+                    T('button', type='submit', name='action', value='accept')('Accept'),
+                )
+            )
+        li(
             ' ',
             common.datetime(request.ctime),
             ' ',
@@ -86,7 +91,7 @@ def push_pending_list(push, requests):
             ' (',
             common.user_email(request.owner),
             ')',
-            )
+        )
         if request.push_plans:
             li(T.a(class_='push-plans', href=config.push_plans_url)('P'))
         return li
