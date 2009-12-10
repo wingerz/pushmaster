@@ -122,42 +122,44 @@ class EditPush(RequestHandler):
             T.span(push.state),
         )
 
+        requests_div = T.div(class_='requests')(
+            T.h2('Requests'),
+            T.h3('Live'),
+            accepted_list(push.live_requests),
+            T.h3('Tested on Stage'),
+            accepted_list(push.tested_requests),
+            T.h3('On Stage'),
+            accepted_list(push.onstage_requests),
+            T.h3('Checked In'),
+            accepted_list(push.checkedin_requests),
+            T.h3('Accepted'),
+            accepted_list(push.accepted_requests),
+        )
+
         body = T.body(
             common.session(),
             common.navbar(),
             header,
-            T.hr(),
-            T.h2('Requests'),
-            T.div(class_='requests')(
-                T('h3')('Live'),
-                accepted_list(push.live_requests),
-                T('h3')('Tested on Stage'),
-                accepted_list(push.tested_requests),
-                T('h3')('On Stage'),
-                accepted_list(push.onstage_requests),
-                T('h3')('Checked In'),
-                accepted_list(push.checkedin_requests),
-                T('h3')('Accepted'),
-                accepted_list(push.accepted_requests),
-                ),
-            )
+            requests_div,
+        )
 
         if users.get_current_user() == push.owner:
-            body(push_actions_form(push))
-
-            if push.state in ('accepting', 'onstage'):
-                body(
-                    T.hr(),
-                    T.h2('Pending Requests'),
-                    push_pending_list(push, requests),
-                    )
+            requests_div(push_actions_form(push))
         else:
-            body(common.take_ownership_form(push))
+            requests_div(common.take_ownership_form(push))
+            
+        if push.state in ('accepting', 'onstage'):
+            body(
+                common.new_request_form(push),
+                T.h2('Pending Requests'),
+                push_pending_list(push, requests),
+            )
 
         body(
             page.script(config.jquery, external=True),
+            page.script('/js/pushmaster.js'),
             page.script('/js/push.js'),
-            )
+        )
 
         head = page.head(title='pushmaster: push: ' + logic.format_datetime(push.ctime))(
             T.script(type='text/javascript')(
@@ -165,10 +167,10 @@ class EditPush(RequestHandler):
                 json.dumps({
                         'key': str(push.key()),
                         'state': push.state,
-                        }),
+                    }),
                 ';',
-                )
             )
+        )
         page.write(self.response.out, head, body)
 
     def post(self, push_id):

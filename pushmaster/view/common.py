@@ -83,3 +83,28 @@ def take_ownership_form(object):
         T.button(type='submit', name='action', value='take_ownership')('Take Ownership'),
         )
     return form
+
+def new_request_form(push=None):
+    form = T.form(action='/requests', method='post', class_='request')(
+        T.fieldset(
+            T.legend(T.a(class_='toggle')('New Request')),
+            T.div(class_='content')(
+                T.div(
+                    T.label(for_='new-request-subject')('Subject'),
+                    T.input(name='subject', id='new-request-subject'),
+                    ),
+                T.div(
+                    T.label(for_='new-request-message')('Message'),
+                    T.textarea(name='message', id='new-request-message'),
+                    ),
+                T.div(
+                    T.input(id='new-request-push-plans', type='checkbox', name='push_plans', class_='checkbox'),
+                    T.label(class_='checkbox', for_='new-request-push-plans')('Push Plans'),
+                    ),
+                T.button(type='submit')('Create')
+                ),
+            ),
+        )
+    if push:
+        form(T.input(type='hidden', name='push', value=str(push.key())))
+    return form

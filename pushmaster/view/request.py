@@ -14,34 +14,12 @@ from pushmaster.view import common
 __author__ = 'Jeremy Latt <jlatt@yelp.com>'
 __all__ = ('Requests', 'EditRequest')
 
-def new_request_form():
-    return T.form(action='/requests', method='post', class_='request')(
-        T.fieldset(
-            T.legend('New Request'),
-            T.div(
-                T.label(for_='new-request-subject')('Subject'),
-                T.input(name='subject', id='new-request-subject'),
-                ),
-            T.div(
-                T.label(for_='new-request-message')('Message'),
-                T.textarea(name='message', id='new-request-message'),
-                ),
-            T.div(
-                T.input(id='new-request-push-plans', type='checkbox', name='push_plans', class_='checkbox'),
-                T.label(class_='checkbox', for_='new-request-push-plans')('Push Plans'),
-                ),
-            ),
-        T.div(
-            T.button(type='submit')('Create')
-            ),
-        )
-
 def edit_request_form(request):
     request_id = str(request.key())
     return T.form(action=request.uri, method='post', class_='request')(
         T.fieldset(
-            T.legend(T.a(class_='edit-request-toggle')('Edit Request')),
-            T.div(class_='edit-request-content')(
+            T.legend(T.a(class_='toggle')('Edit Request')),
+            T.div(class_='content')(
                 T.div(
                     T.label(for_='edit-request-subject-'+request_id)('Subject'),
                     T.input(name='subject', id='edit-request-subject-'+request_id, value=request.subject),
@@ -122,10 +100,12 @@ class Requests(RequestHandler):
         body = T('body')(
             common.session(),
             common.navbar(),
-            new_request_form(),
+            common.new_request_form(),
             T('h2')('Pending Requests'),
             common.request_list(requests),
-            )
+            page.script(config.jquery, external=True),
+            page.script('/js/pushmaster.js'),
+        )
 
         page.write(self.response.out, page.head(title='pushmaster: requests'), body)
         
@@ -134,15 +114,19 @@ class Requests(RequestHandler):
         message = self.request.get('message')
         push_plans = self.request.get('push_plans', 'off')
 
-        assert push_plans in ('on', 'off')
+        assert push_plans in ('on', 'off'), 'push plans must be either on or off'
 
-        assert len(subject) > 0
+        assert len(subject) > 0, 'subject is required'
+
+        push_key = self.request.get('push')
 
         request = logic.create_request(
             subject=subject, 
             message=message,
             push_plans=(push_plans == 'on'))
-        self.redirect('/requests')
+
+        push = Push.get(push_key) if push_key else None
+        self.redirect(push.uri if push else '/requests')
 
 class EditRequest(RequestHandler):
     def get(self, request_id):
@@ -164,8 +148,8 @@ class EditRequest(RequestHandler):
 
         body(
             page.script(config.jquery, external=True),
-            page.script('/js/request.js'),
-            )
+            page.script('/js/pushmaster.js'),
+        )
 
         page.write(self.response.out, page.head(title='pushmaster: request: ' + request.subject), body)
 
