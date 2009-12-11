@@ -144,6 +144,10 @@ class EditPush(RequestHandler):
                 T.h3('Accepted'),
                 accepted_list(push.accepted_requests),
             )
+            if users.get_current_user() == push.owner:
+                requests_div(push_actions_form(push))
+            else:
+                requests_div(common.take_ownership_form(push))
 
         body = T.body(
             common.session(),
@@ -152,10 +156,6 @@ class EditPush(RequestHandler):
             requests_div,
         )
 
-        if users.get_current_user() == push.owner:
-            requests_div(push_actions_form(push))
-        else:
-            requests_div(common.take_ownership_form(push))
             
         if push.state in ('accepting', 'onstage'):
             body(
