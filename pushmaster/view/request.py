@@ -100,9 +100,9 @@ class Requests(RequestHandler):
         body = T('body')(
             common.session(),
             common.navbar(),
-            common.new_request_form(),
             T('h2')('Pending Requests'),
             common.request_list(requests),
+            common.new_request_form(),
             page.script(config.jquery, external=True),
             page.script('/js/pushmaster.js'),
         )

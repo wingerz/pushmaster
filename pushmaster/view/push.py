@@ -129,17 +129,21 @@ class EditPush(RequestHandler):
 
         requests_div = T.div(class_='requests')(
             T.h2('Requests'),
-            T.h3('Live'),
-            accepted_list(push.live_requests),
-            T.h3('Tested on Stage'),
-            accepted_list(push.tested_requests),
-            T.h3('On Stage'),
-            accepted_list(push.onstage_requests),
-            T.h3('Checked In'),
-            accepted_list(push.checkedin_requests),
-            T.h3('Accepted'),
-            accepted_list(push.accepted_requests),
         )
+
+        if push.state == 'live':
+            requests_div(accepted_list(push.live_requests))
+        else:
+            requests_div(
+                T.h3('Tested on Stage'),
+                accepted_list(push.tested_requests),
+                T.h3('On Stage'),
+                accepted_list(push.onstage_requests),
+                T.h3('Checked In'),
+                accepted_list(push.checkedin_requests),
+                T.h3('Accepted'),
+                accepted_list(push.accepted_requests),
+            )
 
         body = T.body(
             common.session(),
@@ -155,9 +159,9 @@ class EditPush(RequestHandler):
             
         if push.state in ('accepting', 'onstage'):
             body(
-                common.new_request_form(push),
                 T.h2('Pending Requests'),
                 push_pending_list(push, requests),
+                common.new_request_form(push),
             )
 
         body(
