@@ -95,7 +95,7 @@ def push_pending_list(push, requests):
         if request.push_plans:
             li(T.a(class_='push-plans', href=config.push_plans_url)('P'))
         return li
-    ol = T('ol', class_='requests')
+    ol = T('ol', class_='requests', id='pending-requests')
     if requests:
         ol(map(request_item, requests))
     return ol
@@ -113,12 +113,38 @@ def push_actions_form(push):
         form(T('button', type='submit', name='action', value='abandon')('Abandon'))
     return form
 
+def push_requests(push):
+    return [
+        T.h3('Tested on Stage'),
+        accepted_list(push.tested_requests),
+        T.h3('On Stage'),
+        accepted_list(push.onstage_requests),
+        T.h3('Checked In'),
+        accepted_list(push.checkedin_requests),
+        T.h3('Accepted'),
+        accepted_list(push.accepted_requests),
+    ]
 
 class EditPush(RequestHandler):
     def get(self, push_id):
         push = Push.get(push_id)
         requests = Request.current()
+        if 'application/json' in self.request.headers.get('Accept', ''):
+            return self.get_xhr(push, requests)
+        else:
+            return self.get_full(push, requests)
 
+    def get_xhr(self, push, requests):
+        self.response.headers['Content-type'] = 'application/json'
+        return self.response.out.write(json.dumps({
+            'requests': str(T.div(
+                T.h2('Requests'),
+                push_requests(push),
+            )),
+            'pending': str(push_pending_list(push, requests)),
+        }))
+        
+    def get_full(self, push, requests):
         header = T.h1(
             common.datetime(push.ctime),
             ' (',
@@ -127,23 +153,14 @@ class EditPush(RequestHandler):
             T.span(push.state),
         )
 
-        requests_div = T.div(class_='requests')(
+        requests_div = T.div(class_='requests', id='requests')(
             T.h2('Requests'),
         )
 
         if push.state == 'live':
             requests_div(accepted_list(push.live_requests))
         else:
-            requests_div(
-                T.h3('Tested on Stage'),
-                accepted_list(push.tested_requests),
-                T.h3('On Stage'),
-                accepted_list(push.onstage_requests),
-                T.h3('Checked In'),
-                accepted_list(push.checkedin_requests),
-                T.h3('Accepted'),
-                accepted_list(push.accepted_requests),
-            )
+            requests_div(push_requests(push))
             if users.get_current_user() == push.owner:
                 requests_div(push_actions_form(push))
             else:
