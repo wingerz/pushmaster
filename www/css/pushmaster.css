@@ -210,3 +210,15 @@ a.push-plans:hover:after {
 form.request-actions, form.take-ownership {
 	display: inline;
 }
+
+span.email {
+    margin-left: 0.5em;
+}
+
+span.email:before {
+    content: '(';
+}
+
+span.email:after {
+    content: ')';
+}

@@ -73,32 +73,7 @@ def accepted_list(accepted):
         )
 
 def push_pending_list(push, requests):
-    is_push_owner = users.get_current_user() == push.owner
-    def request_item(request):
-        li = T.li()
-        if is_push_owner:
-            li(
-                T.form(action=request.uri, method='post', class_='accept-request')(
-                    T('input', type='hidden', name='push', value=str(push.key())),
-                    T('button', type='submit', name='action', value='accept')('Accept'),
-                )
-            )
-        li(
-            ' ',
-            common.datetime(request.ctime),
-            ' ',
-            T('a', href=request.uri)(request.subject),
-            ' (',
-            common.user_email(request.owner),
-            ')',
-        )
-        if request.push_plans:
-            li(T.a(class_='push-plans', href=config.push_plans_url)('P'))
-        return li
-    ol = T('ol', class_='requests', id='pending-requests')
-    if requests:
-        ol(map(request_item, requests))
-    return ol
+    return T.ol(class_='requests', id='pending-requests')
 
 def push_actions_form(push):
     form = T('form', action=push.uri, method='post')
@@ -113,18 +88,6 @@ def push_actions_form(push):
         form(T('button', type='submit', name='action', value='abandon')('Abandon'))
     return form
 
-def push_requests(push):
-    return [
-        T.h3('Tested on Stage'),
-        accepted_list(push.tested_requests),
-        T.h3('On Stage'),
-        accepted_list(push.onstage_requests),
-        T.h3('Checked In'),
-        accepted_list(push.checkedin_requests),
-        T.h3('Accepted'),
-        accepted_list(push.accepted_requests),
-    ]
-
 class EditPush(RequestHandler):
     def get(self, push_id):
         push = Push.get(push_id)
@@ -137,11 +100,8 @@ class EditPush(RequestHandler):
     def get_xhr(self, push, requests):
         self.response.headers['Content-type'] = 'application/json'
         return self.response.out.write(json.dumps({
-            'requests': str(T.div(
-                T.h2('Requests'),
-                push_requests(push),
-            )),
-            'pending': str(push_pending_list(push, requests)),
+            'push': self.push_json(push),
+            'pending': map(self.request_json, requests),
         }))
         
     def get_full(self, push, requests):
@@ -160,7 +120,6 @@ class EditPush(RequestHandler):
         if push.state == 'live':
             requests_div(accepted_list(push.live_requests))
         else:
-            requests_div(push_requests(push))
             if users.get_current_user() == push.owner:
                 requests_div(push_actions_form(push))
             else:
@@ -172,7 +131,6 @@ class EditPush(RequestHandler):
             header,
             requests_div,
         )
-
             
         if push.state in ('accepting', 'onstage'):
             body(
@@ -184,20 +142,40 @@ class EditPush(RequestHandler):
         body(
             page.script(config.jquery, external=True),
             page.script('/js/pushmaster.js'),
+            T.script(type='text/javascript')(
+                'var push = ', json.dumps(self.push_json(push)), ';\n',
+                'var pending = ', json.dumps(map(self.request_json, requests)), ';\n',
+            ),
             page.script('/js/push.js'),
         )
 
-        head = page.head(title='pushmaster: push: ' + logic.format_datetime(push.ctime))(
-            T.script(type='text/javascript')(
-                'var push = ',
-                json.dumps({
-                        'key': str(push.key()),
-                        'state': push.state,
-                    }),
-                ';',
-            )
-        )
+        head = page.head(title='pushmaster: push: ' + logic.format_datetime(push.ctime))
         page.write(self.response.out, head, body)
+
+    def push_json(self, push):
+        return {
+            'key': str(push.key()),
+            'uri': push.uri,
+            'state': push.state,
+            'requests': map(self.request_json, push.requests),
+            'owner': {
+                'email': push.owner.email(),
+                'nickname': push.owner.nickname(),
+            },
+        }
+
+    def request_json(self, request):
+        return {
+            'key': str(request.key()),
+            'uri': request.uri,
+            'subject': request.subject,
+            'state': request.state,
+            'ctime': logic.format_datetime(request.ctime),
+            'owner': {
+                'email': request.owner.email(),
+                'nickname': request.owner.nickname(),
+            },
+        }
 
     def post(self, push_id):
         push = Push.get(push_id)
