@@ -57,7 +57,7 @@ var view = {
             .addClass('small')
             .attr({
                 'method': 'post',
-                'action': request.uri,
+                'action': request.uri
             })
             .append(
                 $('<button/>')
@@ -131,4 +131,3 @@ $(pushmaster.push.display);
 if (push.state != 'live') {
     pushmaster.push.reload();
 }
-
