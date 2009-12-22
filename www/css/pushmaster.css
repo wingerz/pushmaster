@@ -169,7 +169,7 @@ form.request div.content {
 	display: none;
 }
 
-form.accept-request {
+form.small {
 	display: inline;
 }
 
@@ -205,10 +205,6 @@ a.push-plans:hover:after {
     font-size: 75%;
     content: "This request has push plans.";
     margin-left: 1em;
-}
-
-form.request-actions, form.take-ownership {
-	display: inline;
 }
 
 span.email {

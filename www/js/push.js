@@ -6,8 +6,6 @@ $.extend(push, {
     }
 });
 
-var PAGE_RELOAD_DELAY = 30000; // ms
-
 var view = {
     'states': {
         'tested': 'Tested on Stage',
@@ -45,7 +43,6 @@ var view = {
     'requestItem': function(request) {
         return $('<li/>')
             .addClass('accepted request')
-            .append(this.datetime(request.ctime))
             .append(
                 $('<a/>')
                     .attr('href', request.uri)
@@ -55,9 +52,39 @@ var view = {
             .get(0);
     },
 
+    'acceptForm': function(push, request) {
+        return $('<form/>')
+            .addClass('small')
+            .attr({
+                'method': 'post',
+                'action': request.uri,
+            })
+            .append(
+                $('<button/>')
+                    .attr({
+                        'type': 'submit',
+                        'name': 'action',
+                        'value': 'accept'
+                    })
+                    .text('Accept')
+                    .get(0),
+                $('<input/>')
+                    .attr({
+                        'type': 'hidden',
+                        'name': 'push',
+                        'value': push.key
+                    })
+                    .get(0)
+            );
+    },
+
     'pendingList': function(requests) {
         return $('<div/>')
-            .append($(map.call(this, requests, this.requestItem)))
+            .append($(map.call(this, requests, function(request) {
+                var item = $(this.requestItem(request));
+                item.prepend(this.acceptForm(push, request));
+                return item.get(0);
+            })))
             .children();
     }
 };
@@ -82,6 +109,8 @@ pushmaster.push = {
             .append(view.pendingList(pending));
     },
 
+    'PAGE_RELOAD_DELAY': 30000, // ms
+
     'reload': function() {
         setTimeout(this.method(function() {
             $.getJSON(push.uri, this.method(function(data) {
@@ -94,7 +123,7 @@ pushmaster.push = {
                     this.reload();
                 }
             }));
-        }), PAGE_RELOAD_DELAY);
+        }), this.PAGE_RELOAD_DELAY);
     }
 };
 
