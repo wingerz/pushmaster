@@ -1,5 +1,6 @@
 from google.appengine.api import mail
 from google.appengine.api import users
+from google.appengine.api import xmpp
 from google.appengine.runtime.apiproxy_errors import OverQuotaError
 from pushmaster import config
 from pushmaster.model import *
@@ -103,12 +104,17 @@ def accept_request(push, request):
     request.push = push
     request.state = 'accepted'
 
+    owner_email = request.owner.email()
+
     mail.send_mail(
         sender=users.get_current_user().email(),
-        to=request.owner.email(),
+        to=owner_email,
         cc=config.mail_to,
         subject='Re: ' + request.subject,
         body='Please check this in.\n' + config.url(request.uri))
+
+    if xmpp.get_presence(owner_email):
+        xmpp.send_message(owner_email, 'Please check this in: ' + config.url(request.uri))
 
     request.put()
 
@@ -136,12 +142,17 @@ def send_to_stage(push):
         if request.state == 'checkedin':
             request.state = 'onstage'
 
+            owner_email = request.owner.email()
+
             mail.send_mail(
                 sender=users.get_current_user().email(),
-                to=request.owner.email(),
+                to=owner_email,
                 cc=config.mail_to,
                 subject='Re: ' + request.subject,
                 body='Please check your changes on stage.\n' + config.url(request.uri))
+
+            if xmpp.get_presence(owner_email):
+                xmpp.send_message(owner_email, 'Please check your changes on stage: ' + config.url(request.uri))
             
             request.put()
 
