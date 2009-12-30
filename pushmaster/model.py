@@ -1,6 +1,6 @@
 from google.appengine.ext import db
 
-__author__ = 'Jeremy Latt <jeremy@jeremylatt.com>'
+__author__ = 'Jeremy Latt <jlatt@yelp.com>'
 
 class Push(db.Model):
     ctime = db.DateTimeProperty(auto_now_add=True)
@@ -46,7 +46,7 @@ class Push(db.Model):
         return cls.all().filter('state in', ('accepting', 'onstage')).order('-ctime').get()
 
     @classmethod
-    def open(cls, limit=100):
+    def open(cls, limit=20):
         return cls.all().filter('state in', ('accepting', 'onstage', 'live')).order('-ctime').fetch(limit)
 
 class Request(db.Model):
