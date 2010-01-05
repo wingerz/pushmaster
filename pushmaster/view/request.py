@@ -82,14 +82,8 @@ def request_display(request):
                 ),
             )
 
-    if users.get_current_user() == request.owner:
+    if can_edit_request(request):
         div(request_actions_form(request))
-    elif request.push and users.get_current_user() == request.push.owner:
-        div(
-            T.form(action=request.uri, method='post', class_='request-actions')(
-                T.button(type='submit', name='action', value='withdraw')('Kick')
-            )
-        )
 
     return div
 
@@ -97,10 +91,10 @@ class Requests(RequestHandler):
     def get(self):
         requests = Request.current()
 
-        body = T('body')(
+        body = T.body(
             common.session(),
             common.navbar(),
-            T('h2')('Pending Requests'),
+            T.h2('Pending Requests'),
             common.request_list(requests),
             common.new_request_form(),
             page.script(config.jquery, external=True),
@@ -128,6 +122,10 @@ class Requests(RequestHandler):
         push = Push.get(push_key) if push_key else None
         self.redirect(push.uri if push else '/requests')
 
+def can_edit_request(request):
+    current_user = users.get_current_user()
+    return (request.owner == current_user) or (request.push and (request.push.owner == current_user))
+
 class EditRequest(RequestHandler):
     def get(self, request_id):
         request = Request.get(request_id)
@@ -140,7 +138,7 @@ class EditRequest(RequestHandler):
             rdisplay,
             )
         
-        if users.get_current_user() == request.owner:
+        if can_edit_request(request):
             if request.state == 'requested':
                 body(edit_request_form(request))
         else:
