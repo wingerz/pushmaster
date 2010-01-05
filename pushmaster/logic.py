@@ -125,8 +125,16 @@ def withdraw_request(request):
     assert request.push
     assert request.push.state in ('accepting', 'onstage')
 
+    push_owner_email = request.push.owner.email()
     request.push = None
     request.state = 'requested'
+
+    mail.send_mail(
+        sender=users.get_current_user().email(),
+        to=push_owner_email,
+        cc=config.mail_to,
+        subject='Re: ' + request.subject,
+        body='I withdrew my request.\n' + config.url(request.uri))
 
     request.put()
 
