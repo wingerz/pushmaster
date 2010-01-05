@@ -85,9 +85,11 @@ def take_ownership_form(object):
     return form
 
 def new_request_form(push=None):
-    form = T.form(action='/requests', method='post', class_='request')(
+    label = T.a(class_='toggle', href='#')('New Request') if push else 'New Request'
+    class_ = 'push request' if push else 'request'
+    form = T.form(action='/requests', method='post', class_=class_)(
         T.fieldset(
-            T.legend(T.a(class_='toggle')('New Request')),
+            T.legend(label),
             T.div(class_='content')(
                 T.div(
                     T.label(for_='new-request-subject')('Subject'),

@@ -16,9 +16,9 @@ __all__ = ('Requests', 'EditRequest')
 
 def edit_request_form(request):
     request_id = str(request.key())
-    return T.form(action=request.uri, method='post', class_='request')(
+    return T.form(action=request.uri, method='post', class_='edit request')(
         T.fieldset(
-            T.legend(T.a(class_='toggle')('Edit Request')),
+            T.legend(T.a(class_='toggle', href='#')('Edit Request')),
             T.div(class_='content')(
                 T.div(
                     T.label(for_='edit-request-subject-'+request_id)('Subject'),

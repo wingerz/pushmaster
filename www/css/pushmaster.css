@@ -165,8 +165,8 @@ form.request textarea {
 	height: 10em;
 }
 
-form.request div.content {
-	display: none;
+form.push.request div.content, form.edit.request div.content {
+    display: none;
 }
 
 form.accept-request {
