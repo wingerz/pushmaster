@@ -114,7 +114,7 @@ def accept_request(push, request):
         body='Please check this in.\n' + config.url(request.uri))
 
     if xmpp.get_presence(owner_email):
-        xmpp.send_message(owner_email, 'Please check this in: ' + config.url(request.uri))
+        xmpp.send_message(owner_email, 'Please check "%s" in. %s' % (request.subject, config.url(request.uri)))
 
     request.put()
 
@@ -160,7 +160,7 @@ def send_to_stage(push):
                 body='Please check your changes on stage.\n' + config.url(request.uri))
 
             if xmpp.get_presence(owner_email):
-                xmpp.send_message(owner_email, 'Please check your changes on stage: ' + config.url(request.uri))
+                xmpp.send_message(owner_email, 'Please check "%s" on stage. %s' % (request.subject, config.url(request.uri)))
             
             request.put()
 
