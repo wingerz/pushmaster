@@ -1,3 +1,4 @@
+from cgi import escape
 from google.appengine.api import mail
 from google.appengine.api import users
 from google.appengine.api import xmpp
@@ -114,7 +115,7 @@ def accept_request(push, request):
         body='Please check this in.\n' + config.url(request.uri))
 
     if xmpp.get_presence(owner_email):
-        xmpp.send_message(owner_email, 'Please check "%s" in. %s' % (request.subject, config.url(request.uri)))
+        xmpp.send_message(owner_email, 'Please check <a href="%s">%s</a> in.' % (escape(config.url(request.uri)), escape(request.subject)))
 
     request.put()
 
@@ -160,7 +161,7 @@ def send_to_stage(push):
                 body='Please check your changes on stage.\n' + config.url(request.uri))
 
             if xmpp.get_presence(owner_email):
-                xmpp.send_message(owner_email, 'Please check "%s" on stage. %s' % (request.subject, config.url(request.uri)))
+                xmpp.send_message(owner_email, 'Please check your on stage for <a href="%s">%s</a>.' % (escape(config.url(request.uri)), escape(request.subject)))
             
             request.put()
 
