@@ -166,6 +166,7 @@ class EditPush(RequestHandler):
 
         body(
             page.script(config.jquery, external=True),
+            page.script('/js/pushmaster.js'),
             page.script('/js/push.js'),
         )
 

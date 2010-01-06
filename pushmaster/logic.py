@@ -170,15 +170,23 @@ def set_request_tested(request):
     assert request.state == 'onstage'
     assert request.push
 
+    push = request.push
+
     request.state = 'tested'
     request.put()
     
+    push_owner_email = push.owner.email()
+    
     mail.send_mail(
         sender=users.get_current_user().email(),
-        to=request.push.owner.email(),
+        to=push_owner_email,
         cc=config.mail_to,
         subject='Re: ' + request.subject,
-        body='Looks good to me.\n' + config.url(request.push.uri))
+        body='Looks good to me.\n' + config.url(push.uri))
+
+    if set(push.requests) == set(push.tested_requests):
+        if xmpp.get_presence(push_owner_email):
+            xmpp.send_message(push_owner_email, 'All changes are tested on stage. ' + config.url(push.uri))
 
     return request
 
