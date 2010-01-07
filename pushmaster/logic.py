@@ -13,7 +13,7 @@ strftime_format = '%a, %d %b %Y %I:%M %p'
 
 def maybe_send_im(to, msg):
     if xmpp.get_presence(to):
-        xmpp.send_message(to, '<html xmlns="http://jabber.org/protocol/xhtml-im"><body xmlns="http://www.w3.org/1999/xhtml">%s</body></html>' % msg)
+        xmpp.send_message(to, '<html xmlns="http://jabber.org/protocol/xhtml-im"><body xmlns="http://www.w3.org/1999/xhtml">%s</body></html>' % msg, raw_xml=True)
 
 def format_datetime(dt):
     if dt.tzinfo is None:
