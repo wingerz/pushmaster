@@ -11,6 +11,10 @@ __author__ = 'Jeremy Latt <jlatt@yelp.com>'
 
 strftime_format = '%a, %d %b %Y %I:%M %p'
 
+def maybe_send_im(to, msg):
+    if xmpp.get_presence(to):
+        xmpp.send_message(to, '<html xmlns="http://jabber.org/protocol/xhtml-im"><body xmlns="http://www.w3.org/1999/xhtml">%s</body></html>' % msg)
+
 def format_datetime(dt):
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=timezone.UTC())
@@ -114,8 +118,7 @@ def accept_request(push, request):
         subject='Re: ' + request.subject,
         body='Please check this in.\n' + config.url(request.uri))
 
-    if xmpp.get_presence(owner_email):
-        xmpp.send_message(owner_email, 'Please check <a href="%s">%s</a> in.' % (escape(config.url(request.uri)), escape(request.subject)))
+    maybe_send_im(owner_email, 'Please check <a href="%s">%s</a> in.' % (escape(config.url(request.uri)), escape(request.subject)))
 
     request.put()
 
@@ -160,8 +163,7 @@ def send_to_stage(push):
                 subject='Re: ' + request.subject,
                 body='Please check your changes on stage.\n' + config.url(request.uri))
 
-            if xmpp.get_presence(owner_email):
-                xmpp.send_message(owner_email, 'Please check your on stage for <a href="%s">%s</a>.' % (escape(config.url(request.uri)), escape(request.subject)))
+            maybe_send_im(owner_email, 'Please check your on stage for <a href="%s">%s</a>.' % (escape(config.url(request.uri)), escape(request.subject)))
             
             request.put()
 
@@ -186,8 +188,7 @@ def set_request_tested(request):
         body='Looks good to me.\n' + config.url(push.uri))
 
     if set(push.requests) == set(push.tested_requests):
-        if xmpp.get_presence(push_owner_email):
-            xmpp.send_message(push_owner_email, 'All changes are tested on stage. ' + config.url(push.uri))
+        maybe_send_im(push_owner_email, 'All changes for <a href="%s">the push</a> are tested on stage.' % config.url(push.uri))
 
     return request
 
