@@ -101,6 +101,8 @@ def abandon_push(push):
         request.put()
 
     push.put()
+    
+    memcache.delete_multi(['push-current', 'push-open'])
 
     return push
 
