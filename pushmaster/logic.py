@@ -1,5 +1,6 @@
 from cgi import escape
 from google.appengine.api import mail
+from google.appengine.api import memcache
 from google.appengine.api import users
 from google.appengine.api import xmpp
 from google.appengine.runtime.apiproxy_errors import OverQuotaError
@@ -85,6 +86,8 @@ def create_push(parent=None):
         parent.put()
 
     push.put()
+
+    memcache.delete_multi(['push-current', 'push-open'])
 
     return push
 

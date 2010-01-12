@@ -1,3 +1,4 @@
+from google.appengine.api import memcache
 from google.appengine.ext import db
 
 __author__ = 'Jeremy Latt <jlatt@yelp.com>'
@@ -43,11 +44,19 @@ class Push(db.Model):
 
     @classmethod
     def current(cls):
-        return cls.all().filter('state in', ('accepting', 'onstage')).order('-ctime').get()
+        current_push = memcache.get('push-current')
+        if current_push is None:
+            current_push = cls.all().filter('state in', ('accepting', 'onstage')).order('-ctime').get()
+            memcache.add('push-current', current_push, 60 * 60)
+        return current_push
 
     @classmethod
-    def open(cls, limit=20):
-        return cls.all().filter('state in', ('accepting', 'onstage', 'live')).order('-ctime').fetch(limit)
+    def open(cls):
+        open_pushes = memcache.get('push-open')
+        if open_pushes is None:
+            open_pushes = cls.all().filter('state in', ('accepting', 'onstage', 'live')).order('-ctime').fetch(20)
+            memcache.add('push-open', open_pushes, 60 * 60)
+        return open_pushes
 
 class Request(db.Model):
     ctime = db.DateTimeProperty(auto_now_add=True)
