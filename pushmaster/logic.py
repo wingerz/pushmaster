@@ -154,6 +154,8 @@ def send_to_stage(push):
 
     push.state = 'onstage'
     push.put()
+    
+    memcache.delete('push-open')
 
     for request in push.requests:
         if request.state == 'checkedin':
@@ -210,6 +212,8 @@ def send_to_live(push):
     push.state = 'live'
 
     push.put()
+    
+    memcache.delete_multi(['push-current', 'push-open'])
 
     return push
 
@@ -233,6 +237,10 @@ def set_request_checkedin(request):
 def take_ownership(object):
     object.owner = users.get_current_user()
     object.put()
+
+    if isinstance(object, Push):
+        memcache.delete('push-open')
+    
     return object
 
 def force_live(push):
