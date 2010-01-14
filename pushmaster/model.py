@@ -81,4 +81,8 @@ class Request(db.Model):
 
     @classmethod
     def current(cls):
-        return cls.gql('WHERE state = :state ORDER BY ctime ASC', state='requested').fetch(100)
+        current_requests = memcache.get('request-current')
+        if current_requests is None:
+            current_requests = cls.gql('WHERE state = :state ORDER BY ctime ASC', state='requested').fetch(100)
+            memcache.add('request-current', current_requests, 60 * 10)
+        return current_requests

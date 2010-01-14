@@ -31,6 +31,8 @@ def create_request(subject, message=None, push_plans=False):
 
     request.put()
 
+    memcache.delete('request-current')
+
     body = [request.message or request.subject]
     if request.push_plans:
         body.append('This request has push plans.')
@@ -62,6 +64,8 @@ def edit_request(request, subject, message=None, push_plans=False):
         body='\n'.join([request.message or request.subject, config.url(request.uri)]))
 
     request.put()
+    
+    memcache.delete('request-current')
 
     return request
 
@@ -71,6 +75,8 @@ def abandon_request(request):
     request.push = None
     
     request.put()
+    
+    memcache.delete('request-current')
 
     return request
 
@@ -101,8 +107,8 @@ def abandon_push(push):
         request.put()
 
     push.put()
-    
-    memcache.delete_multi(['push-current', 'push-open'])
+
+    memcache.delete_multi(['request-current', 'push-current', 'push-open'])
 
     return push
 
@@ -126,6 +132,8 @@ def accept_request(push, request):
     maybe_send_im(owner_email, 'Please check <a href="%s">%s</a> in.' % (escape(config.url(request.uri)), escape(request.subject)))
 
     request.put()
+    
+    memcache.delete('request-current')
 
     return request
 
@@ -146,6 +154,8 @@ def withdraw_request(request):
         body='I withdrew my request.\n' + config.url(request.uri))
 
     request.put()
+    
+    memcache.delete('request-current')
 
     return request
 
@@ -240,6 +250,8 @@ def take_ownership(object):
 
     if isinstance(object, Push):
         memcache.delete('push-open')
+    elif isinstance(object, Request):
+        memcache.delete('request-current')
     
     return object
 
