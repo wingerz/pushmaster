@@ -12,37 +12,27 @@ from pushmaster.view import common
 __author__ = 'Jeremy Latt <jlatt@yelp.com>'
 __all__ = ('Pushes', 'EditPush')
 
-def new_push_form():
-    return T('form', action='/pushes', method='post', class_='new-push')(
-        T('fieldset')(
-            T('input', type='hidden', name='action', value='new_push'),
-            T('button', type='submit')('Start New Push'),
-            )
-        )
-
 def push_item(push):
-    return T('li', class_='push')(
-        T('a', href=push.uri)(common.datetime(push.ctime)),
+    return T.li(class_='push')(
+        T.a(href=push.uri)(common.datetime(push.ctime)),
         ' (',
         common.user_email(push.owner),
         ') ',
-        T('span', class_='state')(push.state),
-        )
+        T.span(class_='state')(push.state),
+    )
 
 class Pushes(RequestHandler):
     def get(self):
         pushes = Push.open()
 
-        push_list = T('ol')(
-            map(push_item, pushes),
-            )
+        push_list = T.ol(map(push_item, pushes))
         
-        body = T('body')(
+        body = T.body(
             common.session(),
             common.navbar(),
-            new_push_form(),
+            T.div(class_='new-push')(common.new_push_form()),
             push_list, 
-            )
+        )
         page.write(self.response.out, page.head(title='pushmaster: pushes'), body)
 
     def post(self):
@@ -55,20 +45,20 @@ class Pushes(RequestHandler):
         self.redirect(push.uri)
 
 def accepted_item(request):
-    li = T('li', class_='accepted request')(
+    li = T.li(class_='accepted request')(
         common.datetime(request.ctime),
         ' ',
-        T('a', href=request.uri)(request.subject),
+        T.a(href=request.uri)(request.subject),
         ' (',
         common.user_email(request.owner),
         ')',
-        )
+    )
     if request.push_plans:
         li(T.a(class_='push-plans', href=config.push_plans_url)('P'))
     return li
 
 def accepted_list(accepted):
-    return T('ol', class_='accepted requests')(
+    return T.ol(class_='accepted requests')(
         map(accepted_item, accepted),
         )
 
@@ -79,15 +69,15 @@ def push_pending_list(push, requests):
         if is_push_owner:
             li(
                 T.form(action=request.uri, method='post', class_='accept-request')(
-                    T('input', type='hidden', name='push', value=str(push.key())),
-                    T('button', type='submit', name='action', value='accept')('Accept'),
+                    T.input(type='hidden', name='push', value=str(push.key())),
+                    T.button(type='submit', name='action', value='accept')('Accept'),
                 )
             )
         li(
             ' ',
             common.datetime(request.ctime),
             ' ',
-            T('a', href=request.uri)(request.subject),
+            T.a(href=request.uri)(request.subject),
             ' (',
             common.user_email(request.owner),
             ')',
@@ -95,22 +85,22 @@ def push_pending_list(push, requests):
         if request.push_plans:
             li(T.a(class_='push-plans', href=config.push_plans_url)('P'))
         return li
-    ol = T('ol', class_='requests')
+    ol = T.ol(class_='requests')
     if requests:
         ol(map(request_item, requests))
     return ol
 
 def push_actions_form(push):
-    form = T('form', action=push.uri, method='post')
+    form = T.form(action=push.uri, method='post')
 
     if push.state in ('accepting', 'onstage') and push.checkedin_requests.fetch(1):
-        form(T('button', type='submit', name='action', value='sendtostage')('Mark Deployed to Stage'))
+        form(T.button(type='submit', name='action', value='sendtostage')('Mark Deployed to Stage'))
 
     if push.state == 'onstage' and push.tested:
-        form(T('button', type='submit', name='action', value='sendtolive')('Mark Live'))
+        form(T.button(type='submit', name='action', value='sendtolive')('Mark Live'))
 
     if push.state in ('accepting', 'onstage'):
-        form(T('button', type='submit', name='action', value='abandon')('Abandon'))
+        form(T.button(type='submit', name='action', value='abandon')('Abandon'))
     return form
 
 
@@ -156,7 +146,6 @@ class EditPush(RequestHandler):
             requests_div,
         )
 
-            
         if push.state in ('accepting', 'onstage'):
             body(
                 T.h2('Pending Requests'),

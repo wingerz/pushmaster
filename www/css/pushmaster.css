@@ -40,16 +40,13 @@ legend, button, input, textarea, select {
 button {
 	cursor: pointer;
 	margin-right: 0.5em;
-	border: 1px solid #8B0000;
-	background-color: #FFF;
+    border: none;
+	background-color: transparent;
 	color: #8B0000;
-	-moz-border-radius: 4px;
-	-webkit-border-radius: 4px;
 }
 
 button:hover {
 	color: #F00;
-	border-color: #F00;
 }
 
 input, textarea, select {
@@ -69,7 +66,6 @@ a, a:visited {
 
 a:hover {
 	color: #F00;
-	text-decoration: underline;
 }
 
 /* general styles */
@@ -114,10 +110,14 @@ h3.push {
 	margin-bottom: 0.5em;
 }
 
+div.new-push {
+    margin: 1em 0;
+}
+
 /* forms */
 
 form.new-push {
-	margin: 1em 0;
+    display: inline;
 }
 
 form.request {
@@ -168,6 +168,7 @@ form.request textarea {
 form.push.request div.content, form.edit.request div.content {
     display: none;
 }
+
 
 form.accept-request {
 	display: inline;

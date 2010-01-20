@@ -26,44 +26,46 @@ def linkify(text):
     return Literal(''.join(parts).replace('\n', '<br/>'))
 
 def datetime(dt):
-    return T('span', class_='datetime')(logic.format_datetime(dt))
+    return T.span(class_='datetime')(logic.format_datetime(dt))
 
 def navbar(current=None):
-    nav = T('div', class_='nav')(
-        T('a', href='/requests')('Requests'),
-        ' | ',
-        T('a', href='/pushes')('Pushes'),
-        )
+    nav = T.div(class_='nav')(
+        T.a(href='/requests')('Requests'),
+        T.span(' | '),
+        T.a(href='/pushes')('Pushes'),
+        T.span(' | '),
+    )
 
     current_push = model.Push.current()
     if current_push:
         nav(
-            ' | ',
-            T('a', href=current_push.uri)(
-                'Current Push: ',
+            T.a(href=current_push.uri)(
+                T.span('Current Push: '),
                 datetime(current_push.ctime),
-                ),
-            )
+            ),
+        )
+    else:
+        nav(new_push_form())
     
     return nav
 
 def session():
     user = users.get_current_user()
-    div = T('div', class_='session')(
-        T('span', class_='email')(str(user)),
+    div = T.div(class_='session')(
+        T.span(class_='email')(str(user)),
         ' ',
-        T('a', href=users.create_logout_url('/'))('Logout')
-        )
+        T.a(href=users.create_logout_url('/'))('Logout')
+    )
     return div
 
 def user_email(user):
-    return T('a', href='mailto:' + user.email())(user.nickname())
+    return T.a(href='mailto:' + user.email())(user.nickname())
 
 def request_item(request):
-    li = T('li')(
+    li = T.li(
         datetime(request.ctime),
         ' ',
-        T('a', href=request.uri)(request.subject),
+        T.a(href=request.uri)(request.subject),
         ' (',
         user_email(request.owner),
         ')',
@@ -73,7 +75,7 @@ def request_item(request):
     return li
 
 def request_list(requests):
-    ol = T('ol', class_='requests')
+    ol = T.ol(class_='requests')
     if requests:
         ol(map(request_item, requests))
     return ol
@@ -110,3 +112,9 @@ def new_request_form(push=None):
     if push:
         form(T.input(type='hidden', name='push', value=str(push.key())))
     return form
+
+def new_push_form():
+    return T.form(action='/pushes', method='post', class_='new-push')(
+        T.input(type='hidden', name='action', value='new_push'),
+        T.button(type='submit')('Start New Push'),
+    )

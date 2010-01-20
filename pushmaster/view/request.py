@@ -132,11 +132,11 @@ class EditRequest(RequestHandler):
         
         rdisplay = request_display(request)
 
-        body = T('body')(
+        body = T.body(
             common.session(),
             common.navbar(),
             rdisplay,
-            )
+        )
         
         if can_edit_request(request):
             if request.state == 'requested':
