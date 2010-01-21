@@ -11,10 +11,6 @@ from pushmaster import timezone
 
 __author__ = 'Jeremy Latt <jlatt@yelp.com>'
 
-strftime_format_long = '%a, %d %b %l:%M %p'
-strftime_format_medium = '%a, %d %b'
-strftime_format_short = '%l:%M %p'
-
 def maybe_send_im(to, msg):
     if xmpp.get_presence(to):
         xmpp.send_message(to, '<html xmlns="http://jabber.org/protocol/xhtml-im"><body xmlns="http://www.w3.org/1999/xhtml">%s</body></html>' % msg, raw_xml=True)
@@ -25,12 +21,12 @@ def tznow(tz=config.timezone):
 def choose_strftime_format(dt):
     now = tznow()
     
-    strftime_format = '%d %b %Y' # 15 Sep 2009
+    strftime_format = '%e %b %Y' # 15 Sep 2009
     if dt.date().month == now.date().month:
         if dt.date().day == now.date().day:
             strftime_format = '%l:%M %p' # 3:07 PM
         else:
-            strftime_format = '%a, %d %b' # Wed, 20 Jan
+            strftime_format = '%a, %e %b' # Wed, 20 Jan
     return strftime_format
 
 def format_datetime(dt):
