@@ -93,14 +93,26 @@ def push_pending_list(push, requests):
 def push_actions_form(push):
     form = T.form(action=push.uri, method='post')
 
+    button_count = 0
+
     if push.state in ('accepting', 'onstage') and push.checkedin_requests.fetch(1):
+        if button_count:
+            form(T.span(' or '))
         form(T.button(type='submit', name='action', value='sendtostage')('Mark Deployed to Stage'))
+        button_count +=1
 
     if push.state == 'onstage' and push.tested:
+        if button_count:
+            form(T.span(' or '))
         form(T.button(type='submit', name='action', value='sendtolive')('Mark Live'))
+        button_count +=1
 
     if push.state in ('accepting', 'onstage'):
+        if button_count:
+            form(T.span(' or '))
         form(T.button(type='submit', name='action', value='abandon')('Abandon'))
+        button_count +=1
+        
     return form
 
 

@@ -42,17 +42,29 @@ def edit_request_form(request):
 def request_actions_form(request):
     form = T.form(action=request.uri, method='post', class_='request-actions')
 
+    button_count = 0
+
     if request.state == 'requested':
         form(T.button(type='submit', name='action', value='abandon')('Abandon'))
+        button_count += 1
 
     elif request.state == 'accepted':
+        if button_count:
+            form(T.span(' or '))
         form(T.button(type='submit', name='action', value='markcheckedin')('Mark Checked In'))
+        button_count += 1
 
     elif request.state == 'onstage':
+        if button_count:
+            form(T.span(' or '))
         form(T.button(type='submit', name='action', value='marktested')('Mark Tested'))
+        button_count += 1
 
     if request.state in ('accepted', 'checkedin', 'onstage', 'tested'):
+        if button_count:
+            form(T.span(' or '))
         form(T.button(type='submit', name='action', value='withdraw')('Withdraw'))
+        button_count += 1
         
     return form
 
