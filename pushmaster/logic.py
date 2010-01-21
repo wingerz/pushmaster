@@ -194,7 +194,7 @@ def send_to_stage(push):
                 subject='Re: ' + request.subject,
                 body='Please check your changes on stage.\n' + config.url(request.uri))
 
-            maybe_send_im(owner_email, 'Please check your on stage for <a href="%s">%s</a>.' % (escape(config.url(request.uri)), escape(request.subject)))
+            maybe_send_im(owner_email, 'Please check your changes on stage for <a href="%s">%s</a>.' % (escape(config.url(request.uri)), escape(request.subject)))
             
             request.put()
 
