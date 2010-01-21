@@ -39,7 +39,6 @@ legend, button, input, textarea, select {
 
 button {
 	cursor: pointer;
-	margin-right: 0.5em;
     border: none;
 	background-color: transparent;
 	color: #8B0000;
@@ -180,9 +179,8 @@ div.requests {
 	margin-bottom: 0.5em;
 }
 
-div.requests h2 {
-    border-bottom: 1px solid #CCC;
-    margin-bottom: 0.5em;
+h2.pending {
+    margin-top: 1em;
 }
 
 ol.accepted.requests li.request span.datetime {

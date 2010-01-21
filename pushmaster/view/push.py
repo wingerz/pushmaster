@@ -117,8 +117,13 @@ class EditPush(RequestHandler):
             T.span(push.state),
         )
 
-        requests_div = T.div(class_='requests')(
-            T.h2('Requests'),
+        requests_div = T.div(class_='requests')
+        
+        body = T.body(
+            common.session(),
+            common.navbar(),
+            header,
+            requests_div,
         )
 
         if push.state == 'live':
@@ -135,20 +140,15 @@ class EditPush(RequestHandler):
                 accepted_list(push.accepted_requests),
             )
             if users.get_current_user() == push.owner:
-                requests_div(push_actions_form(push))
+                body(push_actions_form(push))
             else:
-                requests_div(common.take_ownership_form(push))
+                body(common.take_ownership_form(push))
 
-        body = T.body(
-            common.session(),
-            common.navbar(),
-            header,
-            requests_div,
-        )
+        
 
         if push.state in ('accepting', 'onstage'):
             body(
-                T.h2('Pending Requests'),
+                T.h2('Pending Requests', class_='pending'),
                 push_pending_list(push, requests),
                 common.new_request_form(push),
             )
