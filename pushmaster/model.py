@@ -1,9 +1,10 @@
 from google.appengine.api import memcache
 from google.appengine.ext import db
+from gaeutilities.rotmodel import ROTModel
 
 __author__ = 'Jeremy Latt <jlatt@yelp.com>'
 
-class Push(db.Model):
+class Push(ROTModel):
     ctime = db.DateTimeProperty(auto_now_add=True)
     mtime = db.DateTimeProperty(auto_now=True)
     owner = db.UserProperty(auto_current_user_add=True)
@@ -58,7 +59,7 @@ class Push(db.Model):
             memcache.add('push-open', open_pushes, 60 * 60)
         return open_pushes
 
-class Request(db.Model):
+class Request(ROTModel):
     ctime = db.DateTimeProperty(auto_now_add=True)
     mtime = db.DateTimeProperty(auto_now=True)
     owner = db.UserProperty(auto_current_user_add=True)
