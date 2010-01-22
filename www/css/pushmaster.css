@@ -69,6 +69,10 @@ a:hover {
 
 /* general styles */
 
+h1.epic:after {
+    content: " EPIC PUSH!";
+}
+
 div.nav {
 	font-size: 150%;
 	margin-bottom: 0.75em;
