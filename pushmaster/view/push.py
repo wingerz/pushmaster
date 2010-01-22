@@ -121,7 +121,8 @@ class EditPush(RequestHandler):
         push = Push.get(push_id)
         requests = Request.current()
 
-        header = T.h1(
+        header = T.h1(class_='epic', title='EPIC PUSH!!1') if len(push.requests.fetch(16)) == 15 else T.h1()
+        header(
             common.datetime(push.ctime),
             ' (',
             common.user_email(push.owner),
@@ -167,6 +168,7 @@ class EditPush(RequestHandler):
 
         body(
             page.script(config.jquery, external=True),
+            page.script('/js/jquery-ui-1.7.2.custom.min.js'),
             page.script('/js/pushmaster.js'),
             page.script('/js/push.js'),
         )
