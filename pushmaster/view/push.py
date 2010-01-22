@@ -121,7 +121,7 @@ class EditPush(RequestHandler):
         push = Push.get(push_id)
         requests = Request.current()
 
-        header = T.h1(class_='epic', title='EPIC PUSH!!1') if len(push.requests.fetch(16)) == 15 else T.h1()
+        header = T.h1(class_='epic', title='EPIC PUSH!!1') if len(push.requests.fetch(16)) == 16 else T.h1()
         header(
             common.datetime(push.ctime),
             ' (',
