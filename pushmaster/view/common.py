@@ -86,7 +86,7 @@ def take_ownership_form(object):
         )
     return form
 
-def new_request_form(push=None):
+def new_request_form(push=None, subject='', message=''):
     label = T.a(class_='toggle', href='#')('New Request') if push else 'New Request'
     class_ = 'push request' if push else 'request'
     form = T.form(action='/requests', method='post', class_=class_)(
@@ -95,11 +95,11 @@ def new_request_form(push=None):
             T.div(class_='content')(
                 T.div(
                     T.label(for_='new-request-subject')('Subject'),
-                    T.input(name='subject', id='new-request-subject'),
+                    T.input(name='subject', id='new-request-subject', value=subject),
                     ),
                 T.div(
                     T.label(for_='new-request-message')('Message'),
-                    T.textarea(name='message', id='new-request-message'),
+                    T.textarea(name='message', id='new-request-message')(message),
                     ),
                 T.div(
                     T.input(id='new-request-push-plans', type='checkbox', name='push_plans', class_='checkbox'),
@@ -118,3 +118,9 @@ def new_push_form():
         T.input(type='hidden', name='action', value='new_push'),
         T.button(type='submit')('Start New Push'),
     )
+
+def bookmarklet():
+    return T.span(
+        T.span('Bookmark the following link to generate a request from within Review Board: '),
+        T.a(href='javascript:$.getScript("%s://%s/%s/js/bookmarklet.js");' % (config.protocol, config.hostname, config.static_serial))('Pushmaster App: Create Review'),
+        )

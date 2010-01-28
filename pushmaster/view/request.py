@@ -103,16 +103,20 @@ class Requests(RequestHandler):
     def get(self):
         requests = Request.current()
 
+        subject = self.request.get('subject')
+        message = self.request.get('message')
+
         body = T.body(
             common.session(),
             common.navbar(),
             T.h2('Pending Requests'),
             common.request_list(requests),
-            common.new_request_form(),
+            common.new_request_form(subject=subject, message=message),
+            T.div(common.bookmarklet()),
             page.script(config.jquery, external=True),
             page.script('/js/pushmaster.js'),
-        )
-
+            )
+        
         page.write(self.response.out, page.head(title='pushmaster: requests'), body)
         
     def post(self):
