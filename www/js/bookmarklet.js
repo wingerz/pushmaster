@@ -21,6 +21,6 @@
 
     location.href = 'http://yelp-pushmaster.appspot.com/requests?' + $.param({
         'subject': summary,
-        'message': message;
+        'message': message
     });
 })();
