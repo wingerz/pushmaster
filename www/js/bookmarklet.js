@@ -2,18 +2,20 @@
     var summary = $('#summary').text();
 
     var codeReview = location.href;
-    var reviewers = $('#target_people a')
-        .map(function(i, a) {
-            return $(a).text();
-        })
+    var reviewers = $.makeArray(
+        $('#target_people a')
+            .map(function(i, a) {
+                return $(a).text();
+            }))
         .join(', ');
 
-    var tickets = $('#bugs_closed a')
-        .map(function(i, a) {
-            return a.href;
-        })
+    var tickets = $.makeArray(
+        $('#bugs_closed a')
+            .map(function(i, a) {
+                return a.href;
+            }))
         .join(', ');
-
+    
     var message = [
         codeReview, ' by ', reviewers, '\n\n',
         'Tickets: ', tickets
