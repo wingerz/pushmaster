@@ -276,4 +276,7 @@ def force_live(push):
 
     push.state = 'live'
     push.put()
+
+    memcache.delete_multi(['push-current', 'push-open'])
+    
     return push
