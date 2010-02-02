@@ -105,6 +105,10 @@ def new_request_form(push=None, subject='', message=''):
                     T.input(id='new-request-push-plans', type='checkbox', name='push_plans', class_='checkbox'),
                     T.label(class_='checkbox', for_='new-request-push-plans')('Push Plans'),
                     ),
+                T.div(
+                    T.input(id='new-request-no-testing', type='checkbox', name='no_testing', class_='checkbox'),
+                    T.label(for_='new-request-no-testing', class_='checkbox')('No Testing (batch-only)'),
+                    ),
                 T.button(type='submit')('Create')
                 ),
             ),

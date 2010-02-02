@@ -35,22 +35,48 @@ def format_datetime(dt):
     dt = dt.astimezone(config.timezone) 
     return dt.strftime(choose_strftime_format(dt))
 
-def create_request(subject, message=None, push_plans=False):
+def create_request(subject, message=None, push_plans=False, no_testing=False):
     assert len(subject) > 0
 
-    request = Request(subject=subject, push_plans=push_plans)
+    request = Request(subject=subject, push_plans=push_plans, no_testing=no_testing)
     if message:
         assert len(message) > 0
         request.message = message
+
+    send_request_mail(request)
 
     request.put()
 
     memcache.delete('request-current')
 
+    return request
+
+def edit_request(request, subject, message=None, push_plans=False, no_testing=False):
+    assert request.state in ('requested', 'accepted')
+
+    request.state = 'requested'
+    request.subject = subject
+    request.push_plans = push_plans
+    request.no_testing = no_testing
+    if message:
+        assert len(message) > 0
+        request.message = message
+
+    send_request_mail(request)
+
+    request.put()
+    
+    memcache.delete('request-current')
+
+    return request
+
+def send_request_mail(request):
     body = [request.message or request.subject]
     if request.push_plans:
         body.append('This request has push plans.')
         body.append(config.push_plans_url)
+    if request.no_testing:
+        body.append('This request requires no stage testing.')
     body.append(config.url(request.uri))
 
     mail.send_mail(
@@ -58,30 +84,6 @@ def create_request(subject, message=None, push_plans=False):
         to=config.mail_to,
         subject=request.subject,
         body='\n'.join(body))
-
-    return request
-
-def edit_request(request, subject, message=None, push_plans=False):
-    assert request.state in ('requested', 'accepted')
-
-    request.state = 'requested'
-    request.subject = subject
-    request.push_plans = push_plans
-    if message:
-        assert len(message) > 0
-        request.message = message
-
-    mail.send_mail(
-        sender=users.get_current_user().email(),
-        to=config.mail_to,
-        subject=request.subject,
-        body='\n'.join([request.message or request.subject, config.url(request.uri)]))
-
-    request.put()
-    
-    memcache.delete('request-current')
-
-    return request
 
 def abandon_request(request):
     assert request.state in ('requested', 'accepted')
@@ -184,19 +186,20 @@ def send_to_stage(push):
     for request in push.requests:
         if request.state == 'checkedin':
             request.state = 'onstage'
+            if request.no_testing:
+                set_request_tested(request)
+            else:
+                owner_email = request.owner.email()
 
-            owner_email = request.owner.email()
+                mail.send_mail(
+                    sender=users.get_current_user().email(),
+                    to=owner_email,
+                    cc=config.mail_to,
+                    subject='Re: ' + request.subject,
+                    body='Please check your changes on stage.\n' + config.url(request.uri))
 
-            mail.send_mail(
-                sender=users.get_current_user().email(),
-                to=owner_email,
-                cc=config.mail_to,
-                subject='Re: ' + request.subject,
-                body='Please check your changes on stage.\n' + config.url(request.uri))
-
-            maybe_send_im(owner_email, 'Please check your changes on stage for <a href="%s">%s</a>.' % (escape(config.url(request.uri)), escape(request.subject)))
-            
-            request.put()
+                maybe_send_im(owner_email, 'Please check your changes on stage for <a href="%s">%s</a>.' % (escape(config.url(request.uri)), escape(request.subject)))
+                request.put()
 
     return push
 

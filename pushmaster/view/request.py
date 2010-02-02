@@ -33,6 +33,10 @@ def edit_request_form(request):
                     T.label(for_='edit-request-push-plans-'+request_id, class_='checkbox')('Push Plans'),
                     ),
                 T.div(
+                    T.input(id='edit-request-no-testing-'+request_id, type='checkbox', name='no_testing', checked=request.no_testing, class_='checkbox'),
+                    T.label(for_='edit-request-no-testing-'+request_id, class_='checkbox')('No Testing (batch-only)'),
+                    ),
+                T.div(
                     T.button(type='submit', name='action', value='edit')('Save'),
                     ),
                 ),
@@ -78,6 +82,7 @@ def request_display(request):
             ),
         T.div(class_='message')(common.linkify(request.message or '')),
         T.h3(class_='push-plans')('This request has push plans.') if request.push_plans else '',
+        T.h3(class_='push-plans')('This request requires no stage testing.') if request.no_testing else '',
         )
 
     push = request.push
@@ -123,8 +128,10 @@ class Requests(RequestHandler):
         subject = self.request.get('subject')
         message = self.request.get('message')
         push_plans = self.request.get('push_plans', 'off')
+        no_testing = self.request.get('no_testing', 'off')
 
-        assert push_plans in ('on', 'off'), 'push plans must be either on or off'
+        assert push_plans in ('on', 'off'), 'push_plans must be either on or off'
+        assert no_testing in ('on', 'off'), 'no_testing must be either on or off'
 
         assert len(subject) > 0, 'subject is required'
 
@@ -133,7 +140,9 @@ class Requests(RequestHandler):
         request = logic.create_request(
             subject=subject, 
             message=message,
-            push_plans=(push_plans == 'on'))
+            push_plans=(push_plans == 'on'),
+            no_testing=(no_testing == 'on'),
+            )
 
         push = Push.get(push_key) if push_key else None
         self.redirect(push.uri if push else '/requests')
