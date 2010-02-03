@@ -107,7 +107,7 @@ def new_request_form(push=None, subject='', message=''):
                     ),
                 T.div(
                     T.input(id='new-request-no-testing', type='checkbox', name='no_testing', class_='checkbox'),
-                    T.label(for_='new-request-no-testing', class_='checkbox')('No Testing (batch-only)'),
+                    T.label(for_='new-request-no-testing', class_='checkbox')('No Testing Required'),
                     ),
                 T.button(type='submit')('Create')
                 ),
