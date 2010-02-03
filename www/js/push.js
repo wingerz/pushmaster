@@ -19,15 +19,22 @@ $(function() {
         maybeReloadAfterDelay();
     }
 
-    var epic = $('h1.epic');
-    if (epic.length > 0) {
+    var header = $('h1');
+    var backgroundColor = null;
+    if (header.is('.epic')) {
+        backgroundColor = 'yellow';
+    } else if (header.is('.gonzo')) {
+        backgroundColor = '#7FFF00';
+    }
+
+    if (backgroundColor) {
         var highlight = {
             'on': function() {
-                epic.animate({ 'backgroundColor': 'yellow' }, 1500, 'linear', highlight.off);
+                header.animate({ 'backgroundColor': backgroundColor }, 1500, 'linear', highlight.off);
             },
 
             'off': function() {
-                epic.animate({ 'backgroundColor': 'white' }, 1500, 'linear', highlight.on);
+                header.animate({ 'backgroundColor': 'white' }, 1500, 'linear', highlight.on);
             }
         };
 

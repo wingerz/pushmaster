@@ -75,6 +75,10 @@ h1.epic:after {
     content: " EPIC PUSH!";
 }
 
+h1.gonzo:after {
+    content: " GONZO PUSH!!!";
+}
+
 div.nav {
 	font-size: 150%;
     padding-bottom: 0.25em;

@@ -135,7 +135,14 @@ class EditPush(RequestHandler):
         push = Push.get(push_id)
         requests = Request.current()
 
-        header = T.h1(class_='epic') if push.requests.count(15) >= 15 else T.h1()
+        estimated_push_count = push.requests.count(20)
+        if estimated_push_count >= 20:
+            header = T.h1(class_='gonzo')
+        elif estimated_push_count >= 15:
+            header = T.h1(class_='epic')
+        else:
+            header = T.h1()
+
         header(
             common.datetime(push.ctime),
             ' (',
