@@ -43,10 +43,8 @@ def create_request(subject, message=None, push_plans=False, no_testing=False):
         assert len(message) > 0
         request.message = message
 
-    send_request_mail(request)
-
     request.put()
-
+    send_request_mail(request)
     memcache.delete('request-current')
 
     return request
@@ -62,10 +60,8 @@ def edit_request(request, subject, message=None, push_plans=False, no_testing=Fa
         assert len(message) > 0
         request.message = message
 
-    send_request_mail(request)
-
     request.put()
-    
+    send_request_mail(request)    
     memcache.delete('request-current')
 
     return request
