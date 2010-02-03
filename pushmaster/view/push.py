@@ -44,6 +44,12 @@ class Pushes(RequestHandler):
 
         self.redirect(push.uri)
 
+def push_plans_link():
+    return T.a(class_='push-plans', href=config.push_plans_url, title='This request has push plans.')('P')
+
+def no_testing_badge():
+    return T.span(class_='no-testing', title='This request requires no testing on stage.')('B')
+
 def accepted_item(request):
     li = T.li(class_='accepted request')(
         common.datetime(request.ctime),
@@ -53,8 +59,12 @@ def accepted_item(request):
         common.user_email(request.owner),
         ')',
     )
+
+    if request.no_testing:
+        li(no_testing_badge())
     if request.push_plans:
-        li(T.a(class_='push-plans', href=config.push_plans_url)('P'))
+        li(push_plans_link())
+
     return li
 
 def accepted_list(accepted):
@@ -82,8 +92,12 @@ def push_pending_list(push, requests):
             common.user_email(request.owner),
             ')',
         )
+
+        if request.no_testing:
+            li(no_testing_badge())
         if request.push_plans:
-            li(T.a(class_='push-plans', href=config.push_plans_url)('P'))
+            li(push_plans_link())
+
         return li
     ol = T.ol(class_='requests')
     if requests:

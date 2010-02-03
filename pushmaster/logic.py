@@ -25,6 +25,8 @@ def choose_strftime_format(dt):
     if dt.date().month == now.date().month:
         if dt.date().day == now.date().day:
             strftime_format = '%l:%M %p' # 3:07 PM
+        elif (now.date() - dt.date()) < datetime.timedelta(days=7):
+            strftime_format = '%a %l:%M %p' # Wed 3:07 PM
         else:
             strftime_format = '%a, %e %b' # Wed, 20 Jan
     return strftime_format

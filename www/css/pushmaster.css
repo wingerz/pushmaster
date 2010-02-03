@@ -39,7 +39,9 @@ legend, button, input, textarea, select {
 
 button {
 	cursor: pointer;
-    border: none;
+    border: 1px solid #CCC;
+    -webkit-border-radius: 0.4em;
+    -moz-border-radius: 0.4em;
 	background-color: transparent;
 	color: #8B0000;
 }
@@ -75,8 +77,9 @@ h1.epic:after {
 
 div.nav {
 	font-size: 150%;
-	margin-bottom: 0.75em;
+    padding-bottom: 0.25em;
 	border-bottom: 1px solid #CCC;
+	margin-bottom: 0.75em;
 }
 
 ol.requests {
@@ -194,20 +197,14 @@ ol.accepted.requests li.request span.datetime {
 a.push-plans {
 	color: #F00;
 	font-weight: bold;
-	margin: 0 0.5em;
+    margin-left: 0.5em;
 }
 
-a.push-plans:hover {
-	color: #F00;
-    text-decoration: none;
-}
-
-a.push-plans:hover:after {
-    color: #333;
-    font-weight: normal;
-    font-size: 75%;
-    content: "This request has push plans.";
-    margin-left: 1em;
+span.no-testing {
+    color: #FF7722;
+    margin-left: 0.5em;
+    font-weight: bold;
+    cursor: help;
 }
 
 form.request-actions, form.take-ownership {
