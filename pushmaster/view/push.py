@@ -48,7 +48,7 @@ def push_plans_link():
     return T.a(class_='push-plans', href=config.push_plans_url, title='This request has push plans.')('P')
 
 def no_testing_badge():
-    return T.span(class_='no-testing', title='This request requires no testing on stage.')('B')
+    return T.span(class_='no-testing', title='This request requires no testing on stage.')('NT')
 
 def accepted_item(request):
     li = T.li(class_='accepted request')(
