@@ -29,12 +29,16 @@ def edit_request_form(request):
                     T.textarea(name='message', id='edit-request-message-'+request_id)(request.message or ''),
                     ),
                 T.div(
-                    T.input(id='edit-request-push-plans-'+request_id, type='checkbox', name='push_plans', checked=request.push_plans, class_='checkbox'),
-                    T.label(for_='edit-request-push-plans-'+request_id, class_='checkbox')('Push Plans'),
+                    T.input(id='edit-request-urgent-'+request_id, type='checkbox', name='urgent', class_='checkbox', checked=request.urgent),
+                    T.label(for_='edit-request-urgent-'+request_id, class_='checkbox')('Urgent (e.g. P0)'),
                     ),
                 T.div(
                     T.input(id='edit-request-no-testing-'+request_id, type='checkbox', name='no_testing', checked=request.no_testing, class_='checkbox'),
                     T.label(for_='edit-request-no-testing-'+request_id, class_='checkbox')('No Testing (batch-only)'),
+                    ),
+                T.div(
+                    T.input(id='edit-request-push-plans-'+request_id, type='checkbox', name='push_plans', checked=request.push_plans, class_='checkbox'),
+                    T.label(for_='edit-request-push-plans-'+request_id, class_='checkbox')('Push Plans'),
                     ),
                 T.div(
                     T.button(type='submit', name='action', value='edit')('Save'),
@@ -83,6 +87,7 @@ def request_display(request):
         T.div(class_='message')(common.linkify(request.message or '')),
         T.h3(class_='push-plans')('This request has push plans.') if request.push_plans else '',
         T.h3(class_='push-plans')('This request requires no stage testing.') if request.no_testing else '',
+        T.h3(class_='push-plans')('This request is urgent.') if request.urgent else '',
         )
 
     push = request.push
@@ -129,9 +134,11 @@ class Requests(RequestHandler):
         message = self.request.get('message')
         push_plans = self.request.get('push_plans', 'off')
         no_testing = self.request.get('no_testing', 'off')
+        urgent = self.request.get('urgent', 'off')
 
         assert push_plans in ('on', 'off'), 'push_plans must be either on or off'
         assert no_testing in ('on', 'off'), 'no_testing must be either on or off'
+        assert urgent in ('on', 'off'), 'urgent must be either on or off'
 
         assert len(subject) > 0, 'subject is required'
 
@@ -142,6 +149,7 @@ class Requests(RequestHandler):
             message=message,
             push_plans=(push_plans == 'on'),
             no_testing=(no_testing == 'on'),
+            urgent=(urgent == 'on'),
             )
 
         push = Push.get(push_key) if push_key else None
@@ -187,7 +195,11 @@ class EditRequest(RequestHandler):
             message = self.request.get('message')
             push_plans = self.request.get('push_plans', 'off')
             assert push_plans in ('on', 'off')
-            logic.edit_request(request, subject=subject, message=message, push_plans=push_plans == 'on')
+            no_testing = self.request.get('no_testing', 'off')
+            assert no_testing in ('on', 'off')
+            urgent = self.request.get('urgent', 'off')
+            assert urgent in ('on', 'off')
+            logic.edit_request(request, subject=subject, message=message, push_plans=push_plans == 'on', no_testing=no_testing == 'on', urgent=urgent == 'on')
             self.redirect(request.uri)
 
         elif action == 'accept':

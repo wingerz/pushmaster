@@ -94,6 +94,10 @@ ol.requests li {
 	margin-bottom: 0.25em;
 }
 
+ol.requests li.urgent {
+    font-weight: bold;
+}
+
 ol.submissions {
 	margin: 0.5em 0 1em 0;
 }

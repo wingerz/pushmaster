@@ -44,60 +44,18 @@ class Pushes(RequestHandler):
 
         self.redirect(push.uri)
 
-def push_plans_link():
-    return T.a(class_='push-plans', href=config.push_plans_url, title='This request has push plans.')('P')
-
-def no_testing_badge():
-    return T.span(class_='no-testing', title='This request requires no testing on stage.')('N')
-
-def accepted_item(request):
-    li = T.li(class_='accepted request')(
-        common.datetime(request.ctime),
-        ' ',
-        T.a(href=request.uri)(request.subject),
-        ' (',
-        common.user_email(request.owner),
-        ')',
-    )
-
-    if request.no_testing:
-        li(no_testing_badge())
-    if request.push_plans:
-        li(push_plans_link())
-
-    return li
-
 def accepted_list(accepted):
-    return T.ol(class_='accepted requests')(
-        map(accepted_item, accepted),
-        )
+    return T.ol(class_='accepted requests')(map(common.request_item, accepted))
 
 def push_pending_list(push, requests):
     is_push_owner = users.get_current_user() == push.owner
     def request_item(request):
-        li = T.li()
+        li = common.request_item(request)
         if is_push_owner:
-            li(
-                T.form(action=request.uri, method='post', class_='accept-request')(
+            li.children.insert(0, T.form(action=request.uri, method='post', class_='accept-request')(
                     T.input(type='hidden', name='push', value=str(push.key())),
                     T.button(type='submit', name='action', value='accept')('Accept'),
-                )
-            )
-        li(
-            ' ',
-            common.datetime(request.ctime),
-            ' ',
-            T.a(href=request.uri)(request.subject),
-            ' (',
-            common.user_email(request.owner),
-            ')',
-        )
-
-        if request.no_testing:
-            li(no_testing_badge())
-        if request.push_plans:
-            li(push_plans_link())
-
+                    ))
         return li
     ol = T.ol(class_='requests')
     if requests:

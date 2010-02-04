@@ -61,17 +61,29 @@ def session():
 def user_email(user):
     return T.a(href='mailto:' + user.email())(user.nickname())
 
+def push_plans_link():
+    return T.a(class_='push-plans', href=config.push_plans_url, title='This request has push plans.')('P')
+
+def no_testing_badge():
+    return T.span(class_='no-testing', title='This request requires no testing on stage.')('N')
+
 def request_item(request):
-    li = T.li(
+    li = T.li(class_='request')(
         datetime(request.ctime),
         ' ',
         T.a(href=request.uri)(request.subject),
         ' (',
         user_email(request.owner),
         ')',
-        )
+    )
+    if request.urgent:
+        li(class_='urgent request', title='Urgent!')
+
+    if request.no_testing:
+        li(no_testing_badge())
     if request.push_plans:
-        li(T.a(class_='push-plans', href=config.push_plans_url)('P'))
+        li(push_plans_link())
+
     return li
 
 def request_list(requests):
@@ -102,12 +114,16 @@ def new_request_form(push=None, subject='', message=''):
                     T.textarea(name='message', id='new-request-message')(message),
                     ),
                 T.div(
-                    T.input(id='new-request-push-plans', type='checkbox', name='push_plans', class_='checkbox'),
-                    T.label(class_='checkbox', for_='new-request-push-plans')('Push Plans'),
+                    T.input(id='new-request-urgent', type='checkbox', name='urgent', class_='checkbox'),
+                    T.label(for_='new-request-urgent', class_='checkbox')('Urgent (e.g. P0)'),
                     ),
                 T.div(
                     T.input(id='new-request-no-testing', type='checkbox', name='no_testing', class_='checkbox'),
                     T.label(for_='new-request-no-testing', class_='checkbox')('No Testing Required'),
+                    ),
+                T.div(
+                    T.input(id='new-request-push-plans', type='checkbox', name='push_plans', class_='checkbox'),
+                    T.label(class_='checkbox', for_='new-request-push-plans')('Push Plans'),
                     ),
                 T.button(type='submit')('Create')
                 ),
