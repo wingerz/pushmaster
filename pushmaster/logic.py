@@ -37,10 +37,11 @@ def format_datetime(dt):
     dt = dt.astimezone(config.timezone) 
     return dt.strftime(choose_strftime_format(dt))
 
-def create_request(subject, message=None, push_plans=False, no_testing=False, urgent=False):
+def create_request(subject, message=None, push_plans=False, no_testing=False, urgent=False, target_date=None):
     assert len(subject) > 0
+    target_date = target_date or datetime.date.today()
 
-    request = Request(subject=subject, push_plans=push_plans, no_testing=no_testing, urgent=urgent)
+    request = Request(subject=subject, push_plans=push_plans, no_testing=no_testing, urgent=urgent, target_date=target_date)
     if message:
         assert len(message) > 0
         request.message = message
@@ -51,7 +52,7 @@ def create_request(subject, message=None, push_plans=False, no_testing=False, ur
 
     return request
 
-def edit_request(request, subject, message=None, push_plans=False, no_testing=False, urgent=False):
+def edit_request(request, subject, message=None, push_plans=False, no_testing=False, urgent=False, target_date=None):
     assert request.state in ('requested', 'accepted')
 
     request.state = 'requested'
@@ -59,6 +60,7 @@ def edit_request(request, subject, message=None, push_plans=False, no_testing=Fa
     request.push_plans = push_plans
     request.no_testing = no_testing
     request.urgent = urgent
+    request.target_date = target_date
     if message:
         assert len(message) > 0
         request.message = message
