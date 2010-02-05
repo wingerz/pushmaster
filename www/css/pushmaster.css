@@ -94,8 +94,9 @@ ol.requests li {
 	margin-bottom: 0.25em;
 }
 
-ol.requests li.urgent {
+ol.requests li.urgent a.request-subject {
     font-weight: bold;
+    font-size: 110%;
 }
 
 ol.submissions {
@@ -170,6 +171,10 @@ form.request input {
 	width: 85%;
 }
 
+form.request input.date {
+    width: auto;
+}
+
 form.request input.checkbox {
 	width: auto;
 }
@@ -198,7 +203,12 @@ h2.pending {
     margin-top: 1em;
 }
 
-ol.accepted.requests li.request span.datetime {
+ol.requests li.request span.date {
+    font-size: 80%;
+    margin-left: 0.5em;
+}
+
+ol.accepted.requests li.request span.date {
 	display: none;
 }
 

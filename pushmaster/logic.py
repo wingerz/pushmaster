@@ -22,13 +22,14 @@ def choose_strftime_format(dt):
     now = tznow()
     
     strftime_format = '%e %b %Y' # 15 Sep 2009
-    if dt.date().month == now.date().month:
-        if dt.date().day == now.date().day:
-            strftime_format = '%l:%M %p' # 3:07 PM
-        elif (now.date() - dt.date()) < datetime.timedelta(days=7):
-            strftime_format = '%a %l:%M %p' # Wed 3:07 PM
-        else:
-            strftime_format = '%a, %e %b' # Wed, 20 Jan
+    if dt.date().year == now.date().year:
+        if dt.date().month == now.date().month:
+            if dt.date().day == now.date().day:
+                strftime_format = '%l:%M %p' # 3:07 PM
+            elif (now.date() - dt.date()) < datetime.timedelta(days=7):
+                strftime_format = '%a %l:%M %p' # Wed 3:07 PM
+            else:
+                strftime_format = '%a, %e %b' # Wed, 20 Jan
     return strftime_format
 
 def format_datetime(dt):
@@ -36,6 +37,26 @@ def format_datetime(dt):
         dt = dt.replace(tzinfo=timezone.UTC())
     dt = dt.astimezone(config.timezone) 
     return dt.strftime(choose_strftime_format(dt))
+
+def choose_date_strftime_format(d):
+    today = datetime.date.today()
+    strftime_format = '%e %b %Y' # 15 Sep 2009
+    if d.year == today.year:
+        if d.month == today.month:
+            if d.day == today.day:
+                strftime_format = 'today'
+            elif d.day == (today.day + 1):
+                strftime_format = 'tomorrow'
+            elif d.day == (today.day - 1):
+                strftime_format = 'yesterday'
+            else:
+                strftime_format = '%a, %e %b' # Wed, 20 Jan
+        else:
+            strftime_format = '%e %b' # 15 Sep
+    return strftime_format
+            
+def format_date(d):
+    return d.strftime(choose_date_strftime_format(d))
 
 def create_request(subject, message=None, push_plans=False, no_testing=False, urgent=False, target_date=None):
     assert len(subject) > 0
@@ -54,6 +75,7 @@ def create_request(subject, message=None, push_plans=False, no_testing=False, ur
 
 def edit_request(request, subject, message=None, push_plans=False, no_testing=False, urgent=False, target_date=None):
     assert request.state in ('requested', 'accepted')
+    target_date = target_date or datetime.date.today()
 
     request.state = 'requested'
     request.subject = subject

@@ -25,8 +25,11 @@ def linkify(text):
             parts.append(cgi.escape(part))
     return Literal(''.join(parts).replace('\n', '<br/>'))
 
-def datetime(dt):
+def display_datetime(dt):
     return T.span(class_='datetime')(logic.format_datetime(dt))
+
+def display_date(d):
+    return T.span(class_='date')(logic.format_date(d))
 
 def navbar(current=None):
     nav = T.div(class_='nav')(
@@ -41,7 +44,7 @@ def navbar(current=None):
         nav(
             T.a(href=current_push.uri)(
                 T.span('Current Push: '),
-                datetime(current_push.ctime),
+                display_datetime(current_push.ctime),
             ),
         )
     else:
@@ -69,9 +72,9 @@ def no_testing_badge():
 
 def request_item(request):
     li = T.li(class_='request')(
-        datetime(request.ctime),
+        display_date(request.target_date),
         ' ',
-        T.a(href=request.uri)(request.subject),
+        T.a(href=request.uri, class_='request-subject')(request.subject),
         ' (',
         user_email(request.owner),
         ')',
@@ -112,6 +115,10 @@ def new_request_form(push=None, subject='', message=''):
                 T.div(
                     T.label(for_='new-request-message')('Message'),
                     T.textarea(name='message', id='new-request-message')(message),
+                    ),
+                T.div(
+                    T.label(for_='new-request-target-date')('Push Date'),
+                    T.input(name='target_date', id='new-request-target-date', class_='date'),
                     ),
                 T.div(
                     T.input(id='new-request-urgent', type='checkbox', name='urgent', class_='checkbox'),

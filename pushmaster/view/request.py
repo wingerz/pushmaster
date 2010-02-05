@@ -1,3 +1,4 @@
+import datetime
 import logging
 
 from google.appengine.api import users
@@ -27,6 +28,10 @@ def edit_request_form(request):
                 T.div(
                     T.label(for_='edit-request-message-'+request_id)('Message'),
                     T.textarea(name='message', id='edit-request-message-'+request_id)(request.message or ''),
+                    ),
+                T.div(
+                    T.label(for_='edit-request-target-date-'+request_id)('Push Date'),
+                    T.input(name='target_date', id='edit-request-target-date-'+request_id, class_='date', value=request.target_date.strftime('%Y-%m-%d') if request.target_date else ''),
                     ),
                 T.div(
                     T.input(id='edit-request-urgent-'+request_id, type='checkbox', name='urgent', class_='checkbox', checked=request.urgent),
@@ -78,12 +83,7 @@ def request_actions_form(request):
 
 def request_display(request):
     div = T.div(class_='request')(
-        T.h2(class_='subject')(
-            request.subject,
-            ' (',
-            common.user_email(request.owner),
-            ')'
-            ),
+        T.h2(class_='subject')(request.subject, ' (', common.user_email(request.owner), ') ', common.display_date(request.target_date)),
         T.div(class_='message')(common.linkify(request.message or '')),
         T.h3(class_='push-plans')('This request has push plans.') if request.push_plans else '',
         T.h3(class_='push-plans')('This request requires no stage testing.') if request.no_testing else '',
@@ -96,7 +96,7 @@ def request_display(request):
             T.h3(class_='push')(
                 'Push: ',
                 T.a(href=push.uri)(
-                    common.datetime(push.ctime),
+                    common.display_datetime(push.ctime),
                     ),
                 ' (',
                 common.user_email(push.owner),
@@ -124,6 +124,7 @@ class Requests(RequestHandler):
             common.new_request_form(subject=subject, message=message),
             T.div(common.bookmarklet()),
             page.script(config.jquery, external=True),
+            page.script(config.jquery_ui, external=True),
             page.script('/js/pushmaster.js'),
             )
         
@@ -132,10 +133,12 @@ class Requests(RequestHandler):
     def post(self):
         subject = self.request.get('subject')
         message = self.request.get('message')
+        target_date = self.request.get('target_date')
         push_plans = self.request.get('push_plans', 'off')
         no_testing = self.request.get('no_testing', 'off')
         urgent = self.request.get('urgent', 'off')
 
+        target_date = datetime.datetime.strptime(target_date, '%Y-%m-%d').date() if target_date else None
         assert push_plans in ('on', 'off'), 'push_plans must be either on or off'
         assert no_testing in ('on', 'off'), 'no_testing must be either on or off'
         assert urgent in ('on', 'off'), 'urgent must be either on or off'
@@ -150,6 +153,7 @@ class Requests(RequestHandler):
             push_plans=(push_plans == 'on'),
             no_testing=(no_testing == 'on'),
             urgent=(urgent == 'on'),
+            target_date=target_date,
             )
 
         push = Push.get(push_key) if push_key else None
@@ -179,6 +183,7 @@ class EditRequest(RequestHandler):
 
         body(
             page.script(config.jquery, external=True),
+            page.script(config.jquery_ui, external=True),
             page.script('/js/pushmaster.js'),
         )
 
@@ -193,13 +198,15 @@ class EditRequest(RequestHandler):
             subject = self.request.get('subject')
             assert len(subject) > 0
             message = self.request.get('message')
+            target_date = self.request.get('target_date')
+            target_date = datetime.datetime.strptime(target_date, '%Y-%m-%d').date() if target_date else None
             push_plans = self.request.get('push_plans', 'off')
             assert push_plans in ('on', 'off')
             no_testing = self.request.get('no_testing', 'off')
             assert no_testing in ('on', 'off')
             urgent = self.request.get('urgent', 'off')
             assert urgent in ('on', 'off')
-            logic.edit_request(request, subject=subject, message=message, push_plans=push_plans == 'on', no_testing=no_testing == 'on', urgent=urgent == 'on')
+            logic.edit_request(request, subject=subject, message=message, push_plans=push_plans == 'on', no_testing=no_testing == 'on', urgent=urgent == 'on', target_date=target_date)
             self.redirect(request.uri)
 
         elif action == 'accept':

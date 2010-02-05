@@ -27,6 +27,7 @@ def head(title='', stylesheets=[], scripts=[]):
         T.title(title),
         T.link(rel='shortcut icon', type='image/x-icon', href=config.favicon),
         stylesheet('http://developer.yahoo.com/yui/build/reset/reset.css', external=True),
+        stylesheet('/css/ui-lightness/jquery-ui-1.7.2.custom.css'),
         stylesheet('/css/pushmaster.css'),
         map(stylesheet, stylesheets),
         map(script, scripts))

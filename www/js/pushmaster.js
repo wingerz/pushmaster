@@ -5,3 +5,9 @@ $('a.toggle').live('click', function(e) {
         .find('div.content')
         .slideToggle('fast');
 });
+
+$(function() {
+    $('input.date').datepicker({ 
+        'dateFormat': 'yy-mm-dd' 
+    });
+});

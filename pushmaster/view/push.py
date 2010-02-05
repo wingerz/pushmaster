@@ -14,7 +14,7 @@ __all__ = ('Pushes', 'EditPush')
 
 def push_item(push):
     return T.li(class_='push')(
-        T.a(href=push.uri)(common.datetime(push.ctime)),
+        T.a(href=push.uri)(common.display_datetime(push.ctime)),
         ' (',
         common.user_email(push.owner),
         ') ',
@@ -102,7 +102,7 @@ class EditPush(RequestHandler):
             header = T.h1()
 
         header(
-            common.datetime(push.ctime),
+            common.display_datetime(push.ctime),
             ' (',
             common.user_email(push.owner),
             ') ',
@@ -147,7 +147,7 @@ class EditPush(RequestHandler):
 
         body(
             page.script(config.jquery, external=True),
-            page.script('/js/jquery-ui-1.7.2.custom.min.js'),
+            page.script(config.jquery_ui, external=True),
             page.script('/js/pushmaster.js'),
             page.script('/js/push.js'),
         )
