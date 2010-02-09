@@ -8,6 +8,8 @@ $('a.toggle').live('click', function(e) {
 
 $(function() {
     $('input.date').datepicker({ 
-        'dateFormat': 'yy-mm-dd' 
+        'showAnim': 'fadeIn',
+        'dateFormat': 'yy-mm-dd',
+        'minDate': new Date()
     });
 });

@@ -15,9 +15,7 @@ __all__ = ('Pushes', 'EditPush')
 def push_item(push):
     return T.li(class_='push')(
         T.a(href=push.uri)(common.display_datetime(push.ctime)),
-        ' (',
-        common.user_email(push.owner),
-        ') ',
+        T.span('(', common.user_email(push.owner), ')'),
         T.span(class_='state')(push.state),
     )
 
@@ -44,18 +42,18 @@ class Pushes(RequestHandler):
 
         self.redirect(push.uri)
 
-def accepted_list(accepted):
-    return T.ol(class_='accepted requests')(map(common.request_item, accepted))
+def accepted_list(accepted, request_item=common.request_item):
+    return T.ol(class_='accepted requests')(map(request_item, accepted))
 
 def push_pending_list(push, requests):
     is_push_owner = users.get_current_user() == push.owner
     def request_item(request):
         li = common.request_item(request)
         if is_push_owner:
-            li.children.insert(0, T.form(action=request.uri, method='post', class_='accept-request')(
-                    T.input(type='hidden', name='push', value=str(push.key())),
-                    T.button(type='submit', name='action', value='accept')('Accept'),
-                    ))
+            li.children.insert(0, T.form(class_='small', action=request.uri, method='post')(
+                    T.div(class_='fields')(
+                        T.button(type='submit')('Accept'),
+                        common.hidden(push=str(push.key()), action='accept'))))
         return li
     ol = T.ol(class_='requests')
     if requests:
@@ -87,6 +85,35 @@ def push_actions_form(push):
         
     return form
 
+def mark_checked_in_form(request):
+    return T.form(class_='small', method='post', action=request.uri)(
+        T.div(class_='fields')(
+            T.button(type='submit')('Mark Checked In'), 
+            common.hidden(push='true', action='markcheckedin')))
+
+def withdraw_form(request):
+    return T.form(class_='small', method='post', action=request.uri)(
+        T.div(class_='fields')(
+            T.button(type='submit')('Withdraw'),
+            common.hidden(push='true', action='withdraw')))
+
+def mark_tested_form(request):
+    return T.form(class_='small', method='post', action=request.uri)(
+        T.div(class_='fields')(
+            T.button(type='submit')('Mark Tested'), 
+            common.hidden(push='true', action='marktested')))
+
+def onstage_request_item(request):
+    li = common.request_item(request)
+    if common.can_edit_request(request):
+        li.children.insert(0, mark_tested_form(request))
+    return li
+
+def accepted_request_item(request):
+    li = common.request_item(request)
+    if common.can_edit_request(request):
+        li.children.insert(0, mark_checked_in_form(request))
+    return li
 
 class EditPush(RequestHandler):
     def get(self, push_id):
@@ -103,9 +130,7 @@ class EditPush(RequestHandler):
 
         header(
             common.display_datetime(push.ctime),
-            ' (',
-            common.user_email(push.owner),
-            ') ',
+            T.span('(', common.user_email(push.owner), ')', class_='email'),
             T.span(push.state),
         )
 
@@ -121,36 +146,33 @@ class EditPush(RequestHandler):
         if push.state == 'live':
             requests_div(accepted_list(push.live_requests))
         else:
-            requests_div(
-                T.h3('Tested on Stage'),
-                accepted_list(push.tested_requests),
-                T.h3('On Stage'),
-                accepted_list(push.onstage_requests),
-                T.h3('Checked In'),
-                accepted_list(push.checkedin_requests),
-                T.h3('Accepted'),
-                accepted_list(push.accepted_requests),
-            )
+            request_states = [
+                ('Tested on Stage', push.tested_requests, common.request_item),
+                ('On Stage', push.onstage_requests, onstage_request_item),
+                ('Checked In', push.checkedin_requests, common.request_item),
+                ('Accepted', push.accepted_requests, accepted_request_item),
+                ]
+            for label, query, request_item in request_states:
+                subrequests = list(query)
+                if subrequests:
+                    requests_div(T.h3(label), accepted_list(subrequests, request_item=request_item))
+
             if users.get_current_user() == push.owner:
                 body(push_actions_form(push))
             else:
                 body(common.take_ownership_form(push))
 
-        
-
         if push.state in ('accepting', 'onstage'):
-            body(
-                T.h2('Pending Requests', class_='pending'),
-                push_pending_list(push, requests),
-                common.new_request_form(push),
-            )
+            if requests:
+                body(T.h2(class_='pending')('Pending Requests'), push_pending_list(push, requests))
+            body(common.new_request_form(push))
 
         body(
             page.script(config.jquery, external=True),
             page.script(config.jquery_ui, external=True),
             page.script('/js/pushmaster.js'),
             page.script('/js/push.js'),
-        )
+            )
 
         head = page.head(title='pushmaster: push: ' + logic.format_datetime(push.ctime))(
             T.script(type='text/javascript')(

@@ -1,11 +1,13 @@
 from pushmaster import config
 from pushmaster.taglib import T
 
+XML_PREAMBLE = '<?xml version="1.0" encoding="UTF-8"?>'
 XHTML_STRICT_DOCTYPE = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'
 HTML_OPEN = '<html xmlns="http://www.w3.org/1999/xhtml">'
 HTML_CLOSE = '</html>'
 
 def write(out, head, body):
+    out.write(XML_PREAMBLE)
     out.write(XHTML_STRICT_DOCTYPE)
     out.write(HTML_OPEN)
     head.serialize(out)
@@ -24,6 +26,7 @@ def script(src, external=False):
 
 def head(title='', stylesheets=[], scripts=[]):
     return T.head(
+        T.meta(**{ 'http-equiv': 'Content-type', 'content': 'text/html;charset=UTF-8' }),
         T.title(title),
         T.link(rel='shortcut icon', type='image/x-icon', href=config.favicon),
         stylesheet('http://developer.yahoo.com/yui/build/reset/reset.css', external=True),

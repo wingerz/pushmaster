@@ -77,7 +77,7 @@ class Request(ROTModel):
     push_plans = db.BooleanProperty(default=False)
     no_testing = db.BooleanProperty(default=False)
     urgent = db.BooleanProperty(default=False)
-    target_date = db.DateProperty()
+    target_date = db.DateProperty(required=True)
 
     @property
     def uri(self):

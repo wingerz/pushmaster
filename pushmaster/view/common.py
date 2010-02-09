@@ -73,12 +73,9 @@ def no_testing_badge():
 def request_item(request):
     li = T.li(class_='request')(
         display_date(request.target_date),
-        ' ',
         T.a(href=request.uri, class_='request-subject')(request.subject),
-        ' (',
-        user_email(request.owner),
-        ')',
-    )
+        T.span('(', user_email(request.owner), ')'),
+        )
     if request.urgent:
         li(class_='urgent request', title='Urgent!')
 
@@ -151,3 +148,10 @@ def bookmarklet():
         T.span('Bookmark the following link to generate a request from within Review Board: '),
         T.a(href='javascript:$.getScript("%s://%s/%s/js/bookmarklet.js");' % (config.protocol, config.hostname, config.static_serial))('Pushmaster App: Create Review'),
         )
+
+def hidden(**kw):
+    return [T.input(type='hidden', name=name, value=value) for name, value in kw.items()]
+
+def can_edit_request(request):
+    current_user = users.get_current_user()
+    return (request.owner == current_user) or (request.push and (request.push.owner == current_user))

@@ -104,7 +104,7 @@ def request_display(request):
                 ),
             )
 
-    if can_edit_request(request):
+    if common.can_edit_request(request):
         div(request_actions_form(request))
 
     return div
@@ -159,10 +159,6 @@ class Requests(RequestHandler):
         push = Push.get(push_key) if push_key else None
         self.redirect(push.uri if push else '/requests')
 
-def can_edit_request(request):
-    current_user = users.get_current_user()
-    return (request.owner == current_user) or (request.push and (request.push.owner == current_user))
-
 class EditRequest(RequestHandler):
     def get(self, request_id):
         request = Request.get(request_id)
@@ -175,7 +171,7 @@ class EditRequest(RequestHandler):
             rdisplay,
         )
         
-        if can_edit_request(request):
+        if common.can_edit_request(request):
             if request.state == 'requested':
                 body(edit_request_form(request))
         else:
@@ -193,6 +189,7 @@ class EditRequest(RequestHandler):
         request = Request.get(request_id)
 
         action = self.request.get('action')
+        redirect_to_push = self.request.get('push') == 'true'
 
         if action == 'edit':
             subject = self.request.get('subject')
@@ -221,19 +218,19 @@ class EditRequest(RequestHandler):
 
         elif action == 'withdraw':
             logic.withdraw_request(request)
-            self.redirect(request.uri)
+            self.redirect(request.push.uri if redirect_to_push else request.uri)
 
         elif action == 'markcheckedin':
             logic.set_request_checkedin(request)
-            self.redirect(request.uri)
+            self.redirect(request.push.uri if redirect_to_push else request.uri)
 
         elif action == 'marktested':
             logic.set_request_tested(request)
-            self.redirect(request.uri)
+            self.redirect(request.push.uri if redirect_to_push else request.uri)
 
         elif action == 'take_ownership':
             logic.take_ownership(request)
-            self.redirect(request.uri)
+            self.redirect(request.push.uri if redirect_to_push else request.uri)
         
         else:
             self.redirect(request.uri)

@@ -79,6 +79,14 @@ h1.gonzo:after {
     content: " GONZO PUSH!!!";
 }
 
+h1 span.datetime {
+    margin-right: 0.5em;
+}
+
+h1 span.email {
+    margin-right: 0.5em;
+}
+
 div.nav {
 	font-size: 150%;
     padding-bottom: 0.25em;
@@ -130,6 +138,15 @@ div.new-push {
 }
 
 /* forms */
+
+form.small {
+    display: inline;
+    margin-right: 0.5em;
+}
+
+form.small div.fields {
+    display: inline;
+}
 
 form.new-push {
     display: inline;
@@ -188,11 +205,6 @@ form.push.request div.content, form.edit.request div.content {
     display: none;
 }
 
-
-form.accept-request {
-	display: inline;
-}
-
 div.requests {
 	padding: 0.5em;
 	border: 1px solid #CCC;
@@ -203,9 +215,13 @@ h2.pending {
     margin-top: 1em;
 }
 
-ol.requests li.request span.date {
+li.request span.date {
     font-size: 80%;
-    margin-left: 0.5em;
+    margin-right: 0.5em;
+}
+
+li.request a.request-subject {
+    margin-right: 0.5em;
 }
 
 ol.accepted.requests li.request span.date {
