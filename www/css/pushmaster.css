@@ -215,6 +215,14 @@ h2.pending {
     margin-top: 1em;
 }
 
+li.push span.datetime {
+    margin-right: 0.5em;
+}
+
+li.push span.email {
+    margin-right: 0.5em;
+}
+
 li.request span.date {
     font-size: 80%;
     margin-right: 0.5em;

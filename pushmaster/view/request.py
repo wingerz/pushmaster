@@ -119,8 +119,12 @@ class Requests(RequestHandler):
         body = T.body(
             common.session(),
             common.navbar(),
-            T.h2('Pending Requests'),
-            common.request_list(requests),
+            )
+
+        if requests:
+            body(T.h2('Pending Requests'), common.request_list(requests))
+
+        body(
             common.new_request_form(subject=subject, message=message),
             T.div(common.bookmarklet()),
             page.script(config.jquery, external=True),

@@ -93,25 +93,28 @@ def request_list(requests):
     return ol
 
 def take_ownership_form(object):
-    form = T.form(class_='take-ownership', action=object.uri, method='post')(
-        T.button(type='submit', name='action', value='take_ownership')('Take Ownership'),
+    form = T.form(class_='small', action=object.uri, method='post')(
+        T.div(class_='fields')(
+            T.button(type='submit', name='action', value='take_ownership')('Take Ownership'),
+            ),
         )
     return form
 
 def new_request_form(push=None, subject='', message=''):
     label = T.a(class_='toggle', href='#')('New Request') if push else 'New Request'
     class_ = 'push request' if push else 'request'
+    content = T.div(class_='content')
     form = T.form(action='/requests', method='post', class_=class_)(
         T.fieldset(
             T.legend(label),
-            T.div(class_='content')(
+            content(
                 T.div(
                     T.label(for_='new-request-subject')('Subject'),
                     T.input(name='subject', id='new-request-subject', value=subject),
                     ),
                 T.div(
                     T.label(for_='new-request-message')('Message'),
-                    T.textarea(name='message', id='new-request-message')(message),
+                    T.textarea(name='message', id='new-request-message', rows='40', cols='120')(message),
                     ),
                 T.div(
                     T.label(for_='new-request-target-date')('Push Date'),
@@ -134,14 +137,16 @@ def new_request_form(push=None, subject='', message=''):
             ),
         )
     if push:
-        form(T.input(type='hidden', name='push', value=str(push.key())))
+        content(T.input(type='hidden', name='push', value=str(push.key())))
     return form
 
 def new_push_form():
-    return T.form(action='/pushes', method='post', class_='new-push')(
-        T.input(type='hidden', name='action', value='new_push'),
-        T.button(type='submit')('Start New Push'),
-    )
+    return T.form(action='/pushes', method='post', class_='small')(
+        T.div(class_='fields')(
+            T.input(type='hidden', name='action', value='new_push'),
+            T.button(type='submit')('Start New Push'),
+            ),
+        )
 
 def bookmarklet():
     return T.span(
