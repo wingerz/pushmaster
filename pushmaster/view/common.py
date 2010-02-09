@@ -160,3 +160,14 @@ def hidden(**kw):
 def can_edit_request(request):
     current_user = users.get_current_user()
     return (request.owner == current_user) or (request.push and (request.push.owner == current_user))
+
+
+display_push_state_map = {
+    'accepting': 'Accepting',
+    'onstage': 'On Stage',
+    'live': 'Live',
+    'abandoned': 'Abandoned',
+    }
+
+def display_push_state(push):
+    return display_push_state_map.get(push.state, 'Unknown')

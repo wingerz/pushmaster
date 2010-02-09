@@ -16,7 +16,7 @@ def push_item(push):
     return T.li(class_='push')(
         T.a(href=push.uri)(common.display_datetime(push.ctime)),
         T.span('(', common.user_email(push.owner), ')', class_='email'),
-        T.span(class_='state')(push.state),
+        T.span(class_='state')(common.display_push_state(push)),
     )
 
 class Pushes(RequestHandler):
@@ -133,8 +133,8 @@ class EditPush(RequestHandler):
         header(
             common.display_datetime(push.ctime),
             T.span('(', common.user_email(push.owner), ')', class_='email'),
-            T.span(push.state),
-        )
+            T.span(common.display_push_state(push)),
+            )
 
         requests_div = T.div(class_='requests')
         
