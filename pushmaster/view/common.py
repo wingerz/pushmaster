@@ -76,21 +76,24 @@ def request_item(request):
         T.a(href=request.uri, class_='request-subject')(request.subject),
         T.span('(', user_email(request.owner), ')'),
         )
+
+    if request.target_date > logic.tznow().date():
+        li.attrs['class'] += ' future'
+
     if request.urgent:
-        li(class_='urgent request', title='Urgent!')
+        li.attrs['class'] += ' urgent'
+        li(title='Urgent!')
 
     if request.no_testing:
         li(no_testing_badge())
+
     if request.push_plans:
         li(push_plans_link())
 
     return li
 
 def request_list(requests):
-    ol = T.ol(class_='requests')
-    if requests:
-        ol(map(request_item, requests))
-    return ol
+    return T.ol(class_='requests')(map(request_item, requests))
 
 def take_ownership_form(object):
     form = T.form(class_='small', action=object.uri, method='post')(

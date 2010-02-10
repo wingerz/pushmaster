@@ -31,7 +31,7 @@ class _Tag(object):
 
     def __call__(self, *args, **kwargs):
         if kwargs:
-            self.attrs = translate(kwargs)
+            self.attrs.update(translate(kwargs))
         for arg in iterflat(args):
             if isinstance(arg, basestring):
                 if self.children:

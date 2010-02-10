@@ -232,6 +232,10 @@ li.request a.request-subject {
     margin-right: 0.5em;
 }
 
+li.request.future {
+    opacity: 0.5;
+}
+
 ol.accepted.requests li.request span.date {
 	display: none;
 }
