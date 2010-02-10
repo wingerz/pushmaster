@@ -39,7 +39,7 @@ def format_datetime(dt):
     return dt.strftime(choose_strftime_format(dt))
 
 def choose_date_strftime_format(d):
-    today = datetime.date.today()
+    today = tznow().date()
     strftime_format = '%e %b %Y' # 15 Sep 2009
     if d.year == today.year:
         if d.month == today.month:
