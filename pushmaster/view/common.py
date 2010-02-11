@@ -42,11 +42,10 @@ def navbar(current=None):
     current_push = model.Push.current()
     if current_push:
         nav(
-            T.a(href=current_push.uri)(
-                T.span('Current Push: '),
-                display_datetime(current_push.ctime),
-            ),
-        )
+            T.a(href='/push/current')(T.span('Current Push')),
+            T.span(' | '),
+            new_push_form(),
+            )
     else:
         nav(new_push_form())
     

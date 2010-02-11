@@ -1,5 +1,7 @@
 from django.utils import simplejson as json
 from google.appengine.api import users
+from google.appengine.api.datastore_errors import BadKeyError
+from google.appengine.ext import db
 from google.appengine.ext.webapp import RequestHandler
 
 from pushmaster.taglib import T
@@ -28,9 +30,8 @@ class Pushes(RequestHandler):
         body = T.body(
             common.session(),
             common.navbar(),
-            T.div(class_='new-push')(common.new_push_form()),
             push_list, 
-        )
+            )
         page.write(self.response.out, page.head(title='pushmaster: pushes'), body)
 
     def post(self):
@@ -119,7 +120,19 @@ def accepted_request_item(request):
 
 class EditPush(RequestHandler):
     def get(self, push_id):
-        push = Push.get(push_id)
+        push = None
+
+        if push_id == 'current':
+            push = Push.current()
+            self.redirect(push.uri if push else '/pushes')
+            return
+
+        try:
+            push = Push.get(push_id)
+        except BadKeyError:
+            self.redirect('/pushes')
+            return
+
         requests = Request.current()
 
         estimated_push_count = push.requests.count(20)
