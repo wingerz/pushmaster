@@ -5,6 +5,7 @@ from pushmaster import tweaks
 
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
+from pushmaster import config
 from pushmaster.view import *
 from pushmaster.log import ClassLogger
 
@@ -24,7 +25,7 @@ application = LoggingWSGIApplication(
      ('/push/(.+)', EditPush),
      ('/favicon.ico', Favicon),
      ('.*', Home)],
-    debug=True)
+    debug=config.debug)
 
 def main():
     run_wsgi_app(application)

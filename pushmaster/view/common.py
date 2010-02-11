@@ -121,7 +121,7 @@ def new_request_form(push=None, subject='', message=''):
                     ),
                 T.div(
                     T.label(for_='new-request-target-date')('Push Date'),
-                    T.input(name='target_date', id='new-request-target-date', class_='date'),
+                    T.input(name='target_date', id='new-request-target-date', class_='date', value=logic.tznow().date().strftime('%Y-%m-%d')),
                     ),
                 T.div(
                     T.input(id='new-request-urgent', type='checkbox', name='urgent', class_='checkbox'),
