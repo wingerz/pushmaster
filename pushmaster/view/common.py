@@ -39,15 +39,11 @@ def navbar(current=None):
         T.span(' | '),
     )
 
-    current_push = model.Push.current()
-    if current_push:
-        nav(
-            T.a(href='/push/current')(T.span('Current Push')),
-            T.span(' | '),
-            new_push_form(),
-            )
-    else:
-        nav(new_push_form())
+    nav(
+        T.a(href='/push/current')(T.span('Current Push')),
+        T.span(' | '),
+        new_push_form(),
+        )
     
     return nav
 
