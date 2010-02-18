@@ -1,8 +1,9 @@
+import httplib
+
 from django.utils import simplejson as json
 from google.appengine.api import users
 from google.appengine.api.datastore_errors import BadKeyError
 from google.appengine.ext import db
-from google.appengine.ext.webapp import RequestHandler
 
 from pushmaster.taglib import T
 from pushmaster import config
@@ -10,6 +11,8 @@ from pushmaster import logic
 from pushmaster.view import page
 from pushmaster.model import *
 from pushmaster.view import common
+from pushmaster.view import HTTPStatusCode
+from pushmaster.view import RequestHandler
 
 __author__ = 'Jeremy Latt <jlatt@yelp.com>'
 __all__ = ('Pushes', 'EditPush')
@@ -37,11 +40,11 @@ class Pushes(RequestHandler):
     def post(self):
         action = self.request.get('action')
         
-        assert action == 'new_push'
-
-        push = logic.create_push()
-
-        self.redirect(push.uri)
+        if action == 'new_push':
+            push = logic.create_push()
+            self.redirect(push.uri)
+        else:
+            raise HTTPStatusCode(httplib.BAD_REQUEST)
 
 def accepted_list(accepted, request_item=common.request_item):
     return T.ol(class_='accepted requests')(map(request_item, accepted))
@@ -130,8 +133,7 @@ class EditPush(RequestHandler):
         try:
             push = Push.get(push_id)
         except BadKeyError:
-            self.redirect('/pushes')
-            return
+            raise HTTPStatusCode(httplib.NOT_FOUND)
 
         requests = Request.current()
 
@@ -202,7 +204,10 @@ class EditPush(RequestHandler):
         page.write(self.response.out, head, body)
 
     def post(self, push_id):
-        push = Push.get(push_id)
+        try:
+            push = Push.get(push_id)
+        except BadKeyError:
+            raise HTTPStatusCode(httplib.NOT_FOUND)
 
         action = self.request.get('action')
 
@@ -223,4 +228,4 @@ class EditPush(RequestHandler):
             self.redirect(push.uri)
 
         else:
-            self.redirect(push.uri)
+            raise HTTPStatusCode(httplib.BAD_REQUEST)

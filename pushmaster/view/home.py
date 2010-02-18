@@ -1,10 +1,10 @@
 __author__ = 'Jeremy Latt <jlatt@yelp.com>'
 
 from pushmaster import config
-from pushmaster.handler import RequestHandler
 from pushmaster.model import Push
 from pushmaster.taglib import T
 from pushmaster.view import page
+from pushmaster.view import RequestHandler
 
 class RedirectHandler(RequestHandler):
     def get(self):
