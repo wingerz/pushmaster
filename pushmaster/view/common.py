@@ -33,6 +33,8 @@ def display_date(d):
 
 def navbar(current=None):
     nav = T.div(class_='nav')(
+        T.a(href='/')('Home'),
+        T.span(' | '),
         T.a(href='/requests')('Requests'),
         T.span(' | '),
         T.a(href='/pushes')('Pushes'),

@@ -58,6 +58,11 @@ class Push(db.Model):
             memcache.add('push-open', open_pushes, 60 * 60)
         return open_pushes
 
+    @classmethod
+    def for_user(cls, user):
+        states = ('accepting', 'onstage', 'live')
+        return cls.all().filter('owner =', user).filter('state in', states).order('-ctime')
+
 class Request(db.Model):
     ctime = db.DateTimeProperty(auto_now_add=True)
     mtime = db.DateTimeProperty(auto_now=True)
@@ -86,6 +91,11 @@ class Request(db.Model):
     def current(cls):
         current_requests = memcache.get('request-current')
         if current_requests is None:
-            current_requests = cls.gql('WHERE state = :state ORDER BY target_date ASC', state='requested').fetch(100)
+            current_requests = cls.all().filter('state =', 'requested').order('target_date').fetch(100)
             memcache.add('request-current', current_requests, 60 * 10)
         return current_requests
+
+    @classmethod
+    def for_user(cls, user):
+        states = ('requested', 'accepted', 'checkedin', 'onstage', 'tested', 'live')
+        return cls.all().filter('owner =', user).filter('state in', states).order('-target_date')

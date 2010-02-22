@@ -20,7 +20,10 @@ class RequestHandler(webapp.RequestHandler):
         self.response.out.write(message)
 
     def handle_exception(self, exception, debug_mode):
-        if isinstance(exception, HTTPStatusCode):
-            self.set_error(code=exception.code, message=exception.message)
+        if not debug_mode:
+            if isinstance(exception, HTTPStatusCode):
+                self.set_error(code=exception.code, message=exception.message)
+            else:
+                self.set_error()
         else:
-            self.set_error()
+            super(RequestHandler, self).handle_exception(exception, debug_mode)
