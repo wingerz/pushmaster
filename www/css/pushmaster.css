@@ -256,3 +256,7 @@ span.no-testing {
 form.request-actions, form.take-ownership {
 	display: inline;
 }
+
+ol.my li.request span.email {
+    display: none;
+}

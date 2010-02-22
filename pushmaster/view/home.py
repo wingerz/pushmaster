@@ -33,7 +33,7 @@ class Home(RequestHandler):
         if requests:
             body(
                 T.h3('Requests'),
-                T.ol(class_='requests')(map(common.request_item, requests)),
+                T.ol(class_='my requests')(map(common.request_item, requests)),
                 )
 
         pushes = model.Push.for_user(current_user).fetch(25)

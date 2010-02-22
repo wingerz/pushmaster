@@ -61,6 +61,9 @@ def session():
 def user_email(user):
     return T.a(href='mailto:' + user.email())(user.nickname())
 
+def display_user_email(user):
+    return T.span(class_='email')('(', user_email(user), ')'),
+
 def push_plans_link():
     return T.a(class_='push-plans', href=config.push_plans_url, title='This request has push plans.')('P')
 
@@ -71,7 +74,7 @@ def request_item(request):
     li = T.li(class_='request')(
         display_date(request.target_date),
         T.a(href=request.uri, class_='request-subject')(request.subject),
-        T.span('(', user_email(request.owner), ')'),
+        display_user_email(request.owner),
         )
 
     if request.target_date > logic.tznow().date():
