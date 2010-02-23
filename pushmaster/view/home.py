@@ -21,6 +21,11 @@ def push_item(push):
         T.span(common.display_push_state(push)),
         )
 
+def request_item(request):
+    item = common.request_item(request)
+    item(T.span(class_='state')(request.state))
+    return item
+
 class Home(RequestHandler):
     def get(self):
         body = T.body(
@@ -32,14 +37,14 @@ class Home(RequestHandler):
         requests = model.Request.for_user(current_user).fetch(25)
         if requests:
             body(
-                T.h3('Requests'),
-                T.ol(class_='my requests')(map(common.request_item, requests)),
+                T.h3('Recent Requests'),
+                T.ol(class_='my requests')(map(request_item, requests)),
                 )
 
         pushes = model.Push.for_user(current_user).fetch(25)
         if pushes:
             body(
-                T.h3('Pushes'),
+                T.h3('Recent Pushes'),
                 T.ol(class_='pushes')(map(push_item, pushes)),
                 )
 
