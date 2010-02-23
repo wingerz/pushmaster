@@ -21,6 +21,11 @@ indexes:
   properties:
   - name: state
   - name: ctime
+
+- kind: Push
+  properties:
+  - name: state
+  - name: ctime
     direction: desc
 
 - kind: Push

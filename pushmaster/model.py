@@ -67,7 +67,7 @@ class Push(db.Model):
 
     @classmethod
     def for_week_of(cls, from_date):
-        return cls.all().filter('ctime >=', from_date).filter('ctime <', from_date + datetime.timedelta(days=7))
+        return cls.all().filter('state =', 'live').filter('ctime >=', from_date).filter('ctime <', from_date + datetime.timedelta(days=7))
 
 class Request(db.Model):
     ctime = db.DateTimeProperty(auto_now_add=True)

@@ -262,7 +262,7 @@ ol.my li.request span.email {
 }
 
 div.push {
-    margin-left: 1em;
+    margin: 1em 0 0 1em;
 }
 
 div.push ol.requests {
