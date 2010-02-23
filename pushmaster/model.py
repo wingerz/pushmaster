@@ -12,6 +12,7 @@ class Push(db.Model):
     mtime = db.DateTimeProperty(auto_now=True)
     owner = db.UserProperty(auto_current_user_add=True)
     state = db.StringProperty(choices=('accepting', 'onstage', 'live', 'abandoned'), default='accepting')
+    ltime = db.DateTimeProperty()
 
     @property
     def uri(self):
@@ -70,7 +71,7 @@ class Push(db.Model):
     @classmethod
     def for_week_of(cls, from_date):
         from_date = from_date.astimezone(timezone.UTC())
-        return cls.all().filter('state =', 'live').filter('ctime >=', from_date).filter('ctime <', from_date + datetime.timedelta(days=7)).order('ctime')
+        return cls.all().filter('state =', 'live').filter('ltime >=', from_date).filter('ltime <', from_date + datetime.timedelta(days=7)).order('ltime')
 
 class Request(db.Model):
     ctime = db.DateTimeProperty(auto_now_add=True)

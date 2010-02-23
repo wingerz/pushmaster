@@ -55,7 +55,11 @@ class ViewReport(RequestHandler):
         pushes = model.Push.for_week_of(from_date)
         for push in pushes:
             pushdiv = T.div(class_='push')
-            pushdiv(T.h2(T.a(href=push.uri)(push.ctime.replace(tzinfo=timezone.UTC()).astimezone(config.timezone).strftime('%a, %l:%M %p, %e %b %Y'))))
+            pushdiv(T.h2(
+                    T.a(href=push.uri)(push.ltime.replace(tzinfo=timezone.UTC()).astimezone(config.timezone).strftime('%a, %l:%M %p, %e %b %Y')), 
+                    T.span(' '),
+                    common.display_user_email(push.owner),
+                    ))
             reqlist = T.ol(class_='requests')
             for request in push.requests:
                 reqlist(common.request_item(request))

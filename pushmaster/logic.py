@@ -260,7 +260,7 @@ def send_to_live(push):
         request.put()
 
     push.state = 'live'
-
+    push.ltime = datetime.datetime.utcnow()
     push.put()
     
     memcache.delete_multi(['push-current', 'push-open'])
@@ -301,6 +301,7 @@ def force_live(push):
         request.put()
 
     push.state = 'live'
+    push.ltime = push.mtime
     push.put()
 
     memcache.delete_multi(['push-current', 'push-open'])
