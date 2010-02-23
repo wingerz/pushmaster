@@ -43,7 +43,7 @@ class Reports(RequestHandler):
 
 class ViewReport(RequestHandler):
     def get(self, datestr):
-        from_date = datetime.datetime.strptime(datestr, '%Y%m%d')
+        from_date = datetime.datetime.strptime(datestr, '%Y%m%d').replace(tzinfo=timezone.UTC())
         to_date = from_date + datetime.timedelta(days=6)
 
         body = T.body(
