@@ -6,10 +6,9 @@ from google.appengine.api import users
 from google.appengine.api.datastore_errors import BadKeyError
 
 from pushmaster import config
-
-from pushmaster.taglib import T
 from pushmaster import logic
 from pushmaster.model import *
+from pushmaster.taglib import T
 from pushmaster.view import page
 from pushmaster.view import common
 from pushmaster.view import HTTPStatusCode

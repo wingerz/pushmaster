@@ -260,3 +260,11 @@ form.request-actions, form.take-ownership {
 ol.my li.request span.email {
     display: none;
 }
+
+div.push {
+    margin-left: 1em;
+}
+
+div.push ol.requests {
+    margin-left: 1em;
+}

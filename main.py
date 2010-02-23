@@ -9,6 +9,7 @@ from pushmaster import config
 from pushmaster.view import home
 from pushmaster.view import request
 from pushmaster.view import push
+from pushmaster.view import report
 from pushmaster.log import ClassLogger
 
 class LoggingWSGIApplication(webapp.WSGIApplication):
@@ -25,6 +26,8 @@ application = LoggingWSGIApplication(
      ('/pushes', push.Pushes),
      ('/request/([^/]+)', request.EditRequest),
      ('/push/(.+)', push.EditPush),
+     ('/report/(\d+)', report.ViewReport),
+     ('/reports', report.Reports),
      ('/favicon.ico', home.Favicon),
      ('.*', home.Home)],
     debug=config.debug)

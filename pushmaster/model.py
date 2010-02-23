@@ -1,3 +1,5 @@
+import datetime
+
 from google.appengine.api import memcache
 from google.appengine.ext import db
 
@@ -62,6 +64,10 @@ class Push(db.Model):
     def for_user(cls, user):
         states = ('accepting', 'onstage', 'live')
         return cls.all().filter('owner =', user).filter('state in', states).order('-ctime')
+
+    @classmethod
+    def for_week_of(cls, from_date):
+        return cls.all().filter('ctime >=', from_date).filter('ctime <', from_date + datetime.timedelta(days=7))
 
 class Request(db.Model):
     ctime = db.DateTimeProperty(auto_now_add=True)
