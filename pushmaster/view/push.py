@@ -19,7 +19,7 @@ __all__ = ('Pushes', 'EditPush')
 
 def push_item(push):
     return T.li(class_='push')(
-        T.a(href=push.uri)(common.display_datetime(push.ctime)),
+        T.a(href=push.uri)(common.display_datetime(push.ltime or push.ctime)),
         T.span('(', common.user_email(push.owner), ')', class_='email'),
         T.span(class_='state')(common.display_push_state(push)),
     )
@@ -146,7 +146,7 @@ class EditPush(RequestHandler):
             header = T.h1()
 
         header(
-            common.display_datetime(push.ctime),
+            common.display_datetime(push.ltime or push.ctime),
             T.span('(', common.user_email(push.owner), ')', class_='email'),
             T.span(common.display_push_state(push)),
             )
@@ -191,7 +191,7 @@ class EditPush(RequestHandler):
             page.script('/js/push.js'),
             )
 
-        head = page.head(title='pushmaster: push: ' + logic.format_datetime(push.ctime))(
+        head = page.head(title='pushmaster: push: ' + logic.format_datetime(push.ltime or push.ctime))(
             T.script(type='text/javascript')(
                 'var push = ',
                 json.dumps({
