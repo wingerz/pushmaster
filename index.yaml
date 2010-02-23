@@ -31,6 +31,11 @@ indexes:
 - kind: Push
   properties:
   - name: state
+  - name: ltime
+
+- kind: Push
+  properties:
+  - name: state
   - name: mtime
     direction: desc
 
