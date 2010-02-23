@@ -73,6 +73,10 @@ class Push(db.Model):
         from_date = from_date.astimezone(timezone.UTC())
         return cls.all().filter('state =', 'live').filter('ltime >=', from_date).filter('ltime <', from_date + datetime.timedelta(days=7)).order('ltime')
 
+    @classmethod
+    def bust_caches(cls):
+        memcache.delete_multi(['push-current', 'push-open'])
+
 class Request(db.Model):
     ctime = db.DateTimeProperty(auto_now_add=True)
     mtime = db.DateTimeProperty(auto_now=True)
@@ -109,3 +113,7 @@ class Request(db.Model):
     def for_user(cls, user):
         states = ('requested', 'accepted', 'checkedin', 'onstage', 'tested', 'live')
         return cls.all().filter('owner =', user).filter('state in', states).order('-target_date')
+
+    @classmethod
+    def bust_caches(cls):
+        memcache.delete('request-current')

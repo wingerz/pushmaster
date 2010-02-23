@@ -1,7 +1,6 @@
 from cgi import escape
 import datetime
 from google.appengine.api import mail
-from google.appengine.api import memcache
 from google.appengine.api import users
 from google.appengine.api import xmpp
 from google.appengine.runtime.apiproxy_errors import OverQuotaError
@@ -69,7 +68,7 @@ def create_request(subject, message=None, push_plans=False, no_testing=False, ur
 
     request.put()
     send_request_mail(request)
-    memcache.delete('request-current')
+    Request.bust_caches()
 
     return request
 
@@ -88,8 +87,8 @@ def edit_request(request, subject, message=None, push_plans=False, no_testing=Fa
         request.message = message
 
     request.put()
-    send_request_mail(request)    
-    memcache.delete('request-current')
+    send_request_mail(request)
+    Request.bust_caches()
 
     return request
 
@@ -115,7 +114,7 @@ def abandon_request(request):
     
     request.put()
     
-    memcache.delete('request-current')
+    Request.bust_caches()
 
     return request
 
@@ -132,7 +131,7 @@ def create_push(parent=None):
 
     push.put()
 
-    memcache.delete_multi(['push-current', 'push-open'])
+    Push.bust_caches()
 
     return push
 
@@ -147,7 +146,8 @@ def abandon_push(push):
 
     push.put()
 
-    memcache.delete_multi(['request-current', 'push-current', 'push-open'])
+    Request.bust_caches()
+    Push.bust_caches()
 
     return push
 
@@ -172,7 +172,7 @@ def accept_request(push, request):
 
     request.put()
     
-    memcache.delete('request-current')
+    Request.bust_caches()
 
     return request
 
@@ -194,7 +194,7 @@ def withdraw_request(request):
 
     request.put()
     
-    memcache.delete('request-current')
+    Request.bust_caches()
 
     return request
 
@@ -204,7 +204,7 @@ def send_to_stage(push):
     push.state = 'onstage'
     push.put()
     
-    memcache.delete('push-open')
+    Push.bust_caches()
 
     for request in push.requests:
         if request.state == 'checkedin':
@@ -263,7 +263,7 @@ def send_to_live(push):
     push.ltime = datetime.datetime.utcnow()
     push.put()
     
-    memcache.delete_multi(['push-current', 'push-open'])
+    Push.bust_caches()
 
     return push
 
@@ -289,9 +289,9 @@ def take_ownership(object):
     object.put()
 
     if isinstance(object, Push):
-        memcache.delete('push-open')
+        Push.bust_caches()
     elif isinstance(object, Request):
-        memcache.delete('request-current')
+        Request.bust_caches()
     
     return object
 
@@ -304,6 +304,6 @@ def force_live(push):
     push.ltime = push.mtime
     push.put()
 
-    memcache.delete_multi(['push-current', 'push-open'])
+    Push.bust_caches()
     
     return push
