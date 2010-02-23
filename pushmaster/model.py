@@ -3,6 +3,8 @@ import datetime
 from google.appengine.api import memcache
 from google.appengine.ext import db
 
+from pushmaster import timezone
+
 __author__ = 'Jeremy Latt <jlatt@yelp.com>'
 
 class Push(db.Model):
@@ -67,6 +69,7 @@ class Push(db.Model):
 
     @classmethod
     def for_week_of(cls, from_date):
+        from_date = from_date.astimezone(timezone.UTC())
         return cls.all().filter('state =', 'live').filter('ctime >=', from_date).filter('ctime <', from_date + datetime.timedelta(days=7)).order('ctime')
 
 class Request(db.Model):
