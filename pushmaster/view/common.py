@@ -34,18 +34,18 @@ def display_date(d):
 def navbar(current=None):
     nav = T.div(class_='nav')(
         T.a(href='/')('Home'),
-        T.span(' | '),
+        T.span(class_='sep')('|'),
         T.a(href='/reports')('Reports'),
-        T.span(' | '),
+        T.span(class_='sep')('|'),
         T.a(href='/requests')('Requests'),
-        T.span(' | '),
+        T.span(class_='sep')('|'),
         T.a(href='/pushes')('Pushes'),
-        T.span(' | '),
     )
 
     nav(
+        T.span(class_='sep')('|'),
         T.a(href='/push/current')(T.span('Current Push')),
-        T.span(' | '),
+        T.span(class_='sep')('|'),
         new_push_form(),
         )
     
@@ -55,7 +55,6 @@ def session():
     user = users.get_current_user()
     div = T.div(class_='session')(
         T.span(class_='email')(str(user)),
-        ' ',
         T.a(href=users.create_logout_url('/'))('Logout')
     )
     return div

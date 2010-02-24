@@ -147,7 +147,7 @@ class EditPush(RequestHandler):
 
         header(
             common.display_datetime(push.ltime or push.ctime),
-            T.span('(', common.user_email(push.owner), ')', class_='email'),
+            common.display_user_email(push.owner),
             T.span(common.display_push_state(push)),
             )
 

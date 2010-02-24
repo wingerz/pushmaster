@@ -87,11 +87,20 @@ h1 span.email {
     margin-right: 0.5em;
 }
 
-div.nav {
+.nav {
 	font-size: 125%;
     padding-bottom: 0.25em;
 	border-bottom: 1px solid #CCC;
 	margin-bottom: 0.75em;
+}
+
+.nav .sep {
+    margin: 0 0.25em;
+}
+
+.nav button {
+    font-size: 80%;
+    vertical-align: top;
 }
 
 ol.requests {
@@ -111,8 +120,12 @@ ol.submissions {
 	margin: 0.5em 0 1em 0;
 }
 
-div.session {
+.session {
 	float: right;
+}
+
+.session .email {
+    margin-right: 0.5em;
 }
 
 h2.subject {
@@ -223,14 +236,13 @@ li.push span.email {
     margin-right: 0.5em;
 }
 
-li.request span.date {
-    font-size: 80%;
-    margin-right: 0.5em;
+li.request >* {
+    margin-right: 0.25em;
 }
 
-li.request a.request-subject {
-    margin-right: 0.5em;
-}
+li.request span.date {
+    font-size: 80%;
+ }
 
 li.request.future {
     opacity: 0.5;
@@ -243,12 +255,10 @@ ol.accepted.requests li.request span.date {
 a.push-plans {
 	color: #F00;
 	font-weight: bold;
-    margin-left: 0.5em;
 }
 
 span.no-testing {
     color: #FF7722;
-    margin-left: 0.5em;
     font-weight: bold;
     cursor: help;
 }
@@ -262,7 +272,7 @@ ol.my li.request span.email {
 }
 
 div.push {
-    margin: 1em 0 0 1em;
+    margin-top: 1em;
 }
 
 div.push ol.requests {
