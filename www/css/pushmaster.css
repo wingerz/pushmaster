@@ -237,7 +237,7 @@ li.push span.email {
 }
 
 li.request >* {
-    margin-right: 0.25em;
+    margin-right: 0.5em;
 }
 
 li.request span.date {
