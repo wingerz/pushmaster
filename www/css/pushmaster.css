@@ -5,7 +5,7 @@ html {
 body {
 	max-width: 60em;
 	margin: 1em auto;
-	padding: 0 1em;
+	padding: 0 1em 1em 1em;
 	font-family: "Helvetica", "Arial", sans;
 	font-size: 14px;
 	color: #333;
@@ -202,7 +202,7 @@ form.request input {
 }
 
 form.request input.date {
-    width: auto;
+    width: 6em;
 }
 
 form.request input.checkbox {
