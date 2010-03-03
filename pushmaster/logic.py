@@ -166,9 +166,9 @@ def accept_request(push, request):
         to=owner_email,
         cc=config.mail_to,
         subject='Re: ' + request.subject,
-        body='Please check this in.\n' + config.url(request.uri))
+        body='Please check this in.\n' + config.url(push.uri))
 
-    maybe_send_im(owner_email, 'Please check <a href="%s">%s</a> in.' % (escape(config.url(request.uri)), escape(request.subject)))
+    maybe_send_im(owner_email, 'Please check <a href="%s">%s</a> in.' % (escape(config.url(push.uri)), escape(request.subject)))
 
     request.put()
     
@@ -219,9 +219,9 @@ def send_to_stage(push):
                     to=owner_email,
                     cc=config.mail_to,
                     subject='Re: ' + request.subject,
-                    body='Please check your changes on stage.\n' + config.url(request.uri))
+                    body='Please check your changes on stage.\n' + config.url(push.uri))
 
-                maybe_send_im(owner_email, 'Please check your changes on stage for <a href="%s">%s</a>.' % (escape(config.url(request.uri)), escape(request.subject)))
+                maybe_send_im(owner_email, 'Please check your changes on stage for <a href="%s">%s</a>.' % (escape(config.url(push.uri)), escape(request.subject)))
                 request.put()
 
     return push
