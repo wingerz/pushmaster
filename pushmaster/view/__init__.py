@@ -1,4 +1,7 @@
 import httplib
+import logging
+import sys
+import traceback
 
 from google.appengine.ext import webapp
 
@@ -13,17 +16,23 @@ class HTTPStatusCode(Exception):
 class RequestHandler(webapp.RequestHandler):
     log = ClassLogger()
 
-    def set_error(self, code=httplib.INTERNAL_SERVER_ERROR, message=None):
+    def set_error(self, debug_mode, code=httplib.INTERNAL_SERVER_ERROR, message=None):
         message = message or httplib.responses.get(code, 'Unknown Error')
         self.error(code)
         self.response.headers['Content-type'] = 'text/plain'
+        self.response.clear()
         self.response.out.write(message)
 
     def handle_exception(self, exception, debug_mode):
-        if not debug_mode:
-            if isinstance(exception, HTTPStatusCode):
-                self.set_error(code=exception.code, message=exception.message)
-            else:
-                self.set_error()
+        logging.exception(exception)
+
+        if isinstance(exception, HTTPStatusCode):
+            self.set_error(code=exception.code, message=exception.message)
         else:
-            super(RequestHandler, self).handle_exception(exception, debug_mode)
+            self.set_error()
+        
+        if debug_mode:
+            self.response.out.write('\n\n')
+            for line in traceback.format_exception(*sys.exc_info()):
+                self.response.out.write(line)
+                self.response.out.write('\n')

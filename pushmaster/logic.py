@@ -77,6 +77,7 @@ def edit_request(request, subject, message=None, push_plans=False, no_testing=Fa
     target_date = target_date or datetime.date.today()
 
     request.state = 'requested'
+    request.push = None
     request.subject = subject
     request.push_plans = push_plans
     request.no_testing = no_testing
