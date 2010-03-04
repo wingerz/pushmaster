@@ -24,15 +24,15 @@ class RequestHandler(webapp.RequestHandler):
         self.response.out.write(message)
 
     def handle_exception(self, exception, debug_mode):
-        logging.exception(exception)
-
         if isinstance(exception, HTTPStatusCode):
             self.set_error(code=exception.code, message=exception.message)
         else:
             self.set_error()
-        
-        if debug_mode:
-            self.response.out.write('\n\n')
-            for line in traceback.format_exception(*sys.exc_info()):
-                self.response.out.write(line)
-                self.response.out.write('\n')
+
+            logging.exception(exception)
+
+            if debug_mode:
+                self.response.out.write('\n\n')
+                for line in traceback.format_exception(*sys.exc_info()):
+                    self.response.out.write(line)
+                    self.response.out.write('\n')
