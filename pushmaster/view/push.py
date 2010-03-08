@@ -137,15 +137,7 @@ class EditPush(RequestHandler):
 
         requests = Request.current()
 
-        estimated_push_count = push.requests.count(20)
-        if estimated_push_count >= 20:
-            header = T.h1(class_='gonzo')
-        elif estimated_push_count >= 15:
-            header = T.h1(class_='epic')
-        else:
-            header = T.h1()
-
-        header(
+        header = T.h1(
             common.display_datetime(push.ltime or push.ctime),
             common.display_user_email(push.owner),
             T.span(common.display_push_state(push)),
