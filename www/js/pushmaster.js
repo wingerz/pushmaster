@@ -7,6 +7,11 @@ $('a.toggle').live('click', function(e) {
 });
 
 $(function() {
+    // for CSS
+    if ($.browser.webkit) {
+        $('body').addClass('webkit');
+    }
+
     $('input.date').datepicker({ 
         'showAnim': 'fadeIn',
         'dateFormat': 'yy-mm-dd',

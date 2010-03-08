@@ -40,10 +40,11 @@ legend, button, input, textarea, select {
 button {
 	cursor: pointer;
     border: 1px solid #CCC;
-    -webkit-border-radius: 0.4em;
-    -moz-border-radius: 0.4em;
 	background-color: transparent;
 	color: #8B0000;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
 }
 
 button:hover {
