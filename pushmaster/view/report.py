@@ -8,13 +8,14 @@ from pushmaster import config
 from pushmaster import model
 from pushmaster import timezone
 from pushmaster.view import common
-from pushmaster.view import page
 from pushmaster.view import RequestHandler
-from pushmaster.taglib import T
+from pushmaster.taglib import T, XHTML
 
 class Reports(RequestHandler):
     def get(self):
-        body = T.body(
+        doc = common.Document(title='pushmaster: reports')
+
+        doc.body(
             common.session(),
             common.navbar(),
             T.h1('Reports'),
@@ -31,22 +32,24 @@ class Reports(RequestHandler):
                         T.span(' - '),
                         (date + datetime.timedelta(days=6)).strftime('%e %b %Y'),
                         )))
-        body(ol)
 
-        body(
-            page.script(config.jquery, external=True),
-            page.script(config.jquery_ui, external=True),
-            page.script('/js/pushmaster.js'),
+        doc.body(
+            ol,
+            common.script(config.jquery, external=True),
+            common.script(config.jquery_ui, external=True),
+            common.script('/js/pushmaster.js'),
             )
-        
-        page.write(self.response.out, page.head(title='pushmaster: reports'), body)
+
+        doc.serialize(self.response.out)
 
 class ViewReport(RequestHandler):
     def get(self, datestr):
         from_date = datetime.datetime.strptime(datestr, '%Y%m%d').replace(tzinfo=config.timezone)
         to_date = from_date + datetime.timedelta(days=6)
 
-        body = T.body(
+        doc = common.Document(title='pushmaster: reports')
+
+        doc.body(
             common.session(),
             common.navbar(),
             T.h1('Report for ', from_date.strftime('%e %b %Y'), ' - ', to_date.strftime('%e %b %Y')),
@@ -64,12 +67,7 @@ class ViewReport(RequestHandler):
             for request in push.requests:
                 reqlist(common.request_item(request))
             pushdiv(reqlist)
-            body(pushdiv)
+            doc.body(pushdiv)
 
-        body(
-            page.script(config.jquery, external=True),
-            page.script(config.jquery_ui, external=True),
-            page.script('/js/pushmaster.js'),
-            )
-        
-        page.write(self.response.out, page.head(title='pushmaster: reports'), body)
+        doc.body(common.jquery_js, common.jquery_ui_js, common.pushmaster_js)
+        doc.serialize(self.response.out)

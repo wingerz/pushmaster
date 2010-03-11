@@ -1,7 +1,7 @@
 import cgi
-from functools import partial
 
-__author__ = 'Jeremy Latt <jeremy@jeremylatt.com>'
+__author__ = 'Jeremy Latt <jlatt@yelp.com>'
+__all__ = ('T', 'Literal', 'Text', 'XHTML')
 
 def iterflat(args):
     for arg in args:
@@ -12,47 +12,54 @@ def iterflat(args):
             yield arg
 
 def translate(attrs):
-    newattrs = {}
-    for key, value in attrs.items():
+    for key, value in attrs.iteritems():
         if key.endswith('_'):
             key = key[:-1]
-        newattrs[key] = value
-    return newattrs
 
-class _Tag(object):
-    empty = ('link', 'input', 'hr', 'meta')
+        yield (key, value)
 
-    def __init__(self, tagname, **attrs):
-        self.tagname = tagname
-        self.attrs = translate(attrs)
-        self.text = ''
-        self.tail = ''
-        self.children = []
+def iterattrs(attrs):
+    for key, value in attrs.iteritems():
+        if isinstance(value, bool):
+            if value:
+                value = key
+            else: # skip False
+                continue
+        else:
+            value = str(value)
 
-    def __call__(self, *args, **kwargs):
-        if kwargs:
-            self.attrs.update(translate(kwargs))
-        for arg in iterflat(args):
-            if isinstance(arg, basestring):
-                if self.children:
-                    self.children[-1].tail += arg
-                else:
-                    self.text += arg
-            else:
-                self.children.append(arg)
-        return self
+        yield (key, value)
 
+def write_attribute(f, aname, avalue):
+    f.write(' ')
+    f.write(cgi.escape(aname))
+    f.write('=')
+    f.write('"')
+    f.write(cgi.escape(avalue, quote=True))
+    f.write('"')
+
+class StrSerializable(object):
     def __str__(self):
         from StringIO import StringIO
         return self.serialize(StringIO()).getvalue()
 
-    def write_attribute(self, f, aname, avalue):
-        f.write(' ')
-        f.write(aname)
-        f.write('=')
-        f.write('"')
-        f.write(cgi.escape(avalue, quote=True))
-        f.write('"')
+    def serialize(self, f):
+        raise NotImplemented
+
+class _Tag(StrSerializable):
+    empty = set('link', 'input', 'hr', 'meta')
+
+    def __init__(self, tagname, *children, **attrs):
+        assert tagname == cgi.escape(tagname), 'illegal tag name %s' % tagname
+
+        self.tagname = tagname
+        self.children = children
+        self.attrs = dict(translate(attrs))
+
+    def __call__(self, *children, **attrs):
+        self.children.extend(children)
+        self.attrs.update(translate(attrs))
+        return self
 
     def serialize(self, f):
         # open tag
@@ -60,31 +67,60 @@ class _Tag(object):
         f.write(self.tagname)
 
         # attributes
-        for aname, avalue in self.attrs.items():
-            if isinstance(avalue, bool):
-                if avalue:
-                    self.write_attribute(f, aname, aname)
-            else:
-                self.write_attribute(f, aname, avalue)
+        for key, value in iterattrs(self.attrs):
+            write_attribute(f, key, value)
 
         if self.tagname in self.empty:
+            assert not self.children, 'empty tag %s has children' % self.tagname
             f.write('/>')
         else:
             f.write('>')
         
-            if self.text:
-                f.write(cgi.escape(self.text))
-            
             for child in self.children:
-                child.serialize(f)
+                if hasattr(child, 'serialize'):
+                    child.serialize(f)
+                else:
+                    f.write(cgi.escape(str(child)))
 
             f.write('</')
             f.write(self.tagname)
             f.write('>')
 
-        f.write(cgi.escape(self.tail))
-
         return f
+
+class Literal(StrSerializable):
+    def __init__(self, html):
+        self.html = html
+
+    def serialize(self, f):
+        f.write(self.html)
+        return f
+
+class Text(StrSerializable):
+    def __init__(self, text):
+        self.text = text
+
+    def serialize(self, f):
+        f.write(cgi.escape(self.text))
+        return f
+
+
+XML_PREAMBLE = '<?xml version="1.0" encoding="UTF-8"?>'
+XML_NS = 'http://www.w3.org/1999/xhtml'
+XHTML_STRICT_DOCTYPE = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'
+
+class XHTML(StrSerializable):
+    def __init__(self):
+        self.html = T.html(xmlns=XML_NS)
+
+    def serialize(self, f):
+        f.write(XML_PREAMBLE)
+        self.html.serialize(f)
+        return f
+
+    def __call__(self, *args, **kw):
+        self.html(*args, **kw)
+        return self
 
 class TagFactory(object):
     """Tag wrapper that lets you use normal Tag syntax (i.e. T('head')(...)) as
@@ -100,10 +136,3 @@ class TagFactory(object):
         return self.tag_cls(*args, **kwargs)
 
 T = TagFactory()
-
-class Literal(object):
-    def __init__(self, html):
-        self.html = html
-
-    def serialize(self, f):
-        f.write(self.html)

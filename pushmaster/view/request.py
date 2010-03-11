@@ -9,7 +9,6 @@ from pushmaster import config
 from pushmaster import logic
 from pushmaster.model import *
 from pushmaster.taglib import T
-from pushmaster.view import page
 from pushmaster.view import common
 from pushmaster.view import HTTPStatusCode
 from pushmaster.view import RequestHandler
@@ -108,28 +107,25 @@ def request_display(request):
 
 class Requests(RequestHandler):
     def get(self):
+        doc = common.Document(title='pushmaster: requests')
+
         requests = Request.current()
 
         subject = self.request.get('subject')
-        message = self.request.get('message')
-
-        body = T.body(
-            common.session(),
-            common.navbar(),
-            )
+        message = self.request.get('message')        
 
         if requests:
-            body(T.h2('Pending Requests'), common.request_list(requests))
+            doc.body(T.h2('Pending Requests'), common.request_list(requests))
 
-        body(
+        doc.body(
             common.new_request_form(subject=subject, message=message),
             T.div(common.bookmarklet()),
-            page.script(config.jquery, external=True),
-            page.script(config.jquery_ui, external=True),
-            page.script('/js/pushmaster.js'),
+            common.jquery_js,
+            common.jquery_ui_js,
+            common.pushmaster_js,
             )
-        
-        page.write(self.response.out, page.head(title='pushmaster: requests'), body)
+
+        doc.serialize(self.response.out)
         
     def post(self):
         subject = self.request.get('subject')
@@ -173,28 +169,21 @@ class EditRequest(RequestHandler):
             request = Request.get(request_id)
         except BadKeyError:
             raise HTTPStatusCode(httplib.NOT_FOUND)
+
+        doc = common.Document(title='pushmaster: request: ' + request.subject)
         
         rdisplay = request_display(request)
 
-        body = T.body(
-            common.session(),
-            common.navbar(),
-            rdisplay,
-        )
+        doc.body(rdisplay)
         
         if common.can_edit_request(request):
             if request.state == 'requested':
-                body(edit_request_form(request))
+                doc.body(edit_request_form(request))
         else:
             rdisplay(common.take_ownership_form(request))
 
-        body(
-            page.script(config.jquery, external=True),
-            page.script(config.jquery_ui, external=True),
-            page.script('/js/pushmaster.js'),
-        )
-
-        page.write(self.response.out, page.head(title='pushmaster: request: ' + request.subject), body)
+        doc.body(common.jquery_js, common.jquery_ui_js, common.pushmaster_js)
+        doc.serialize(self.response.out)
 
     def post(self, request_id):
         try:

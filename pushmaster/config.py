@@ -8,6 +8,7 @@ debug = is_dev
 timezone = timezone.Pacific
 jquery = 'http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'
 jquery_ui = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js'
+reset_css = 'http://developer.yahoo.com/yui/build/reset/reset.css'
 favicon = 'http://static.px.yelp.com/favicon.ico'
 mail_to = 'push@yelp.com'
 hostname = 'yelp-pushmaster.appspot.com'

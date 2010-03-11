@@ -7,7 +7,7 @@ from pushmaster import config
 from pushmaster import logic
 from pushmaster import model
 from pushmaster import timezone
-from pushmaster.taglib import Literal, T
+from pushmaster.taglib import Literal, T, XHTML
 
 linkify_re = re.compile(r'\b(https?://[^\s]+)', re.MULTILINE | re.IGNORECASE)
 http_re = re.compile(r'https?://', re.IGNORECASE)
@@ -175,3 +175,58 @@ display_push_state_map = {
 
 def display_push_state(push):
     return display_push_state_map.get(push.state, 'Unknown')
+
+
+favicon = T.link(rel='shortcut icon', type='image/x-icon', href=config.favicon)
+meta_content_type = T.meta(**{ 'http-equiv': 'Content-type', 'content': 'text/html;charset=UTF-8' })
+
+def stylesheet(href, external=False):
+    if not external:
+        href = '/%s%s' % (config.static_serial, href)
+    return T('link', rel='stylesheet', href=href)
+
+def script(src, external=False):
+    if not external:
+        src = '/%s%s' % (config.static_serial, src)
+    return T.script(type='text/javascript', src=src)
+
+def head(title='pushmaster', stylesheets=None, scripts=None):
+    head = T.head(
+        meta_content_type, 
+        T.title(title),
+        favicon,
+        stylesheet(config.reset_css, external=True),
+        stylesheet('/css/ui-lightness/jquery-ui-1.7.2.custom.css'),
+        stylesheet('/css/pushmaster.css'),
+        )
+
+    if stylesheets:
+        head(map(stylesheet, stylesheets))
+    
+    if scripts:
+        head(map(script, scripts))
+
+    return head
+
+reset_css = stylesheet(config.reset_css, external=True)
+jquery_ui_css = stylesheet('/css/ui-lightness/jquery-ui-1.7.2.custom.css')
+pushmaster_css = stylesheet('/css/pushmaster.css')
+
+jquery_js = common.script(config.jquery, external=True),
+jquery_ui_js = common.script(config.jquery_ui, external=True),
+pushmaster_js = common.script('/js/pushmaster.js'),
+
+class Document(XHTML):
+    def __init__(self, title='pushmaster'):
+        super(Document, self).__init__()
+        self.title = T.title(title) if title else T.title()
+        self.head = head(
+            meta_content_type, 
+            self.title,
+            favicon,
+            reset_css,
+            jquery_ui_css,
+            pushmaster_css,
+            )
+        self.body = T.body(session(), navbar())
+        self.html(head, body)

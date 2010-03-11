@@ -8,7 +8,6 @@ from google.appengine.ext import db
 from pushmaster.taglib import T
 from pushmaster import config
 from pushmaster import logic
-from pushmaster.view import page
 from pushmaster.model import *
 from pushmaster.view import common
 from pushmaster.view import HTTPStatusCode
@@ -26,16 +25,14 @@ def push_item(push):
 
 class Pushes(RequestHandler):
     def get(self):
+        doc = common.Document(title='pushmaster: pushes')
+        
         pushes = Push.open()
 
         push_list = T.ol(map(push_item, pushes))
         
-        body = T.body(
-            common.session(),
-            common.navbar(),
-            push_list, 
-            )
-        page.write(self.response.out, page.head(title='pushmaster: pushes'), body)
+        doc.body(push_list)
+        doc.serialize(self.response.out)
 
     def post(self):
         action = self.request.get('action')
@@ -135,6 +132,8 @@ class EditPush(RequestHandler):
         except BadKeyError:
             raise HTTPStatusCode(httplib.NOT_FOUND)
 
+        doc = common.Document(title='pushmaster: push: ' + logic.format_datetime(push.ltime or push.ctime))
+
         requests = Request.current()
 
         header = T.h1(
@@ -145,12 +144,7 @@ class EditPush(RequestHandler):
 
         requests_div = T.div(class_='requests')
         
-        body = T.body(
-            common.session(),
-            common.navbar(),
-            header,
-            requests_div,
-        )
+        doc.body(header, requests_div)
 
         if push.state == 'live':
             requests_div(accepted_list(push.live_requests))
@@ -167,33 +161,18 @@ class EditPush(RequestHandler):
                     requests_div(T.h3(label), accepted_list(subrequests, request_item=request_item))
 
             if users.get_current_user() == push.owner:
-                body(push_actions_form(push))
+                doc.body(push_actions_form(push))
             else:
-                body(common.take_ownership_form(push))
+                doc.body(common.take_ownership_form(push))
 
         if push.state in ('accepting', 'onstage'):
             if requests:
-                body(T.h2(class_='pending')('Pending Requests'), push_pending_list(push, requests))
-            body(common.new_request_form(push))
+                doc.body(T.h2(class_='pending')('Pending Requests'), push_pending_list(push, requests))
+            doc.body(common.new_request_form(push))
 
-        body(
-            page.script(config.jquery, external=True),
-            page.script(config.jquery_ui, external=True),
-            page.script('/js/pushmaster.js'),
-            page.script('/js/push.js'),
-            )
-
-        head = page.head(title='pushmaster: push: ' + logic.format_datetime(push.ltime or push.ctime))(
-            T.script(type='text/javascript')(
-                'var push = ',
-                json.dumps({
-                        'key': str(push.key()),
-                        'state': push.state,
-                    }),
-                ';',
-            )
-        )
-        page.write(self.response.out, head, body)
+        doc.body(common.jquery_js, common.jquery_ui_js, common.pushmaster_js, common.script('/js/push.js'))
+        doc.head(T.script(type='text/javascript')('this.push = ', json.dumps(dict(key=push.key(), state=push.state)), ';'))
+        doc.serialize(self.response.out)
 
     def post(self, push_id):
         try:
