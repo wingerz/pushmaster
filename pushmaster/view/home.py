@@ -43,7 +43,7 @@ class Home(RequestHandler):
                 T.ol(class_='pushes')(map(push_item, pushes)),
                 )
 
-        doc.body(common.new_request_form(), T.div(common.bookmarklet()))
+        doc.body(T.div(common.bookmarklet()))
         doc.body(common.jquery_js, common.jquery_ui_js, common.pushmaster_js)
         doc.serialize(self.response.out)
 

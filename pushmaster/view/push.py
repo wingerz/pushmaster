@@ -32,6 +32,7 @@ class Pushes(RequestHandler):
         push_list = T.ol(map(push_item, pushes))
         
         doc.body(push_list)
+        doc.body(common.jquery_js, common.jquery_ui_js, common.pushmaster_js)
         doc.serialize(self.response.out)
 
     def post(self):
@@ -168,10 +169,9 @@ class EditPush(RequestHandler):
         if push.state in ('accepting', 'onstage'):
             if requests:
                 doc.body(T.h2(class_='pending')('Pending Requests'), push_pending_list(push, requests))
-            doc.body(common.new_request_form(push))
 
         doc.body(common.jquery_js, common.jquery_ui_js, common.pushmaster_js, common.script('/js/push.js'))
-        doc.head(T.script(type='text/javascript')('this.push = ', json.dumps(dict(key=push.key(), state=push.state)), ';'))
+        doc.head(T.script(type='text/javascript')('this.push = ', json.dumps(dict(key=str(push.key()), state=push.state)), ';'))
         doc.serialize(self.response.out)
 
     def post(self, push_id):

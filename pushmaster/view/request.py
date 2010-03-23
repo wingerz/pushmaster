@@ -118,7 +118,6 @@ class Requests(RequestHandler):
             doc.body(T.h2('Pending Requests'), common.request_list(requests))
 
         doc.body(
-            common.new_request_form(subject=subject, message=message),
             T.div(common.bookmarklet()),
             common.jquery_js,
             common.jquery_ui_js,

@@ -42,22 +42,24 @@ class StrSerializable(object):
     def __str__(self):
         from StringIO import StringIO
         return self.serialize(StringIO()).getvalue()
+    
+    __repr__ = __str__
 
     def serialize(self, f):
         raise NotImplemented
 
 class _Tag(StrSerializable):
-    empty = set('link', 'input', 'hr', 'meta')
+    empty = set(('link', 'input', 'hr', 'meta'))
 
     def __init__(self, tagname, *children, **attrs):
         assert tagname == cgi.escape(tagname), 'illegal tag name %s' % tagname
 
         self.tagname = tagname
-        self.children = children
+        self.children = list(iterflat(children))
         self.attrs = dict(translate(attrs))
 
     def __call__(self, *children, **attrs):
-        self.children.extend(children)
+        self.children.extend(iterflat(children))
         self.attrs.update(translate(attrs))
         return self
 

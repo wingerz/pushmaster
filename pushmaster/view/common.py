@@ -40,11 +40,10 @@ def navbar(current=None):
         T.a(href='/requests')('Requests'),
         T.span(class_='sep')('|'),
         T.a(href='/pushes')('Pushes'),
-    )
-
-    nav(
         T.span(class_='sep')('|'),
         T.a(href='/push/current')(T.span('Current Push')),
+        T.span(class_='sep')('|'),
+        T.button(id='new-request')('Make Request'),
         T.span(class_='sep')('|'),
         new_push_form(),
         )
@@ -190,37 +189,20 @@ def script(src, external=False):
         src = '/%s%s' % (config.static_serial, src)
     return T.script(type='text/javascript', src=src)
 
-def head(title='pushmaster', stylesheets=None, scripts=None):
-    head = T.head(
-        meta_content_type, 
-        T.title(title),
-        favicon,
-        stylesheet(config.reset_css, external=True),
-        stylesheet('/css/ui-lightness/jquery-ui-1.7.2.custom.css'),
-        stylesheet('/css/pushmaster.css'),
-        )
-
-    if stylesheets:
-        head(map(stylesheet, stylesheets))
-    
-    if scripts:
-        head(map(script, scripts))
-
-    return head
 
 reset_css = stylesheet(config.reset_css, external=True)
-jquery_ui_css = stylesheet('/css/ui-lightness/jquery-ui-1.7.2.custom.css')
+jquery_ui_css = stylesheet('/css/smoothness/jquery-ui-1.8.custom.css')
 pushmaster_css = stylesheet('/css/pushmaster.css')
 
-jquery_js = common.script(config.jquery, external=True),
-jquery_ui_js = common.script(config.jquery_ui, external=True),
-pushmaster_js = common.script('/js/pushmaster.js'),
+jquery_js = script(config.jquery, external=True)
+jquery_ui_js = script(config.jquery_ui, external=True)
+pushmaster_js = script('/js/pushmaster.js')
 
 class Document(XHTML):
     def __init__(self, title='pushmaster'):
         super(Document, self).__init__()
         self.title = T.title(title) if title else T.title()
-        self.head = head(
+        self.head = T.head(
             meta_content_type, 
             self.title,
             favicon,
@@ -228,5 +210,11 @@ class Document(XHTML):
             jquery_ui_css,
             pushmaster_css,
             )
-        self.body = T.body(session(), navbar())
-        self.html(head, body)
+
+        self.dialogs = T.div(id='dialogs')
+        request_form = new_request_form()
+        request_form(id='new-request-form')
+        self.dialogs(request_form)
+
+        self.body = T.body(session(), navbar(), self.dialogs)
+        self.html(self.head, self.body)

@@ -170,6 +170,16 @@ form.request {
 	margin: 0.5em 0;
 }
 
+#new-request-form legend {
+    display: none;
+}
+
+#new-request-form fieldset {
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+
 form.request fieldset {
 	border: 1px solid #CCC;
 	padding: 0.5em;
@@ -278,4 +288,12 @@ div.push {
 
 div.push ol.requests {
     margin-left: 1em;
+}
+
+#dialogs {
+    display: none;
+}
+
+ol.pushes {
+    margin: 0.5em 0 1em 0;
 }

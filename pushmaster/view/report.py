@@ -15,11 +15,7 @@ class Reports(RequestHandler):
     def get(self):
         doc = common.Document(title='pushmaster: reports')
 
-        doc.body(
-            common.session(),
-            common.navbar(),
-            T.h1('Reports'),
-            )
+        doc.body(T.h1('Reports'))
 
         today = datetime.date.today()
         last_monday = today - datetime.timedelta(days=today.weekday())
