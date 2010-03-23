@@ -46,8 +46,6 @@ class ViewReport(RequestHandler):
         doc = common.Document(title='pushmaster: reports')
 
         doc.body(
-            common.session(),
-            common.navbar(),
             T.h1('Report for ', from_date.strftime('%e %b %Y'), ' - ', to_date.strftime('%e %b %Y')),
             )
 
