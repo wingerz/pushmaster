@@ -1,12 +1,13 @@
 this.provide = function() {
     var namespace = this;
-    Array.forEach(arguments, function(name) {
+    var provide = this.provide;
+    $.each(arguments, function(i, name) {
         if (!namespace[name]) {
             namespace[name] = {};
         }
         namespace = namespace[name];
-        namespace.provide = this.provide;
-    }, this);
+        namespace.provide = provide;
+    });
 };
 
 provide('pushmaster', 'location');
@@ -17,8 +18,8 @@ pushmaster.location.queryToObject = function(query) {
         if (query.charAt(0) == '?') {
             query = query.substring(1);
         }
-        query.split('&').forEach(function(pair) {
-            var parts = pair.split('=').map(function(part) {
+        $.each(query.split('&'), function(i, pair) {
+            var parts = $.map(pair.split('='), function(part) {
                 return decodeURIComponent(part.replace(/\+/g, '%20'));
             });
             object[parts[0]] = parts[1];
