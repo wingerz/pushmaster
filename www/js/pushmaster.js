@@ -87,6 +87,25 @@ pushmaster.dialog.MakeRequest.prototype = {
     }
 };
 
+pushmaster.provide('event');
+
+pushmaster.event.preventDefaultEmptyHref = function(e) {
+    var href = $(e.target).closest('a').attr('href');
+    if (href.charAt(href.length - 1) === '#') {
+        e.preventDefault();
+    }
+};
+
+pushmaster.event.toggleFormContent = function(e) {
+    $(e.target)
+        .closest('form')
+        .find('div.content')
+        .toggle();
+};
+
+$('a').live('click', pushmaster.event.preventDefaultEmptyHref);
+$('a.toggle').live('click', pushmaster.event.toggleFormContent);
+
 pushmaster.provide('page');
 
 $(function() {
