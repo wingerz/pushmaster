@@ -40,7 +40,7 @@ class UserHome(RequestHandler):
         
         doc = common.Document(title='pushmaster: recent activity: ' + email)
 
-        doc.body(T.div(common.bookmarklet()))
+        doc.body(T.div(class_='bookmarklet')(common.bookmarklet()))
 
         user = users.User(email)
 
