@@ -291,3 +291,7 @@ div.push ol.requests {
 ol.pushes {
     margin: 0.5em 0 1em 0;
 }
+
+.bookmarklet {
+    margin-bottom: 0.5em;
+}
