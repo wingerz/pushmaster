@@ -33,7 +33,7 @@ def display_date(d):
 
 def navbar(current=None):
     nav = T.div(class_='nav')(
-        T.a(href='/')('Home'),
+        T.a(href='/user/' + users.get_current_user().email())('Home'),
         T.span(class_='sep')('|'),
         T.a(href='/reports')('Reports'),
         T.span(class_='sep')('|'),
@@ -43,7 +43,7 @@ def navbar(current=None):
         T.span(class_='sep')('|'),
         T.a(href='/push/current')(T.span('Current Push')),
         T.span(class_='sep')('|'),
-        T.button(id='new-request')('Make Request'),
+        T.a(id='new-request', href='#')('Make Request'),
         T.span(class_='sep')('|'),
         new_push_form(),
         )

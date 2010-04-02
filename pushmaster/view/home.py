@@ -7,7 +7,7 @@ from pushmaster.view import common
 from pushmaster.view import RequestHandler
 
 __author__ = 'Jeremy Latt <jlatt@yelp.com>'
-__all__ = ('Home', 'Favicon', 'RedirectHandler')
+__all__ = ('Root', 'UserHome', 'Favicon', 'RedirectHandler')
 
 class RedirectHandler(RequestHandler):
     def get(self):
@@ -24,19 +24,28 @@ def request_item(request):
     item(T.span(class_='state')(request.state))
     return item
 
-class Home(RequestHandler):
+class Root(RequestHandler):
     def get(self):
-        doc = common.Document(title='pushmaster: home')
+        push = model.Push.current()
+        if push:
+            return self.redirect(push.uri)
+        else:
+            return self.redirect('/user/' + users.get_current_user().email())
 
-        current_user = users.get_current_user()
-        requests = model.Request.for_user(current_user).fetch(25)
+class UserHome(RequestHandler):
+    def get(self, email):
+        doc = common.Document(title='pushmaster: recent activity: ' + email)
+
+        user = users.User(email)        
+
+        requests = model.Request.for_user(user).fetch(50)
         if requests:
             doc.body(
                 T.h3('Recent Requests'),
                 T.ol(class_='my requests')(map(request_item, requests)),
                 )
 
-        pushes = model.Push.for_user(current_user).fetch(25)
+        pushes = model.Push.for_user(user).fetch(20)
         if pushes:
             doc.body(
                 T.h3('Recent Pushes'),

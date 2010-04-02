@@ -28,8 +28,9 @@ application = LoggingWSGIApplication(
      ('/push/(.+)', push.EditPush),
      ('/report/(\d+)', report.ViewReport),
      ('/reports', report.Reports),
+     ('/user/(.+)', home.UserHome),
      ('/favicon.ico', home.Favicon),
-     ('.*', home.Home)],
+     ('.*', home.Root)],
     debug=config.debug)
 
 def main():

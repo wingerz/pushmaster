@@ -89,7 +89,6 @@ h1 span.email {
 }
 
 .nav {
-	font-size: 125%;
     padding-bottom: 0.25em;
 	border-bottom: 1px solid #CCC;
 	margin-bottom: 0.75em;
@@ -97,11 +96,6 @@ h1 span.email {
 
 .nav .sep {
     margin: 0 0.25em;
-}
-
-.nav button {
-    font-size: 80%;
-    vertical-align: top;
 }
 
 ol.requests {
