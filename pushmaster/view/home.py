@@ -1,3 +1,5 @@
+import urllib
+
 from google.appengine.api import users
 
 from pushmaster import config
@@ -34,9 +36,11 @@ class Root(RequestHandler):
 
 class UserHome(RequestHandler):
     def get(self, email):
+        email = urllib.unquote_plus(email)
+        
         doc = common.Document(title='pushmaster: recent activity: ' + email)
 
-        user = users.User(email)        
+        user = users.User(email)
 
         requests = model.Request.for_user(user).fetch(50)
         if requests:
