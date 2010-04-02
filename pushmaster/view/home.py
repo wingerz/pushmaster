@@ -40,6 +40,8 @@ class UserHome(RequestHandler):
         
         doc = common.Document(title='pushmaster: recent activity: ' + email)
 
+        doc.body(T.div(common.bookmarklet()))
+
         user = users.User(email)
 
         requests = model.Request.for_user(user).fetch(50)
@@ -55,8 +57,6 @@ class UserHome(RequestHandler):
                 T.h3('Recent Pushes'),
                 T.ol(class_='pushes')(map(push_item, pushes)),
                 )
-
-        doc.body(T.div(common.bookmarklet()))
         doc.body(common.jquery_js, common.jquery_ui_js, common.pushmaster_js)
         doc.serialize(self.response.out)
 
