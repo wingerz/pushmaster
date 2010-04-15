@@ -219,20 +219,24 @@ class EditRequest(RequestHandler):
             self.redirect('/requests')
 
         elif action == 'withdraw':
+            push_uri = request.push.uri if request.push else None
             logic.withdraw_request(request)
-            self.redirect(request.push.uri if redirect_to_push else request.uri)
+            self.redirect(push_uri if (redirect_to_push and push_uri) else request.uri)
 
         elif action == 'markcheckedin':
+            push_uri = request.push.uri if request.push else None
             logic.set_request_checkedin(request)
-            self.redirect(request.push.uri if redirect_to_push else request.uri)
+            self.redirect(push_uri if (redirect_to_push and push_uri) else request.uri)
 
         elif action == 'marktested':
+            push_uri = request.push.uri if request.push else None
             logic.set_request_tested(request)
-            self.redirect(request.push.uri if redirect_to_push else request.uri)
+            self.redirect(push_uri if (redirect_to_push and push_uri) else request.uri)
 
         elif action == 'take_ownership':
+            push_uri = request.push.uri if request.push else None
             logic.take_ownership(request)
-            self.redirect(request.push.uri if redirect_to_push else request.uri)
+            self.redirect(push_uri if (redirect_to_push and push_uri) else request.uri)
         
         else:
             raise HTTPStatusCode(httplib.BAD_REQUEST)

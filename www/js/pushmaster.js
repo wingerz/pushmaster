@@ -124,3 +124,36 @@ $(function() {
         'minDate': new Date()
     });
 });
+
+pushmaster.provide('shortcuts');
+
+pushmaster.shortcuts.lastKeys = [];
+
+pushmaster.shortcuts.keyup = function(e) {
+    console.debug('pushmaster.shortcuts.keyup', e.which);
+
+    var lastKeys = pushmaster.shortcuts.lastKeys;
+    lastKeys.push(e.which);
+    while (lastKeys.length > 3) {
+        lastKeys.shift();
+    }
+    $.each(pushmaster.shortcuts.actions, function(i, action) {
+        if (action.keys.length === lastKeys.length) {
+            var same = $.grep(action.keys, function(i, key) {
+                return lastKeys[i] === key;
+            });
+            if (same.length === lastKeys.length) {
+                action.callback.call();
+            }
+        }
+    });
+};
+
+pushmaster.shortcuts.actions = [{
+    'keys': [24, 52, 48], // ^C+x 4 0
+    'callback': function() {
+        pushmaster.page.makeRequest.open();
+    }
+}];
+
+//$('body').live('keyup', pushmaster.shortcuts.keyup);

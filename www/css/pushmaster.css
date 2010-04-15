@@ -3,7 +3,7 @@ html {
 }
 
 body {
-	max-width: 60em;
+	max-width: 55em;
 	margin: 1em auto;
 	padding: 0 1em 1em 1em;
 	font-family: "Helvetica", "Arial", sans;
@@ -40,8 +40,8 @@ legend, button, input, textarea, select {
 button {
 	cursor: pointer;
     border: 1px solid #CCC;
-	background-color: transparent;
-	color: #8B0000;
+	background-color: #FFF;
+	color: #C41200;
     border-radius: 4px;
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
@@ -54,7 +54,7 @@ button:hover {
 input, textarea, select {
 	padding: 0.2em;
 	border: 1px solid #CCC;
-	background-color: transparent;
+	background-color: #FFF;
 }
 
 textarea {
@@ -62,7 +62,7 @@ textarea {
 }
 
 a, a:visited {
-	color: #8B0000;
+    color: #C41200;
 	text-decoration: none;
 }
 
@@ -224,8 +224,7 @@ form.push.request div.content, form.edit.request div.content {
 }
 
 div.requests {
-	padding: 0.5em;
-	border: 1px solid #CCC;
+	border-bottom: 1px solid #CCC;
 	margin-bottom: 0.5em;
 }
 
@@ -241,13 +240,24 @@ li.push span.email {
     margin-right: 0.5em;
 }
 
+li.request {
+    padding: 0.25em;
+    background-color: #FAFAFA;
+    margin: 0.25em 0;
+}
+
 li.request >* {
     margin-right: 0.5em;
 }
 
 li.request span.date {
     font-size: 80%;
- }
+}
+
+li.request span.email {
+    float: right;
+    margin-right: 0;
+}
 
 li.request.future {
     opacity: 0.5;
@@ -266,6 +276,10 @@ span.no-testing {
     color: #FF7722;
     font-weight: bold;
     cursor: help;
+}
+
+.actions {
+    margin: 0.25em 0;
 }
 
 form.request-actions, form.take-ownership {

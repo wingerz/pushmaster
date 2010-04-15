@@ -4,6 +4,7 @@ from google.appengine.api import memcache
 from google.appengine.ext import db
 
 from pushmaster import timezone
+from pushmaster import urls
 
 __author__ = 'Jeremy Latt <jlatt@yelp.com>'
 
@@ -16,7 +17,7 @@ class Push(db.Model):
 
     @property
     def uri(self):
-        return '/push/' + str(self.key())
+        return urls.push(self)
 
     @property
     def tested(self):
@@ -99,7 +100,7 @@ class Request(db.Model):
 
     @property
     def uri(self):
-        return '/request/' + str(self.key())
+        return urls.request(self)
 
     @classmethod
     def current(cls):

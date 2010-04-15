@@ -7,6 +7,7 @@ from google.appengine.api import users
 from pushmaster import config
 from pushmaster import model
 from pushmaster import timezone
+from pushmaster import urls
 from pushmaster.view import common
 from pushmaster.view import RequestHandler
 from pushmaster.taglib import T, XHTML
@@ -23,7 +24,7 @@ class Reports(RequestHandler):
 
         ol = T.ol(class_='reports')
         for date in report_dates:
-            ol(T.li(T.a(href=('/report/' + date.strftime('%Y%m%d')))(
+            ol(T.li(T.a(href=urls.report(date))(
                         date.strftime('%e %b %Y'),
                         T.span(' - '),
                         (date + datetime.timedelta(days=6)).strftime('%e %b %Y'),
