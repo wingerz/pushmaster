@@ -279,6 +279,14 @@ span.no-testing {
     margin: 0.25em 0;
 }
 
+.actions form.small {
+    margin-right: 0;
+}
+
+.actions .sep {
+    margin: 0 0.5em;
+}
+
 form.request-actions, form.take-ownership {
 	display: inline;
 }

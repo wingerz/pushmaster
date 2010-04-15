@@ -14,7 +14,7 @@ mail_to = 'push@yelp.com'
 hostname = 'yelp-pushmaster.appspot.com'
 protocol = 'http'
 push_plans_url = 'https://trac.yelpcorp.com/wiki/YelpPushPlans'
-static_serial = '2010-04-15a'
+static_serial = '2010-04-15b'
 
 def url(path):
     return '%s://%s%s' % (protocol, hostname, path)

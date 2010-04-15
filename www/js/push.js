@@ -1,21 +1,26 @@
 var PAGE_RELOAD_DELAY = 60000; // ms
 
-var canReload = function() {
-    return pushmaster.page.makeRequest && pushmaster.page.makeRequest.isOpen();
+pushmaster.provide('push');
+
+
+pushmaster.push.canReload = function() {
+    return pushmaster.page.makeRequest && !pushmaster.page.makeRequest.isOpen();
 };
 
-var maybeReloadAfterDelay = function() {
+pushmaster.push.maybeReloadAfterDelay = function() {
     setTimeout(function() {
-        if (canReload()) {
+        if (pushmaster.push.canReload()) {
             location.href = location.href;
         } else {
-            maybeReloadAfterDelay();
+            pushmaster.push.maybeReloadAfterDelay();
         }
     }, PAGE_RELOAD_DELAY);
 };
 
-$(function() {
+pushmaster.push.load = function() {
     if (push.state != 'live') {
-        maybeReloadAfterDelay();
+        pushmaster.push.maybeReloadAfterDelay();
     }
-});
+};
+
+$(pushmaster.push.load);

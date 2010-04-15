@@ -111,7 +111,7 @@ def mark_tested_form(request):
 def onstage_request_item(request):
     li = common.request_item(request)
     if common.can_edit_request(request):
-        li(T.div(class_='actions')(mark_tested_form(request), withdraw_form(request)))
+        li(T.div(class_='actions')(mark_tested_form(request), T.span('or', class_='sep'), withdraw_form(request)))
     return li
 
 def withdrawable_request_item(request):
@@ -123,7 +123,7 @@ def withdrawable_request_item(request):
 def accepted_request_item(request):
     li = common.request_item(request)
     if common.can_edit_request(request):
-        li(T.div(class_='actions')(mark_checked_in_form(request), withdraw_form(request)))
+        li(T.div(class_='actions')(mark_checked_in_form(request), T.span('or', class_='sep'),  withdraw_form(request)))
     return li
 
 class EditPush(RequestHandler):
