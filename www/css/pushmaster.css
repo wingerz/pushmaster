@@ -41,14 +41,19 @@ button {
 	cursor: pointer;
     border: 1px solid #CCC;
 	background-color: #FFF;
-	color: #C41200;
+	color: #4876FF;
     border-radius: 4px;
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
 }
 
 button:hover {
-	color: #F00;
+    background-color: #FFF68F;
+}
+
+button:active {
+    color: #FFF68F;
+	background-color: #4876FF;
 }
 
 input, textarea, select {
@@ -62,23 +67,15 @@ textarea {
 }
 
 a, a:visited {
-    color: #C41200;
+    color: #698B69;
 	text-decoration: none;
 }
 
 a:hover {
-	color: #F00;
+    text-decoration: underline;
 }
 
 /* general styles */
-
-h1.epic:after {
-    content: " EPIC PUSH!";
-}
-
-h1.gonzo:after {
-    content: " GONZO PUSH!!!";
-}
 
 h1 span.datetime {
     margin-right: 0.5em;

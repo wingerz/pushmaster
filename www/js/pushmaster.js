@@ -65,6 +65,10 @@ pushmaster.dialog.MakeRequest.prototype = {
         }
     },
 
+    isOpen: function() {
+        return this.initialized && this.form.dialog('isOpen');
+    },
+
     open: function() {
         this.ensureDialog();
         if (!this.form.dialog('isOpen')) {

@@ -1,7 +1,7 @@
 var PAGE_RELOAD_DELAY = 60000; // ms
 
 var canReload = function() {
-    return !$('#new-request-form').dialog('isOpen');
+    return pushmaster.page.makeRequest && pushmaster.page.makeRequest.isOpen();
 };
 
 var maybeReloadAfterDelay = function() {
