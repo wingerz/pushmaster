@@ -12,18 +12,22 @@ body {
 }
 
 h1 {
+    margin-top: 0.5em;
 	font-size: 150%;
 }
 
 h2 {
+    margin-top: 0.5em;
 	font-size: 140%;
 }
 
 h3 {
+    margin-top: 0.5em;
 	font-size: 130%;
 }
 
 h4 {
+    margin-top: 0.5em;
 	font-size: 120%;
 }
 
@@ -114,6 +118,10 @@ ol.requests li {
 ol.requests li.urgent a.request-subject {
     font-weight: bold;
     font-size: 110%;
+}
+
+ol.my.requests li.request span.email {
+    display: none;
 }
 
 ol.submissions {
@@ -233,9 +241,7 @@ div.requests {
 	margin-bottom: 0.5em;
 }
 
-h2.pending {
-    margin-top: 1em;
-}
+/* push list */
 
 li.push span.datetime {
     margin-right: 0.5em;
@@ -245,70 +251,71 @@ li.push span.email {
     margin-right: 0.5em;
 }
 
+/* request list */
+
 li.request {
     padding: 0.25em;
     background-color: #FAFAFA;
     margin: 0.25em 0;
 }
 
-li.request >* {
-    margin-right: 0.5em;
-}
-
 li.request span.date {
+    display: none;
     font-size: 80%;
+    margin-right: 0.5em;
 }
 
 li.request span.email {
     float: right;
-    margin-right: 0;
 }
 
 li.request.future {
     opacity: 0.5;
 }
 
-ol.accepted.requests li.request span.date {
-	display: none;
-}
-
-a.push-plans {
+li.request a.push-plans {
 	color: #F00;
 	font-weight: bold;
 }
 
-span.no-testing {
+li.request a.request-subject {
+    margin-right: 0.5em;
+}
+
+li.request a.push-plans {
+    margin-right: 0.5em;
+}
+
+li.request span.no-testing {
     color: #FF7722;
     font-weight: bold;
     cursor: help;
+    margin-right: 0.5em;
 }
 
-.actions {
+li.request .actions {
     margin: 0.25em 0;
+    text-align: right;
 }
 
-.actions form.small {
+li.request .actions form.small {
     margin-right: 0;
 }
 
-.actions .sep {
+li.request .actions .sep {
     margin: 0 0.5em;
 }
+
+/* */
 
 form.request-actions, form.take-ownership {
 	display: inline;
 }
 
-ol.my li.request span.email {
-    display: none;
-}
-
 div.push {
-    margin-top: 1em;
-}
-
-div.push ol.requests {
-    margin-left: 1em;
+    margin: 0.5em 0;
+    padding-bottom: 0.5em;
+    border-bottom: 1px solid #CCC;
 }
 
 #dialogs {

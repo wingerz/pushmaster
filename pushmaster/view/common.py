@@ -73,6 +73,7 @@ def no_testing_badge():
 def request_item(request):
     li = T.li(class_='request')(
         display_date(request.target_date),
+        display_user_email(request.owner),
         T.a(href=request.uri, class_='request-subject')(request.subject),
         )
 
@@ -88,8 +89,6 @@ def request_item(request):
 
     if request.push_plans:
         li(push_plans_link())
-
-    li(display_user_email(request.owner))
 
     return li
 

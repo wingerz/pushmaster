@@ -168,8 +168,14 @@ def accept_request(push, request):
         cc=config.mail_to,
         subject='Re: ' + request.subject,
         body='Please check this in.\n' + config.url(push.uri))
-
-    maybe_send_im(owner_email, 'Please check <a href="%s">%s</a> in.' % (escape(config.url(push.uri)), escape(request.subject)))
+    
+    im_fields = dict(
+        pushmaster_email=escape(push.owner.email()),
+        pushmaster_name=escape(push.owner.nickname()), 
+        request_subject=escape(request.subject), 
+        uri=escape(config.url(push.uri)),
+        )
+    maybe_send_im(owner_email, '<a href="mailto:%(pushmaster_email)s">%(pushmaster_name)s</a> requests that you check <a href="%(uri)s">%(request_subject)s</a> in.' % im_fields)
 
     request.put()
     
@@ -222,7 +228,13 @@ def send_to_stage(push):
                     subject='Re: ' + request.subject,
                     body='Please check your changes on stage.\n' + config.url(push.uri))
 
-                maybe_send_im(owner_email, 'Please check your changes on stage for <a href="%s">%s</a>.' % (escape(config.url(push.uri)), escape(request.subject)))
+                im_fields = dict(
+                    pushmaster_email=escape(push.owner.email()),
+                    pushmaster_name=escape(push.owner.nickname()),
+                    request_subject=escape(request.subject),
+                    uri=escape(config.url(push.uri)),
+                    )
+                maybe_send_im(owner_email, '<a href="mailto:%(pushmaster_email)s">%(pushmaster_name)s</a> requests that you check your changes on stage for <a href="%(uri)s">%(request_subject)s</a>.' % im_fields)
                 request.put()
 
     return push
@@ -245,7 +257,7 @@ def set_request_tested(request):
         subject='Re: ' + request.subject,
         body='Looks good to me.\n' + config.url(push.uri))
 
-    if set(push.requests) == set(push.tested_requests):
+    if all(request.state == 'tested' for request in push.requests):
         maybe_send_im(push_owner_email, 'All changes for <a href="%s">the push</a> are tested on stage.' % config.url(push.uri))
 
     return request
