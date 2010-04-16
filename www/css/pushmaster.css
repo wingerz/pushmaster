@@ -273,6 +273,10 @@ li.request.future {
     opacity: 0.5;
 }
 
+li.request.future span.date {
+    display: inline;
+}
+
 li.request a.push-plans {
 	color: #F00;
 	font-weight: bold;

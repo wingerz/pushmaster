@@ -1,3 +1,4 @@
+import datetime
 import httplib
 
 from django.utils import simplejson as json
@@ -142,7 +143,8 @@ class EditPush(RequestHandler):
 
         doc = common.Document(title='pushmaster: push: ' + logic.format_datetime(push.ltime or push.ctime))
 
-        requests = Request.current()
+        today = datetime.date.today()
+        requests = filter(lambda request: request.target_date <= today, Request.current())
 
         header = T.h1(
             common.display_datetime(push.ltime or push.ctime),
