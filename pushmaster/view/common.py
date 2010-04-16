@@ -7,6 +7,7 @@ from pushmaster import config
 from pushmaster import logic
 from pushmaster import model
 from pushmaster import timezone
+from pushmaster import urls
 from pushmaster.taglib import Literal, T, XHTML
 
 linkify_re = re.compile(r'\b(https?://[^\s]+)', re.MULTILINE | re.IGNORECASE)
@@ -73,7 +74,7 @@ def no_testing_badge():
 def request_item(request):
     li = T.li(class_='request')(
         display_date(request.target_date),
-        display_user_email(request.owner),
+        T.span(class_='email')(T.a(href=urls.user_home(request.owner))(request.owner.nickname())),
         T.a(href=request.uri, class_='request-subject')(request.subject),
         )
 

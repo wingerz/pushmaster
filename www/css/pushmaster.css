@@ -89,11 +89,11 @@ a:hover {
 
 /* general styles */
 
-h1 span.datetime {
+h1 .datetime {
     margin-right: 0.5em;
 }
 
-h1 span.email {
+h1 .email {
     margin-right: 0.5em;
 }
 
@@ -120,7 +120,7 @@ ol.requests li.urgent a.request-subject {
     font-size: 110%;
 }
 
-ol.my.requests li.request span.email {
+ol.my.requests li.request .email {
     display: none;
 }
 
@@ -243,11 +243,11 @@ div.requests {
 
 /* push list */
 
-li.push span.datetime {
+li.push .datetime {
     margin-right: 0.5em;
 }
 
-li.push span.email {
+li.push .email {
     margin-right: 0.5em;
 }
 
@@ -259,21 +259,22 @@ li.request {
     margin: 0.25em 0;
 }
 
-li.request span.date {
+li.request .date {
     display: none;
     font-size: 80%;
     margin-right: 0.5em;
 }
 
-li.request span.email {
+li.request .email {
     float: right;
+    margin-left: 2em;
 }
 
 li.request.future {
     opacity: 0.5;
 }
 
-li.request.future span.date {
+li.request.future .date {
     display: inline;
 }
 
