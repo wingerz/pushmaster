@@ -26,7 +26,7 @@ def iterattrs(attrs):
             else: # skip False
                 continue
         else:
-            value = str(value)
+            value = unicode(value)
 
         yield (key, value)
 
@@ -82,7 +82,7 @@ class _Tag(StrSerializable):
                 if hasattr(child, 'serialize'):
                     child.serialize(f)
                 else:
-                    f.write(cgi.escape(str(child)))
+                    f.write(cgi.escape(unicode(child)))
 
             f.write('</')
             f.write(self.tagname)
