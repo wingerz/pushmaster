@@ -28,6 +28,12 @@ pushmaster.location.queryToObject = function(query) {
     return object;
 };
 
+pushmaster.location.reload = function() {
+    location.replace(location.href);
+};
+
+pushmaster.location.query = pushmaster.location.queryToObject(location.search);
+
 provide('pushmaster', 'dialog');
 
 pushmaster.dialog.MakeRequest = function() {

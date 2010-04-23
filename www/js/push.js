@@ -1,7 +1,6 @@
-var PAGE_RELOAD_DELAY = 60000; // ms
+var PAGE_RELOAD_DELAY = 30 * 1000; // ms
 
 pushmaster.provide('push');
-
 
 pushmaster.push.canReload = function() {
     return pushmaster.page.makeRequest && !pushmaster.page.makeRequest.isOpen();
@@ -10,7 +9,7 @@ pushmaster.push.canReload = function() {
 pushmaster.push.maybeReloadAfterDelay = function() {
     setTimeout(function() {
         if (pushmaster.push.canReload()) {
-            location.href = location.href;
+            pushmaster.location.reload();
         } else {
             pushmaster.push.maybeReloadAfterDelay();
         }
