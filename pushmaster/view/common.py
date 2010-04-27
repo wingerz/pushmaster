@@ -9,6 +9,7 @@ from pushmaster import model
 from pushmaster import timezone
 from pushmaster import urls
 from pushmaster.taglib import Literal, T, XHTML
+import www
 
 linkify_re = re.compile(r'\b(https?://[^\s]+)', re.MULTILINE | re.IGNORECASE)
 http_re = re.compile(r'https?://', re.IGNORECASE)
@@ -181,14 +182,10 @@ favicon = T.link(rel='shortcut icon', type='image/x-icon', href=config.favicon)
 meta_content_type = T.meta(**{ 'http-equiv': 'Content-type', 'content': 'text/html;charset=UTF-8' })
 
 def stylesheet(href, external=False):
-    if not external:
-        href = '/%s%s' % (config.static_serial, href)
-    return T('link', rel='stylesheet', href=href)
+    return T('link', rel='stylesheet', href=href if external else www.assets[href])
 
 def script(src, external=False):
-    if not external:
-        src = '/%s%s' % (config.static_serial, src)
-    return T.script(type='text/javascript', src=src)
+    return T.script(type='text/javascript', src=src if external else www.assets[src])
 
 
 reset_css = stylesheet(config.reset_css, external=True)

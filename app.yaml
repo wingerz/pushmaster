@@ -4,9 +4,9 @@ runtime: python
 api_version: 1
 
 handlers:
-- url: /([^/]+/)?(css|js|images)/(.+)
-  static_files: www/\2/\3
-  upload: www/(css|js|images)/(.+)
+- url: /static/(.+)
+  static_files: www/static/\1
+  upload: www/static
   expiration: "365d"
 
 - url: /admin/.*
