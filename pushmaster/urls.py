@@ -1,3 +1,6 @@
+from pushmaster import config
+import www
+
 __author__ = 'jlatt@yelp.com'
 
 def report(d):
@@ -17,3 +20,7 @@ pushes = '/pushes'
 requests = '/requests'
 
 reports = '/reports'
+
+def static_url(path):
+    #return '//%s%s' % (config.static_host(path), www.assets[path]) if config.is_prod else www.assets[path]
+    return www.assets[path]

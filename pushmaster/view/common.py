@@ -182,10 +182,10 @@ favicon = T.link(rel='shortcut icon', type='image/x-icon', href=config.favicon)
 meta_content_type = T.meta(**{ 'http-equiv': 'Content-type', 'content': 'text/html;charset=UTF-8' })
 
 def stylesheet(href, external=False):
-    return T('link', rel='stylesheet', href=href if external else www.assets[href])
+    return T('link', rel='stylesheet', href=href if external else urls.static_url(href))
 
 def script(src, external=False):
-    return T.script(type='text/javascript', src=src if external else www.assets[src])
+    return T.script(type='text/javascript', src=src if external else urls.static_url(src))
 
 
 reset_css = stylesheet(config.reset_css, external=True)

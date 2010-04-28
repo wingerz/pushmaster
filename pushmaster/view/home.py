@@ -1,3 +1,4 @@
+import httplib
 import urllib
 
 from google.appengine.api import users
@@ -6,11 +7,11 @@ from pushmaster import config
 from pushmaster import model
 from pushmaster.taglib import T, XHTML
 from pushmaster.view import common
-from pushmaster.view import RequestHandler
+from pushmaster.view import RequestHandler, HTTPStatusCode
 import www
 
 __author__ = 'Jeremy Latt <jlatt@yelp.com>'
-__all__ = ('Root', 'UserHome', 'Favicon', 'RedirectHandler', 'Bookmarklet')
+__all__ = ('Root', 'UserHome', 'Favicon', 'RedirectHandler', 'Bookmarklet', 'NotFound')
 
 class RedirectHandler(RequestHandler):
     def get(self):
@@ -67,3 +68,9 @@ class Favicon(RedirectHandler):
 class Bookmarklet(RedirectHandler):
     url = www.assets['/js/bookmarklet.js']
 
+class NotFound(RequestHandler):
+    def get(self):
+        raise HTTPStatusCode(httplib.NOT_FOUND)
+
+    def post(self):
+        raise HTTPStatusCode(httplib.NOT_FOUND)
