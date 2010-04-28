@@ -7,9 +7,10 @@ from pushmaster import model
 from pushmaster.taglib import T, XHTML
 from pushmaster.view import common
 from pushmaster.view import RequestHandler
+import www
 
 __author__ = 'Jeremy Latt <jlatt@yelp.com>'
-__all__ = ('Root', 'UserHome', 'Favicon', 'RedirectHandler')
+__all__ = ('Root', 'UserHome', 'Favicon', 'RedirectHandler', 'Bookmarklet')
 
 class RedirectHandler(RequestHandler):
     def get(self):
@@ -62,4 +63,7 @@ class UserHome(RequestHandler):
 
 class Favicon(RedirectHandler):
     url = config.favicon
+
+class Bookmarklet(RedirectHandler):
+    url = www.assets['/js/bookmarklet.js']
 
