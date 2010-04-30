@@ -19,6 +19,7 @@ images.sha: $(images_assets)
 	@echo $(images_assets) | xargs sha1sum > $@
 
 js.sha: $(js_assets)
+	@echo $(js_assets) | xargs js -s -C
 	@echo $(js_assets) | xargs sha1sum > $@
 
 css.sha: $(css_assets)
