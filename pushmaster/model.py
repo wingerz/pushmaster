@@ -1,16 +1,23 @@
+import datetime
+
+from google.appengine.api import memcache
 from google.appengine.ext import db
 
-__author__ = 'Jeremy Latt <jeremy@jeremylatt.com>'
+from pushmaster import timezone
+from pushmaster import urls
+
+__author__ = 'Jeremy Latt <jlatt@yelp.com>'
 
 class Push(db.Model):
     ctime = db.DateTimeProperty(auto_now_add=True)
     mtime = db.DateTimeProperty(auto_now=True)
     owner = db.UserProperty(auto_current_user_add=True)
     state = db.StringProperty(choices=('accepting', 'onstage', 'live', 'abandoned'), default='accepting')
+    ltime = db.DateTimeProperty()
 
     @property
     def uri(self):
-        return '/push/' + str(self.key())
+        return urls.push(self)
 
     @property
     def tested(self):
@@ -43,11 +50,33 @@ class Push(db.Model):
 
     @classmethod
     def current(cls):
-        return cls.all().filter('state in', ('accepting', 'onstage')).order('-ctime').get()
+        current_push = memcache.get('push-current')
+        if current_push is None:
+            current_push = cls.all().filter('state in', ('accepting', 'onstage')).order('-ctime').get()
+            memcache.add('push-current', current_push, 60 * 60)
+        return current_push
 
     @classmethod
-    def open(cls, limit=100):
-        return cls.all().filter('state in', ('accepting', 'onstage', 'live')).order('-ctime').fetch(limit)
+    def open(cls):
+        open_pushes = memcache.get('push-open')
+        if open_pushes is None:
+            open_pushes = cls.all().filter('state in', ('accepting', 'onstage', 'live')).order('-ctime').fetch(20)
+            memcache.add('push-open', open_pushes, 60 * 60)
+        return open_pushes
+
+    @classmethod
+    def for_user(cls, user):
+        states = ('accepting', 'onstage', 'live')
+        return cls.all().filter('owner =', user).filter('state in', states).order('-ctime')
+
+    @classmethod
+    def for_week_of(cls, from_date):
+        from_date = from_date.astimezone(timezone.UTC())
+        return cls.all().filter('state =', 'live').filter('ltime >=', from_date).filter('ltime <', from_date + datetime.timedelta(days=7)).order('ltime')
+
+    @classmethod
+    def bust_caches(cls):
+        memcache.delete_multi(['push-current', 'push-open'])
 
 class Request(db.Model):
     ctime = db.DateTimeProperty(auto_now_add=True)
@@ -65,11 +94,27 @@ class Request(db.Model):
                                        'abandoned'),
                               default='requested')
     push_plans = db.BooleanProperty(default=False)
+    no_testing = db.BooleanProperty(default=False)
+    urgent = db.BooleanProperty(default=False)
+    target_date = db.DateProperty(required=True)
 
     @property
     def uri(self):
-        return '/request/' + str(self.key())
+        return urls.request(self)
 
     @classmethod
     def current(cls):
-        return cls.gql('WHERE state = :state ORDER BY ctime ASC', state='requested').fetch(100)
+        current_requests = memcache.get('request-current')
+        if current_requests is None:
+            current_requests = cls.all().filter('state =', 'requested').order('target_date').fetch(100)
+            memcache.add('request-current', current_requests, 60 * 10)
+        return current_requests
+
+    @classmethod
+    def for_user(cls, user):
+        states = ('requested', 'accepted', 'checkedin', 'onstage', 'tested', 'live')
+        return cls.all().filter('owner =', user).filter('state in', states).order('-target_date')
+
+    @classmethod
+    def bust_caches(cls):
+        memcache.delete('request-current')

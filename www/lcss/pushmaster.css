@@ -1,0 +1,335 @@
+html {
+	background: #FFF url(/images/drinking_coffee.png) no-repeat fixed bottom right;
+}
+
+body {
+	max-width: 55em;
+	margin: 1em auto;
+	padding: 0 1em 1em 1em;
+	font-family: "Helvetica", "Arial", sans;
+	font-size: 14px;
+	color: #333;
+}
+
+h1 {
+    margin-top: 0.5em;
+	font-size: 150%;
+}
+
+h2 {
+    margin-top: 0.5em;
+	font-size: 140%;
+}
+
+h3 {
+    margin-top: 0.5em;
+	font-size: 130%;
+}
+
+h4 {
+    margin-top: 0.5em;
+	font-size: 120%;
+}
+
+hr {
+	border: none;
+	height: 1px;
+	background-color: #CCC;
+}
+
+legend, button, input, textarea, select {
+	color: #333;
+}
+
+ /* overrides extra padding in Firefox */
+button::-moz-focus-inner {
+    border: 0;
+    padding: 0;
+    margin: 0;
+}
+
+button {
+	cursor: pointer;
+    border: 1px solid #CCC;
+	background-color: #FFF;
+	color: #4876FF;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    padding: 0.1em 0.1em 0 0.1em;
+}
+
+button:hover {
+    background-color: #FFF68F;
+}
+
+button:active {
+    color: #FFF68F;
+	background-color: #4876FF;
+}
+
+input, textarea, select {
+	padding: 0.2em;
+	border: 1px solid #CCC;
+	background-color: #FFF;
+}
+
+textarea {
+	resize: none; /* safari */
+}
+
+a, a:visited {
+    color: #698B69;
+	text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* general styles */
+
+h1 .datetime {
+    margin-right: 0.5em;
+}
+
+h1 .email {
+    margin-right: 0.5em;
+}
+
+.nav {
+    padding-bottom: 0.25em;
+	border-bottom: 1px solid #CCC;
+	margin-bottom: 0.75em;
+}
+
+.nav .sep {
+    margin: 0 0.25em;
+}
+
+ol.requests {
+	margin: 0.5em 0 1em 0;
+}
+
+ol.requests li {
+	margin-bottom: 0.25em;
+}
+
+ol.requests li.urgent a.request-subject {
+    font-weight: bold;
+    font-size: 110%;
+}
+
+ol.my.requests li.request .email {
+    display: none;
+}
+
+ol.submissions {
+	margin: 0.5em 0 1em 0;
+}
+
+.session {
+	float: right;
+}
+
+.session .email {
+    margin-right: 0.5em;
+}
+
+h2.subject {
+	margin-bottom: 0.5em;
+}
+
+div.owner {
+	margin-bottom: 0.5em;
+}
+
+div.message {
+	border: 1px solid #CCC;
+	padding: 0.25em;
+	margin-bottom: 0.5em;
+}
+
+h3.push {
+	margin-bottom: 0.5em;
+}
+
+div.new-push {
+    margin: 1em 0;
+}
+
+/* forms */
+
+form.small {
+    display: inline;
+    margin-right: 0.5em;
+}
+
+form.small div.fields {
+    display: inline;
+}
+
+form.new-push {
+    display: inline;
+}
+
+form.request {
+	margin: 0.5em 0;
+}
+
+#new-request-form legend {
+    display: none;
+}
+
+#new-request-form fieldset {
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+
+form.request fieldset {
+	border: 1px solid #CCC;
+	padding: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+form.request fieldset legend {
+	padding: 0 0.25em;
+}
+
+form.request fieldset div {
+	margin-bottom: 0.5em;
+}
+
+form.request label {
+	padding-top: 0.25em;
+	float: left;
+	width: 10%;
+	text-align: right;
+	padding-right: 1%;
+}
+
+form.request label.checkbox {
+	padding: 0 0 0 0.5em;
+	float: none;
+	text-align: left;
+}
+
+form.request input {
+	width: 85%;
+}
+
+form.request input.date {
+    width: 6em;
+}
+
+form.request input.checkbox {
+	width: auto;
+}
+
+form.request textarea {
+	width: 85%;
+	height: 10em;
+}
+
+form.push.request div.content, form.edit.request div.content {
+    display: none;
+}
+
+div.requests {
+	border-bottom: 1px solid #CCC;
+	margin-bottom: 0.5em;
+}
+
+/* push list */
+
+li.push .datetime {
+    margin-right: 0.5em;
+}
+
+li.push .email {
+    margin-right: 0.5em;
+}
+
+/* request list */
+
+li.request {
+    padding: 0.25em;
+    background-color: #FAFAFA;
+    margin: 0.25em 0;
+}
+
+li.request .date {
+    display: none;
+    font-size: 80%;
+    margin-right: 0.5em;
+}
+
+li.request .email {
+    float: right;
+    margin-left: 2em;
+}
+
+li.request.future {
+    opacity: 0.5;
+}
+
+li.request.future .date {
+    display: inline;
+}
+
+li.request a.push-plans {
+	color: #F00;
+	font-weight: bold;
+}
+
+li.request a.request-subject {
+    margin-right: 0.5em;
+}
+
+li.request a.push-plans {
+    margin-right: 0.5em;
+}
+
+li.request span.no-testing {
+    color: #FF7722;
+    font-weight: bold;
+    cursor: help;
+    margin-right: 0.5em;
+}
+
+li.request .actions {
+    margin: 0.25em 0;
+}
+
+li.request .actions form.small {
+    margin-right: 0;
+}
+
+li.request .actions .sep {
+    margin: 0 0.5em;
+}
+
+/* */
+
+form.request-actions, form.take-ownership {
+	display: inline;
+}
+
+div.push {
+    margin: 0.5em 0;
+    padding-bottom: 0.5em;
+    border-bottom: 1px solid #CCC;
+}
+
+#dialogs {
+    display: none;
+}
+
+ol.pushes {
+    margin: 0.5em 0 1em 0;
+}
+
+.bookmarklet {
+    margin-bottom: 0.5em;
+}

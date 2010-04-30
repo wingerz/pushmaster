@@ -1,189 +1,192 @@
+import datetime
+import httplib
+
 from django.utils import simplejson as json
 from google.appengine.api import users
-from google.appengine.ext.webapp import RequestHandler
+from google.appengine.api.datastore_errors import BadKeyError
+from google.appengine.ext import db
 
 from pushmaster.taglib import T
 from pushmaster import config
 from pushmaster import logic
-from pushmaster.view import page
 from pushmaster.model import *
 from pushmaster.view import common
+from pushmaster.view import HTTPStatusCode
+from pushmaster.view import RequestHandler
 
 __author__ = 'Jeremy Latt <jlatt@yelp.com>'
 __all__ = ('Pushes', 'EditPush')
 
-def new_push_form():
-    return T('form', action='/pushes', method='post', class_='new-push')(
-        T('fieldset')(
-            T('input', type='hidden', name='action', value='new_push'),
-            T('button', type='submit')('Start New Push'),
-            )
-        )
-
 def push_item(push):
-    return T('li', class_='push')(
-        T('a', href=push.uri)(common.datetime(push.ctime)),
-        ' (',
-        common.user_email(push.owner),
-        ') ',
-        T('span', class_='state')(push.state),
-        )
+    return T.li(class_='push')(
+        T.a(href=push.uri)(common.display_datetime(push.ltime or push.ctime)),
+        T.span('(', common.user_email(push.owner), ')', class_='email'),
+        T.span(class_='state')(common.display_push_state(push)),
+    )
 
 class Pushes(RequestHandler):
     def get(self):
+        doc = common.Document(title='pushmaster: pushes')
+        
         pushes = Push.open()
 
-        push_list = T('ol')(
-            map(push_item, pushes),
-            )
+        push_list = T.ol(map(push_item, pushes))
         
-        body = T('body')(
-            common.session(),
-            common.navbar(),
-            new_push_form(),
-            push_list, 
-            )
-        page.write(self.response.out, page.head(title='pushmaster: pushes'), body)
+        doc.body(push_list)
+        doc.body(common.jquery_js, common.jquery_ui_js, common.pushmaster_js)
+        doc.serialize(self.response.out)
 
     def post(self):
         action = self.request.get('action')
         
-        assert action == 'new_push'
+        if action == 'new_push':
+            push = logic.create_push()
+            self.redirect(push.uri)
+        else:
+            raise HTTPStatusCode(httplib.BAD_REQUEST)
 
-        push = logic.create_push()
-
-        self.redirect(push.uri)
-
-def accepted_item(request):
-    li = T('li', class_='accepted request')(
-        common.datetime(request.ctime),
-        ' ',
-        T('a', href=request.uri)(request.subject),
-        ' (',
-        common.user_email(request.owner),
-        ')',
-        )
-    if request.push_plans:
-        li(T.a(class_='push-plans', href=config.push_plans_url)('P'))
-    return li
-
-def accepted_list(accepted):
-    return T('ol', class_='accepted requests')(
-        map(accepted_item, accepted),
-        )
+def accepted_list(accepted, request_item=common.request_item):
+    return T.ol(class_='accepted requests')(map(request_item, accepted))
 
 def push_pending_list(push, requests):
     is_push_owner = users.get_current_user() == push.owner
     def request_item(request):
-        li = T.li()
+        li = common.request_item(request)
         if is_push_owner:
-            li(
-                T.form(action=request.uri, method='post', class_='accept-request')(
-                    T('input', type='hidden', name='push', value=str(push.key())),
-                    T('button', type='submit', name='action', value='accept')('Accept'),
-                )
-            )
-        li(
-            ' ',
-            common.datetime(request.ctime),
-            ' ',
-            T('a', href=request.uri)(request.subject),
-            ' (',
-            common.user_email(request.owner),
-            ')',
-        )
-        if request.push_plans:
-            li(T.a(class_='push-plans', href=config.push_plans_url)('P'))
+            li(T.div(class_='actions')(
+                    T.form(class_='small', action=request.uri, method='post')(
+                        T.div(class_='fields')(
+                            T.button(type='submit')('Accept'),
+                            common.hidden(push=str(push.key()), action='accept')))))
         return li
-    ol = T('ol', class_='requests')
+    ol = T.ol(class_='requests')
     if requests:
         ol(map(request_item, requests))
     return ol
 
 def push_actions_form(push):
-    form = T('form', action=push.uri, method='post')
+    form = T.form(action=push.uri, method='post')
+    fields = T.div(class_='fields')
+    form(fields)
+
+    button_count = 0
 
     if push.state in ('accepting', 'onstage') and push.checkedin_requests.fetch(1):
-        form(T('button', type='submit', name='action', value='sendtostage')('Mark Deployed to Stage'))
+        if button_count:
+            fields(T.span(' or '))
+        fields(T.button(type='submit', name='action', value='sendtostage')('Mark Deployed to Stage'))
+        button_count +=1
 
     if push.state == 'onstage' and push.tested:
-        form(T('button', type='submit', name='action', value='sendtolive')('Mark Live'))
+        if button_count:
+            fields(T.span(' or '))
+        fields(T.button(type='submit', name='action', value='sendtolive')('Mark Live'))
+        button_count +=1
 
     if push.state in ('accepting', 'onstage'):
-        form(T('button', type='submit', name='action', value='abandon')('Abandon'))
+        if button_count:
+            fields(T.span(' or '))
+        fields(T.button(type='submit', name='action', value='abandon')('Abandon'))
+        button_count +=1
+        
     return form
 
+def mark_checked_in_form(request):
+    return T.form(class_='small', method='post', action=request.uri)(
+        T.div(class_='fields')(
+            T.button(type='submit')('Mark Checked In'), 
+            common.hidden(push='true', action='markcheckedin')))
+
+def withdraw_form(request):
+    return T.form(class_='small', method='post', action=request.uri)(
+        T.div(class_='fields')(
+            T.button(type='submit')('Withdraw'),
+            common.hidden(push='true', action='withdraw')))
+
+def mark_tested_form(request):
+    return T.form(class_='small', method='post', action=request.uri)(
+        T.div(class_='fields')(
+            T.button(type='submit')('Mark Tested'), 
+            common.hidden(push='true', action='marktested')))
+
+def onstage_request_item(request):
+    li = common.request_item(request)
+    if common.can_edit_request(request):
+        li(T.div(class_='actions')(mark_tested_form(request), T.span('or', class_='sep'), withdraw_form(request)))
+    return li
+
+def withdrawable_request_item(request):
+    li = common.request_item(request)
+    if common.can_edit_request(request):
+        li(T.div(class_='actions')(withdraw_form(request)))
+    return li
+
+def accepted_request_item(request):
+    li = common.request_item(request)
+    if common.can_edit_request(request):
+        li(T.div(class_='actions')(mark_checked_in_form(request), T.span('or', class_='sep'),  withdraw_form(request)))
+    return li
 
 class EditPush(RequestHandler):
     def get(self, push_id):
-        push = Push.get(push_id)
-        requests = Request.current()
+        push = None
+
+        if push_id == 'current':
+            push = Push.current()
+            self.redirect(push.uri if push else '/pushes')
+            return
+
+        try:
+            push = Push.get(push_id)
+        except BadKeyError:
+            raise HTTPStatusCode(httplib.NOT_FOUND)
+
+        doc = common.Document(title='pushmaster: push: ' + logic.format_datetime(push.ltime or push.ctime))
+
+        today = datetime.date.today()
+        requests = filter(lambda request: request.target_date <= today, Request.current())
 
         header = T.h1(
-            common.datetime(push.ctime),
-            ' (',
-            common.user_email(push.owner),
-            ') ',
-            T.span(push.state),
-        )
+            common.display_datetime(push.ltime or push.ctime),
+            common.display_user_email(push.owner))
 
-        requests_div = T.div(class_='requests')(
-            T.h2('Requests'),
-        )
+        requests_div = T.div(class_='requests')
+        
+        actions = T.div(class_='actions')
+        if users.get_current_user() == push.owner:
+            actions(push_actions_form(push))
+        else:
+            actions(common.take_ownership_form(push))
+
+        doc.body(T.div(class_='push')(header, actions), requests_div)
 
         if push.state == 'live':
             requests_div(accepted_list(push.live_requests))
         else:
-            requests_div(
-                T.h3('Tested on Stage'),
-                accepted_list(push.tested_requests),
-                T.h3('On Stage'),
-                accepted_list(push.onstage_requests),
-                T.h3('Checked In'),
-                accepted_list(push.checkedin_requests),
-                T.h3('Accepted'),
-                accepted_list(push.accepted_requests),
-            )
-            if users.get_current_user() == push.owner:
-                requests_div(push_actions_form(push))
-            else:
-                requests_div(common.take_ownership_form(push))
+            request_states = [
+                ('Tested on Stage', push.tested_requests, withdrawable_request_item),
+                ('On Stage', push.onstage_requests, onstage_request_item),
+                ('Checked In', push.checkedin_requests, withdrawable_request_item),
+                ('Accepted', push.accepted_requests, accepted_request_item),
+                ]
+            for label, query, request_item in request_states:
+                subrequests = list(query)
+                if subrequests:
+                    requests_div(T.h3(label), accepted_list(subrequests, request_item=request_item))
 
-        body = T.body(
-            common.session(),
-            common.navbar(),
-            header,
-            requests_div,
-        )
-
-            
         if push.state in ('accepting', 'onstage'):
-            body(
-                T.h2('Pending Requests'),
-                push_pending_list(push, requests),
-                common.new_request_form(push),
-            )
+            if requests:
+                doc.body(T.h2(class_='pending')('Pending Requests'), push_pending_list(push, requests))
 
-        body(
-            page.script(config.jquery, external=True),
-            page.script('/js/pushmaster.js'),
-            page.script('/js/push.js'),
-        )
-
-        head = page.head(title='pushmaster: push: ' + logic.format_datetime(push.ctime))(
-            T.script(type='text/javascript')(
-                'var push = ',
-                json.dumps({
-                        'key': str(push.key()),
-                        'state': push.state,
-                    }),
-                ';',
-            )
-        )
-        page.write(self.response.out, head, body)
+        doc.body(common.jquery_js, common.jquery_ui_js, common.pushmaster_js, common.script('/js/push.js'))
+        doc.head(T.script(type='text/javascript')('this.push = ', json.dumps(dict(key=str(push.key()), state=push.state)), ';'))
+        doc.serialize(self.response.out)
 
     def post(self, push_id):
-        push = Push.get(push_id)
+        try:
+            push = Push.get(push_id)
+        except BadKeyError:
+            raise HTTPStatusCode(httplib.NOT_FOUND)
 
         action = self.request.get('action')
 
@@ -204,4 +207,4 @@ class EditPush(RequestHandler):
             self.redirect(push.uri)
 
         else:
-            self.redirect(push.uri)
+            raise HTTPStatusCode(httplib.BAD_REQUEST)
