@@ -9,11 +9,10 @@
             }))
         .join(', ');
 
-    var tickets = $.makeArray(
-        $('#bugs_closed a')
-            .map(function(i, a) {
-                return a.href;
-            }))
+    var tickets = $('#bugs_closed')
+        .text()
+        .split(',')
+        .map(function(bug) { return 'https://trac.yelpcorp.com/ticket/' + bug.match(/\d+/)[0]; })
         .join(', ');
     
     var message = [
