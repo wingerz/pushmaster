@@ -50,7 +50,7 @@ def navbar(current=None):
 def session():
     user = users.get_current_user()
     div = T('div', class_='session')(
-        T('span', class_='login')(str(user)),
+        T('span', class_='email')(str(user)),
         ' ',
         T('a', href=users.create_logout_url('/'))('Logout')
         )
