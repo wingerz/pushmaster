@@ -155,7 +155,7 @@ class EditPush(RequestHandler):
         actions = T.div(class_='actions')
         if users.get_current_user() == push.owner:
             actions(push_actions_form(push))
-        elif push.state is not 'live':
+        elif push.state != 'live':
             actions(common.take_ownership_form(push))
 
         doc.body(T.div(class_='push')(header, actions), requests_div)
