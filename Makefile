@@ -15,7 +15,7 @@ www:
 	cd www && make
 
 git-version:
-	@echo -n $(head_commit) > .git-version
+	@echo $(head_commit) > .git-version
 
 app.yaml: app-template.yaml git-version
 	@echo "generating app.yaml"
