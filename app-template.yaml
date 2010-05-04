@@ -1,5 +1,5 @@
 application: yelp-pushmaster
-version: master
+version: $HEAD_COMMIT
 runtime: python
 api_version: 1
 
