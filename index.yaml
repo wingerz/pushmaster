@@ -59,6 +59,12 @@ indexes:
 
 - kind: Request
   properties:
+  - name: push
+  - name: state
+  - name: subject
+
+- kind: Request
+  properties:
   - name: state
   - name: ctime
 
@@ -77,3 +83,9 @@ indexes:
   properties:
   - name: state
   - name: target_date
+
+- kind: Request
+  properties:
+  - name: state
+  - name: target_date
+  - name: subject

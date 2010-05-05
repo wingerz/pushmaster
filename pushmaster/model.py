@@ -30,23 +30,23 @@ class Push(db.Model):
 
     @property
     def accepted_requests(self):
-        return self.requests.filter('state =', 'accepted')
+        return self.requests.filter('state =', 'accepted').order('subject')
 
     @property
     def checkedin_requests(self):
-        return self.requests.filter('state =', 'checkedin')
+        return self.requests.filter('state =', 'checkedin').order('subject')
 
     @property
     def onstage_requests(self):
-        return self.requests.filter('state =', 'onstage')
+        return self.requests.filter('state =', 'onstage').order('subject')
 
     @property
     def tested_requests(self):
-        return self.requests.filter('state =', 'tested')
+        return self.requests.filter('state =', 'tested').order('subject')
     
     @property
     def live_requests(self):
-        return self.requests.filter('state =', 'live')
+        return self.requests.filter('state =', 'live').order('subject')
 
     @classmethod
     def current(cls):
@@ -106,7 +106,7 @@ class Request(db.Model):
     def current(cls):
         current_requests = memcache.get('request-current')
         if current_requests is None:
-            current_requests = cls.all().filter('state =', 'requested').order('target_date').fetch(100)
+            current_requests = list(cls.all().filter('state =', 'requested').order('target_date').order('subject'))
             memcache.add('request-current', current_requests, 60 * 10)
         return current_requests
 
