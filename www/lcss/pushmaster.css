@@ -274,6 +274,10 @@ li.request.own {
     background-color: #FFE4E1;
 }
 
+ol.my.requests li.request.own {
+    background-color: #FAFAFA;
+}
+
 li.request.future {
     opacity: 0.5;
 }
