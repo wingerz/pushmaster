@@ -1,6 +1,6 @@
 assets=$(shell find www -name '*.js' -or -name '*.css')
 
-head_commit=$(shell git show-ref -s HEAD)
+head_commit=$(shell bash head-commit.sh)
 
 .PHONY: www clean git-version
 
