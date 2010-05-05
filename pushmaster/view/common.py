@@ -86,6 +86,9 @@ def request_item(request):
         li.attrs['class'] += ' urgent'
         li(title='Urgent!')
 
+    if request.owner == users.get_current_user():
+        li.attrs['class'] += ' own'
+
     if request.no_testing:
         li(no_testing_badge())
 

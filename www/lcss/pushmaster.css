@@ -270,6 +270,10 @@ li.request .email {
     margin-left: 2em;
 }
 
+li.request.own {
+    background-color: #FFE4E1;
+}
+
 li.request.future {
     opacity: 0.5;
 }
