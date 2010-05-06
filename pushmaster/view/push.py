@@ -65,7 +65,7 @@ def push_pending_list(push, requests):
     return ol
 
 def push_actions_form(push):
-    form = T.form(action=push.uri, method='post')
+    form = T.form(action=push.uri, method='post', class_='small')
     fields = T.div(class_='fields')
     form(fields)
 
@@ -151,14 +151,17 @@ class EditPush(RequestHandler):
             common.display_user_email(push.owner))
 
         requests_div = T.div(class_='requests')
-        
-        actions = T.div(class_='actions')
-        if users.get_current_user() == push.owner:
-            actions(push_actions_form(push))
-        elif push.state != 'live':
-            actions(common.take_ownership_form(push))
 
-        doc.body(T.div(class_='push')(header, actions), requests_div)
+        push_div = T.div(class_='push')
+        
+        if users.get_current_user() == push.owner:
+            push_div(push_actions_form(push))
+        elif push.state != 'live':
+            push_div(common.take_ownership_form(push))
+            
+        push_div(header)
+
+        doc.body(push_div, requests_div)
 
         if push.state == 'live':
             requests_div(accepted_list(push.live_requests))

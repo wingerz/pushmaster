@@ -330,6 +330,10 @@ div.push {
     border-bottom: 1px solid #CCC;
 }
 
+div.push form.small {
+    float: right;
+}
+
 #dialogs {
     display: none;
 }
