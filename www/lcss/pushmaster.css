@@ -332,6 +332,7 @@ div.push {
 
 div.push form.small {
     float: right;
+    margin-right: 0;
 }
 
 #dialogs {
