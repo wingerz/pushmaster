@@ -1,5 +1,3 @@
-assets=$(shell find www -name '*.js' -or -name '*.css')
-
 .PHONY: www clean deploy
 
 all: www
@@ -12,8 +10,8 @@ clean:
 www:
 	cd www && make
 
-deploy:
+deploy: www
 	appcfg.py update -V $(shell bash app-version.sh) .
 
-run:
+run: www
 	dev_appserver.py .
