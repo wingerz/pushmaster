@@ -16,6 +16,10 @@ class Push(db.Model):
     ltime = db.DateTimeProperty()
 
     @property
+    def ptime(self):
+        return self.ltime or self.ctime
+
+    @property
     def uri(self):
         return urls.push(self)
 
@@ -103,12 +107,16 @@ class Request(db.Model):
         return urls.request(self)
 
     @classmethod
-    def current(cls):
+    def current(cls, not_after=None):
         current_requests = memcache.get('request-current')
         if current_requests is None:
             current_requests = list(cls.all().filter('state =', 'requested').order('target_date').order('subject'))
             memcache.add('request-current', current_requests, 60 * 10)
-        return current_requests
+
+        if not_after:
+            return [request for request in current_requests if request.target_date <= not_after]
+        else:
+            return current_requests
 
     @classmethod
     def for_user(cls, user):

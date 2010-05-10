@@ -19,7 +19,7 @@ __all__ = ('Pushes', 'EditPush')
 
 def push_item(push):
     return T.li(class_='push')(
-        T.a(href=push.uri)(common.display_datetime(push.ltime or push.ctime)),
+        T.a(href=push.uri)(common.display_datetime(push.ptime)),
         T.span('(', common.user_email(push.owner), ')', class_='email'),
         T.span(class_='state')(common.display_push_state(push)),
     )
@@ -141,14 +141,12 @@ class EditPush(RequestHandler):
         except BadKeyError:
             raise HTTPStatusCode(httplib.NOT_FOUND)
 
-        doc = common.Document(title='pushmaster: push: ' + logic.format_datetime(push.ltime or push.ctime))
+        doc = common.Document(title='pushmaster: push: ' + logic.format_datetime(push.ptime))
 
         today = datetime.date.today()
-        requests = filter(lambda request: request.target_date <= today, Request.current())
+        requests = Request.current(not_after=today)
 
-        header = T.h1(
-            common.display_datetime(push.ltime or push.ctime),
-            common.display_user_email(push.owner))
+        header = T.h1(common.display_datetime(push.ptime), common.display_user_email(push.owner))
 
         requests_div = T.div(class_='requests')
 
