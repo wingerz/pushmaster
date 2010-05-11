@@ -106,17 +106,34 @@ class Text(StrSerializable):
         f.write(cgi.escape(self.text))
         return f
 
+class CData(StrSerializable):
+    begin = '<![CDATA['
+    end = ']]>'
 
-XML_PREAMBLE = '<?xml version="1.0" encoding="UTF-8"?>'
-XML_NS = 'http://www.w3.org/1999/xhtml'
-XHTML_STRICT_DOCTYPE = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'
-
-class XHTML(StrSerializable):
-    def __init__(self):
-        self.html = T.html(xmlns=XML_NS)
+    def __init__(self, value):
+        self.value = value
 
     def serialize(self, f):
-        f.write(XML_PREAMBLE)
+        f.write(self.begin)
+        f.write(self.value)
+        f.write(self.end)
+        return f
+
+class ScriptCData(CData):
+    begin = '/* %s */' % CData.begin
+    end = '/* %s */' % CData.end
+
+class XHTML(StrSerializable):
+    preamble = '<?xml version="1.0" encoding="UTF-8"?>'
+    namespace = 'http://www.w3.org/1999/xhtml'
+    strict_doctype = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'
+
+    def __init__(self):
+        self.html = T.html(xmlns=self.namespace)
+
+    def serialize(self, f):
+        f.write(self.preamble)
+        f.write(self.strict_doctype)
         self.html.serialize(f)
         return f
 

@@ -6,7 +6,7 @@ from google.appengine.api import users
 from google.appengine.api.datastore_errors import BadKeyError
 from google.appengine.ext import db
 
-from pushmaster.taglib import T
+from pushmaster.taglib import T, ScriptCData
 from pushmaster import config
 from pushmaster import logic
 from pushmaster.model import *
@@ -182,7 +182,8 @@ class EditPush(RequestHandler):
                 doc.body(T.h2(class_='pending')('Pending Requests'), push_pending_list(push, requests))
 
         doc.body(common.jquery_js, common.jquery_ui_js, common.pushmaster_js, common.script('/js/push.js'))
-        doc.head(T.script(type='text/javascript')('this.push = ', json.dumps(dict(key=str(push.key()), state=push.state)), ';'))
+        push_json = ScriptCData('this.push = %s;' % json.dumps(dict(key=str(push.key()), state=push.state)))
+        doc.head(T.script(type='text/javascript')(push_json))
         doc.serialize(self.response.out)
 
     def post(self, push_id):
