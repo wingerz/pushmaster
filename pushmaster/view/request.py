@@ -118,7 +118,7 @@ class Requests(RequestHandler):
             doc.body(T.h2('Pending Requests'), common.request_list(requests))
 
         doc.body(
-            T.div(common.bookmarklet()),
+            T.div(common.bookmarklet(self.hostname)),
             common.jquery_js,
             common.jquery_ui_js,
             common.pushmaster_js,

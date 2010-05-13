@@ -16,10 +16,14 @@ class HTTPStatusCode(Exception):
 class RequestHandler(webapp.RequestHandler):
     log = ClassLogger()
 
+    @property
+    def hostname(self):
+        return self.request.headers['Host']
+
     def set_error(self, debug_mode, code=httplib.INTERNAL_SERVER_ERROR, message=None):
         message = message or httplib.responses.get(code, 'Unknown Error')
         self.error(code)
-        self.response.headers['Content-type'] = 'text/plain'
+        self.response.headers['Content-Type'] = 'text/plain'
         self.response.clear()
         self.response.out.write(message)
 
