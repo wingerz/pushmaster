@@ -12,6 +12,7 @@
     var tickets = $('#bugs_closed')
         .text()
         .split(',')
+        .filter(Boolean)
         .map(function(bug) { return 'https://trac.yelpcorp.com/ticket/' + bug.match(/\d+/)[0]; })
         .join(', ');
     
