@@ -148,9 +148,7 @@ class EditPush(RequestHandler):
         current_user = users.get_current_user()        
         pending_requests = model.Request.current(not_after=datetime.date.today()) if current_user == push.owner else []
 
-        req_content_type = self.request.headers.get('Content-Type', 'text/html')
-        log.debug('req_content_type: %s', req_content_type)
-        if req_content_type == 'application/json':
+        if self.request.headers.get('Accept', None) == 'application/json':
             push_div = self.render_push_div(current_user, push, pending_requests)
             response = {'push': dict(key=str(push.key()), state=push.state), 'html': unicode(push_div)}
             self.response.headers['Content-Type'] = 'application/json'
