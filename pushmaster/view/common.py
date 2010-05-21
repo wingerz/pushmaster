@@ -35,17 +35,15 @@ def display_date(d):
 
 def navbar(current=None):
     nav = T.div(class_='nav')(
-        T.a(href='/user/' + users.get_current_user().email())('Home'),
+        T.a(id='new-request', href='#')('Make Request'),
         T.span(class_='sep')('|'),
-        T.a(href='/reports')('Reports'),
+        T.a(href='/push/current')(T.span('Current Push')),
         T.span(class_='sep')('|'),
         T.a(href='/requests')('Requests'),
         T.span(class_='sep')('|'),
         T.a(href='/pushes')('Pushes'),
         T.span(class_='sep')('|'),
-        T.a(href='/push/current')(T.span('Current Push')),
-        T.span(class_='sep')('|'),
-        T.a(id='new-request', href='#')('Make Request'),
+        T.a(href='/reports')('Reports'),
         T.span(class_='sep')('|'),
         new_push_form(),
         )
@@ -55,13 +53,16 @@ def navbar(current=None):
 def session():
     user = users.get_current_user()
     div = T.div(class_='session')(
-        T.span(class_='email')(str(user)),
+        user_home_link(user),
         T.a(href=users.create_logout_url('/'))('Logout')
     )
     return div
 
 def user_email(user):
     return T.a(href='mailto:' + user.email())(user.nickname())
+
+def user_home_link(user):
+    return T.span(class_='email')(T.a(href=urls.user_home(user))(user.nickname()))
 
 def display_user_email(user):
     return T.span(class_='email')(user_email(user)),

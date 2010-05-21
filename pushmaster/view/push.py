@@ -10,6 +10,7 @@ from pushmaster.taglib import T, ScriptCData
 from pushmaster import config
 from pushmaster import logic
 from pushmaster import model
+from pushmaster import urls
 from pushmaster.view import common
 from pushmaster.view import HTTPStatusCode
 from pushmaster.view import RequestHandler
@@ -20,7 +21,7 @@ __all__ = ('Pushes', 'EditPush')
 def push_item(push):
     return T.li(class_='push')(
         T.a(href=push.uri)(common.display_datetime(push.ptime)),
-        T.span('(', common.user_email(push.owner), ')', class_='email'),
+        common.user_home_link(push.owner),
         T.span(class_='state')(common.display_push_state(push)),
     )
 
@@ -175,7 +176,7 @@ class EditPush(RequestHandler):
         elif push.state != 'live':
             push_div(common.take_ownership_form(push)(class_='small push-action'))
             
-        header = T.h1(common.display_datetime(push.ptime), common.display_user_email(push.owner))
+        header = T.h1(common.display_datetime(push.ptime), common.user_home_link(push.owner))
         push_div(header)
 
         requests_div = T.div(class_='requests')

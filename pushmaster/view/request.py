@@ -84,7 +84,10 @@ def request_actions_form(request):
 
 def request_display(request):
     div = T.div(class_='request')(
-        T.h2(class_='subject')(request.subject, ' (', common.user_email(request.owner), ') ', common.display_date(request.target_date)),
+        T.h2(class_='subject')(
+            request.subject, ' ', 
+            common.user_home_link(request.owner), ' ',
+            common.display_date(request.target_date)),
         T.div(class_='message')(common.linkify(request.message or '')),
         )
 
