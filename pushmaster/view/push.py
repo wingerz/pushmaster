@@ -132,6 +132,10 @@ def accepted_request_item(request):
     return li
 
 class EditPush(RequestHandler):
+    def get_request_header_list(self, header, default=''):
+        hval = self.request.headers.get(header, default)
+        return [part.strip() for part in hval.split(',')]
+
     def get(self, push_id):
         push = None
 
@@ -148,7 +152,7 @@ class EditPush(RequestHandler):
         current_user = users.get_current_user()        
         pending_requests = model.Request.current(not_after=datetime.date.today()) if current_user == push.owner else []
 
-        if self.request.headers.get('Accept', None) == 'application/json':
+        if 'application/json' in self.get_request_header_list('Accept', '*/*'):
             push_div = self.render_push_div(current_user, push, pending_requests)
             response = {'push': dict(key=str(push.key()), state=push.state), 'html': unicode(push_div)}
             self.response.headers['Content-Type'] = 'application/json'
