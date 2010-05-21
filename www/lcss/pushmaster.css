@@ -237,7 +237,6 @@ form.push.request div.content, form.edit.request div.content {
 }
 
 div.requests {
-	border-bottom: 1px solid #CCC;
 	margin-bottom: 0.5em;
 }
 
@@ -252,6 +251,11 @@ li.push .email {
 }
 
 /* request list */
+
+h2.pending {
+    border-top: 1px solid #CCC;
+    padding-top: 0.25em;
+}
 
 li.request {
     padding: 0.25em;
@@ -324,13 +328,7 @@ form.request-actions, form.take-ownership {
 	display: inline;
 }
 
-div.push {
-    margin: 0.5em 0;
-    padding-bottom: 0.5em;
-    border-bottom: 1px solid #CCC;
-}
-
-div.push form.small {
+div.push form.push-action {
     float: right;
     margin-right: 0;
 }

@@ -141,25 +141,45 @@ class EditPush(RequestHandler):
         except BadKeyError:
             raise HTTPStatusCode(httplib.NOT_FOUND)
 
+        current_user = users.get_current_user()        
+        pending_requests = Request.current(not_after=datetime.date.today())
+
+        req_content_type = self.request.headers.get('Content-Type', 'text/html')
+        if req_content_type == 'application/json':
+            push_div = self.render_push_div(current_user, push, pending_requests)
+            response = {'push': dict(key=str(push.key()), state=push.state), 'html': unicode(push_div)}
+            self.response.headers['Content-Type'] = 'application/json'
+            self.response.out.write(json.dumps(response))
+
+        else:
+            doc = self.render_doc(current_user, push, pending_requests)
+            doc.serialize(self.response.out)
+
+    def render_doc(self, current_user, push, pending_requests):
         doc = common.Document(title='pushmaster: push: ' + logic.format_datetime(push.ptime))
 
-        today = datetime.date.today()
-        requests = Request.current(not_after=today)
+        push_div = self.render_push_div(current_user, push, pending_requests)
+        doc.body(push_div)
 
-        header = T.h1(common.display_datetime(push.ptime), common.display_user_email(push.owner))
+        doc.body(common.jquery_js, common.jquery_ui_js, common.pushmaster_js, common.script('/js/push.js'))
+        push_json = ScriptCData('this.push = %s;' % json.dumps(dict(key=str(push.key()), state=push.state)))
+        doc.head(T.script(type='text/javascript')(push_json))
 
-        requests_div = T.div(class_='requests')
+        return doc
 
+    def render_push_div(self, current_user, push, pending_requests):
         push_div = T.div(class_='push')
-        
-        if users.get_current_user() == push.owner:
-            push_div(push_actions_form(push))
+
+        if current_user == push.owner:
+            push_div(push_actions_form(push)(class_='small push-action'))
         elif push.state != 'live':
-            push_div(common.take_ownership_form(push))
+            push_div(common.take_ownership_form(push)(class_='small push-action'))
             
+        header = T.h1(common.display_datetime(push.ptime), common.display_user_email(push.owner))
         push_div(header)
 
-        doc.body(push_div, requests_div)
+        requests_div = T.div(class_='requests')
+        push_div(requests_div)
 
         if push.state == 'live':
             requests_div(accepted_list(push.live_requests))
@@ -176,13 +196,10 @@ class EditPush(RequestHandler):
                     requests_div(T.h3(label), accepted_list(subrequests, request_item=request_item))
 
         if push.state in ('accepting', 'onstage'):
-            if requests:
-                doc.body(T.h2(class_='pending')('Pending Requests'), push_pending_list(push, requests))
+            if pending_requests:
+                push_div(T.h2(class_='pending')('Pending Requests'), push_pending_list(push, pending_requests))
 
-        doc.body(common.jquery_js, common.jquery_ui_js, common.pushmaster_js, common.script('/js/push.js'))
-        push_json = ScriptCData('this.push = %s;' % json.dumps(dict(key=str(push.key()), state=push.state)))
-        doc.head(T.script(type='text/javascript')(push_json))
-        doc.serialize(self.response.out)
+        return push_div
 
     def post(self, push_id):
         try:
