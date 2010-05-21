@@ -9,7 +9,7 @@ from google.appengine.ext import db
 from pushmaster.taglib import T, ScriptCData
 from pushmaster import config
 from pushmaster import logic
-from pushmaster.model import *
+from pushmaster import model
 from pushmaster.view import common
 from pushmaster.view import HTTPStatusCode
 from pushmaster.view import RequestHandler
@@ -28,7 +28,7 @@ class Pushes(RequestHandler):
     def get(self):
         doc = common.Document(title='pushmaster: pushes')
         
-        pushes = Push.open()
+        pushes = model.Push.open()
 
         push_list = T.ol(map(push_item, pushes))
         
@@ -132,17 +132,17 @@ class EditPush(RequestHandler):
         push = None
 
         if push_id == 'current':
-            push = Push.current()
+            push = model.Push.current()
             self.redirect(push.uri if push else '/pushes')
             return
 
         try:
-            push = Push.get(push_id)
+            push = model.Push.get(push_id)
         except BadKeyError:
             raise HTTPStatusCode(httplib.NOT_FOUND)
 
         current_user = users.get_current_user()        
-        pending_requests = Request.current(not_after=datetime.date.today())
+        pending_requests = model.Request.current(not_after=datetime.date.today())
 
         req_content_type = self.request.headers.get('Content-Type', 'text/html')
         if req_content_type == 'application/json':
@@ -203,7 +203,7 @@ class EditPush(RequestHandler):
 
     def post(self, push_id):
         try:
-            push = Push.get(push_id)
+            push = model.Push.get(push_id)
         except BadKeyError:
             raise HTTPStatusCode(httplib.NOT_FOUND)
 
