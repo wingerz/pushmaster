@@ -143,7 +143,7 @@ class EditPush(RequestHandler):
             raise HTTPStatusCode(httplib.NOT_FOUND)
 
         current_user = users.get_current_user()        
-        pending_requests = model.Request.current(not_after=datetime.date.today())
+        pending_requests = model.Request.current(not_after=datetime.date.today()) if current_user == push.owner else []
 
         req_content_type = self.request.headers.get('Content-Type', 'text/html')
         if req_content_type == 'application/json':
