@@ -1,5 +1,6 @@
 import datetime
 import httplib
+import logging
 
 from django.utils import simplejson as json
 from google.appengine.api import users
@@ -17,6 +18,8 @@ from pushmaster.view import RequestHandler
 
 __author__ = 'Jeremy Latt <jlatt@yelp.com>'
 __all__ = ('Pushes', 'EditPush')
+
+log = logging.getLogger('pushmaster.view.push')
 
 def push_item(push):
     return T.li(class_='push')(
@@ -146,6 +149,7 @@ class EditPush(RequestHandler):
         pending_requests = model.Request.current(not_after=datetime.date.today()) if current_user == push.owner else []
 
         req_content_type = self.request.headers.get('Content-Type', 'text/html')
+        log.debug('req_content_type: %s', req_content_type)
         if req_content_type == 'application/json':
             push_div = self.render_push_div(current_user, push, pending_requests)
             response = {'push': dict(key=str(push.key()), state=push.state), 'html': unicode(push_div)}
