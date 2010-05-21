@@ -132,8 +132,8 @@ ol.submissions {
 	float: right;
 }
 
-.session .email {
-    margin-right: 0.5em;
+.session >* {
+    margin-left: 0.5em;
 }
 
 h2.subject {

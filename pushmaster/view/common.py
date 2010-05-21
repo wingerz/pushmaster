@@ -54,6 +54,7 @@ def session():
     user = users.get_current_user()
     div = T.div(class_='session')(
         user_home_link(user),
+        T.span(class_='sep')('|'),
         T.a(href=users.create_logout_url('/'))('Logout')
     )
     return div
