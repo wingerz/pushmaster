@@ -344,3 +344,25 @@ ol.pushes {
 .bookmarklet {
     margin-bottom: 0.5em;
 }
+
+/* last week */
+
+ul.teams ul.devs {
+    margin-left: 1em;
+}
+
+ul.teams h4.pm {
+    margin-left: 1em;
+}
+
+ul.teams li.dev ol.requests {
+    margin-left: 1em;
+}
+
+ul.teams li.dev ol.requests li.own {
+    background-color: #FAFAFA;
+}
+
+ul.teams li.dev ol.requests li.request span.email {
+    display: none;
+}

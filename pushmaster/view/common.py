@@ -45,6 +45,8 @@ def navbar(current=None):
         T.span(class_='sep')('|'),
         T.a(href='/reports')('Reports'),
         T.span(class_='sep')('|'),
+        T.a(href='/lastweek')('Last Week'),
+        T.span(class_='sep')('|'),
         new_push_form(),
         )
     

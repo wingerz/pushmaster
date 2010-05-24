@@ -21,3 +21,75 @@ def url(path):
 
 def static_host(path):
     return '%d.%s' % (hash(path) % static_host_count, hostname)
+
+report_users = (
+    ('Consumer/I18n', (
+            'abhinav',
+            'alan',
+            'edmund',
+            'hannah',
+            'jlatt',
+            'jon',
+            'rohan',
+            'wing',
+            ), (
+            'benb',
+            'vivek',
+            )),
+    ('Ads', (
+            'juliank',
+            'mtai',
+            ), (
+            'bryan',
+            )),
+    ('Biz', (
+            'adamb',
+            'anthony',
+            'lenza',
+            'minh',
+            ), (
+            'kyle',
+            'mallen',
+            )),
+    ('Internal Apps', (
+            'derwiki',
+            'duncan',
+            'kmitton',
+            ), (
+            'bryan',
+            )),
+    ('Search', (
+            'aditya',
+            'daniel',
+            'jfennell',
+            'shivaram',
+            'smg',
+            'timr',
+            ), (
+            'eric',
+            )),
+    ('Spam', (
+            'dave',
+            'pwais',
+            ), (
+            'jeremy',
+            )),
+    ('Mobile', (
+            'alexd',
+            'gabe',
+            'garrick',
+            'greg',
+            'johnb',
+            'mattj',
+            'newhouseb',
+            'pretz',
+            ), (
+            'eric',
+            )),
+    )
+
+def gen_report_user_to_team():
+    for team, devs, pms in report_users:
+        for dev in devs:
+            yield (dev, team)
+report_user_to_team = dict(gen_report_user_to_team())

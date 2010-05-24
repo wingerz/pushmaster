@@ -28,6 +28,8 @@ application = LoggingWSGIApplication([
         ('/push/(.+)', push.EditPush),
         ('/report/(\d+)', report.ViewReport),
         ('/reports', report.Reports),
+        ('/lastweek/(\d+)', report.LastWeek),
+        ('/lastweek/?', report.LastWeek),
         ('/user/(.+)', home.UserHome),
         ('/favicon.ico', home.Favicon),
         ('/bookmarklet', home.Bookmarklet),
