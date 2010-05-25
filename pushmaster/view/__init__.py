@@ -27,6 +27,19 @@ class RequestHandler(webapp.RequestHandler):
         self.response.clear()
         self.response.out.write(message)
 
+    def get_request_header_list(self, header, default=''):
+        hval = self.request.headers.get(header, default)
+        return [part.strip() for part in hval.split(',')]
+
+    def negotiate_content_type(self, provided=None):
+        provided = provided or ('text/html',)
+        accept_types = self.get_request_header_list('Accept', default='*/*')
+        # TODO actually negotiate content type
+        if 'application/json' in accept_types:
+            return 'application/json'
+        else:
+            return provided[0]
+
     def handle_exception(self, exception, debug_mode):
         if isinstance(exception, HTTPStatusCode):
             self.set_error(debug_mode, code=exception.code, message=exception.message)

@@ -2,16 +2,13 @@ import datetime
 import httplib
 import logging
 
+from django.utils import simplejson as json
 from google.appengine.api import users
 from google.appengine.api.datastore_errors import BadKeyError
 
-from pushmaster import config
-from pushmaster import logic
-from pushmaster.model import *
+from pushmaster import config, logic, model
 from pushmaster.taglib import T
-from pushmaster.view import common
-from pushmaster.view import HTTPStatusCode
-from pushmaster.view import RequestHandler
+from pushmaster.view import common, HTTPStatusCode, RequestHandler
 
 __author__ = 'Jeremy Latt <jlatt@yelp.com>'
 __all__ = ('Requests', 'EditRequest')
@@ -112,7 +109,7 @@ class Requests(RequestHandler):
     def get(self):
         doc = common.Document(title='pushmaster: requests')
 
-        requests = Request.current()
+        requests = model.Request.current()
 
         subject = self.request.get('subject')
         message = self.request.get('message')        
@@ -120,12 +117,8 @@ class Requests(RequestHandler):
         if requests:
             doc.body(T.h2('Pending Requests'), common.request_list(requests))
 
-        doc.body(
-            T.div(common.bookmarklet(self.hostname)),
-            common.jquery_js,
-            common.jquery_ui_js,
-            common.pushmaster_js,
-            )
+        doc.body(T.div(common.bookmarklet(self.hostname)))
+        doc.body(common.jquery_js, common.jquery_ui_js, common.pushmaster_js)
 
         doc.serialize(self.response.out)
         
@@ -160,7 +153,7 @@ class Requests(RequestHandler):
         push_key = self.request.get('push')
         if push_key:
             try:
-                push = Push.get(push_key)
+                push = model.Push.get(push_key)
             except BadKeyError:
                 pass
         self.redirect(push.uri if push else request.uri)
@@ -168,10 +161,16 @@ class Requests(RequestHandler):
 class EditRequest(RequestHandler):
     def get(self, request_id):
         try:
-            request = Request.get(request_id)
+            request = model.Request.get(request_id)
         except BadKeyError:
             raise HTTPStatusCode(httplib.NOT_FOUND)
 
+        if self.negotiate_content_type(provided=('text/html', 'application/json')) == 'application/json':
+            self.get_json(request)
+        else:
+            self.get_html(request)
+
+    def get_html(self, request):
         doc = common.Document(title='pushmaster: request: ' + request.subject)
         
         rdisplay = request_display(request)
@@ -187,9 +186,13 @@ class EditRequest(RequestHandler):
         doc.body(common.jquery_js, common.jquery_ui_js, common.pushmaster_js)
         doc.serialize(self.response.out)
 
+    def get_json(self, request):
+        req_json = {'key': str(req.key()), 'subject': req.subject, 'message': req.message, 'state': req.state}
+        self.response.write(json.dumps(req_json))
+
     def post(self, request_id):
         try:
-            request = Request.get(request_id)
+            request = model.Request.get(request_id)
         except BadKeyError:
             raise HTTPStatusCode(httplib.NOT_FOUND)
 
@@ -213,7 +216,7 @@ class EditRequest(RequestHandler):
 
         elif action == 'accept':
             push_id = self.request.get('push')
-            push = Push.get(push_id)
+            push = model.Push.get(push_id)
             logic.accept_request(push, request)
             self.redirect(push.uri)
 

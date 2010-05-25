@@ -137,10 +137,6 @@ def accepted_request_item(request):
     return li
 
 class EditPush(RequestHandler):
-    def get_request_header_list(self, header, default=''):
-        hval = self.request.headers.get(header, default)
-        return [part.strip() for part in hval.split(',')]
-
     def get(self, push_id):
         push = None
 
