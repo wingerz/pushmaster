@@ -28,6 +28,7 @@ report_users = (
             'alan',
             'edmund',
             'hannah',
+            'jeffmicklos',
             'jlatt',
             'jon',
             'rohan',
@@ -81,7 +82,6 @@ report_users = (
             'greg',
             'johnb',
             'mattj',
-            'newhouseb',
             'pretz',
             ), (
             'eric',
