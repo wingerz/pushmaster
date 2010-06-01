@@ -38,7 +38,7 @@ report_users = (
             'vivek',
             )),
     ('Ads', (
-            'juliank',
+            'julian',
             'mtai',
             ), (
             'bryan',
