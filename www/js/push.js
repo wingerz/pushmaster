@@ -1,9 +1,10 @@
-var PAGE_RELOAD_DELAY = 20 * 1000; // ms
+var PAGE_RELOAD_DELAY = 15 * 1000; // ms
 
 pushmaster.provide('xhr');
 
-pushmaster.xhr.acceptJSON = function(xhr) {
-    xhr.setRequestHeader('Accept', 'application/json');
+pushmaster.xhr.get = function(options) {
+    options = $.extend({'dataType': 'json'}, options, {'type': 'get'});
+    return $.ajax(options);
 };
 
 pushmaster.provide('push');
@@ -12,7 +13,7 @@ pushmaster.push.retrievePushData = function() {
     if (push.state !== 'live') {
         pushmaster.push.retrieveTimeout = setTimeout(function() {
             pushmaster.push.retrieveTimeout = null;
-            $.ajax({'success': pushmaster.push.loadPushData, 'beforeSend': pushmaster.xhr.acceptJSON});
+            pushmaster.xhr.get({'success': pushmaster.push.loadPushData});
         }, PAGE_RELOAD_DELAY);
     }
 };
