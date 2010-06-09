@@ -46,7 +46,11 @@ class ViewReport(RequestHandler):
         for push in pushes:
             pushdiv = T.div(class_='push')
             pushdiv(T.h2(
-                    T.a(href=push.uri)(push.ltime.replace(tzinfo=timezone.UTC()).astimezone(config.timezone).strftime('%a, %l:%M %p, %e %b %Y')), 
+                    T.a(href=push.uri)(
+                        push.ltime.replace(tzinfo=timezone.UTC()).astimezone(config.timezone).strftime('%a, %l:%M %p, %e %b %Y'),
+                        T.span(' '),
+                        push.name or '',
+                        ), 
                     T.span(' by '),
                     common.display_user_email(push.owner),
                     ))

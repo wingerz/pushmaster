@@ -133,8 +133,8 @@ def abandon_request(request):
 
     return request
 
-def create_push(parent=None):
-    push = Push()
+def create_push(name=None, parent=None):
+    push = Push(name=name)
 
     if parent:
         assert parent.state in ('accepting', 'onstage')

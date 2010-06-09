@@ -29,40 +29,20 @@ pushmaster.location.queryToObject = function(query) {
 };
 
 pushmaster.location.reload = function() {
-    location.replace(location.href);
+    if (location.hash) {
+        location.reload();
+    } else {
+        location.replace(location.href);
+    }
 };
 
 pushmaster.location.query = pushmaster.location.queryToObject(location.search);
 
 provide('pushmaster', 'dialog');
 
-pushmaster.dialog.MakeRequest = function() {
-    this.form = $('#new-request-form');
-
-    if (location.search) {
-        var query = pushmaster.location.queryToObject(location.search);
-
-        if (query.subject) {
-            this.form.find('[name=subject]').val(query.subject);
-        }
-
-        if (query.message) {
-            this.form.find('[name=message]').val(query.message);
-        }
-
-        if (query.message || query.subject) {
-            this.open();
-        }
-    }
-};
-pushmaster.dialog.MakeRequest.prototype = {
+pushmaster.dialog.Dialog = function() {};
+pushmaster.dialog.Dialog.prototype = {
     initialized: false,
-
-    dialogOptions: {
-        'title': 'Make Request',
-        'width': 700,
-        'height': 450
-    },
 
     ensureDialog: function() {
         if (!this.initialized) {
@@ -97,6 +77,48 @@ pushmaster.dialog.MakeRequest.prototype = {
     }
 };
 
+pushmaster.dialog.MakeRequest = function() {
+    this.form = $('#new-request-form');
+
+    if (location.search) {
+        var query = pushmaster.location.queryToObject(location.search);
+
+        if (query.subject) {
+            this.form.find('[name=subject]').val(query.subject);
+        }
+
+        if (query.message) {
+            this.form.find('[name=message]').val(query.message);
+        }
+
+        if (query.message || query.subject) {
+            this.open();
+        }
+    }
+    this.constructor.prototype.constructor.call(this);
+};
+pushmaster.dialog.MakeRequest.prototype = $.extend(new pushmaster.dialog.Dialog(), {
+    dialogOptions: {
+        'title': 'Make Request',
+        'width': 700,
+        'height': 450,
+        'position': ['center', 100]
+    }
+});
+
+pushmaster.dialog.StartPush = function() {
+    this.form = $('#new-push-form');
+    this.constructor.prototype.constructor.call(this);
+};
+pushmaster.dialog.StartPush.prototype = $.extend(new pushmaster.dialog.Dialog(), {
+    dialogOptions: {
+        'title': 'Start Push',
+        'width': 500,
+        'height': 100,
+        'position': ['center', 100]
+    }
+});
+
 pushmaster.provide('event');
 
 pushmaster.event.preventDefaultEmptyHref = function(e) {
@@ -120,9 +142,13 @@ pushmaster.provide('page');
 
 $(function() {
     pushmaster.page.makeRequest = new pushmaster.dialog.MakeRequest();
-
     $('#new-request').click(function(e) {
         pushmaster.page.makeRequest.toggle();
+    });
+
+    pushmaster.page.startPush = new pushmaster.dialog.StartPush();
+    $('#new-push').click(function(e) {
+        pushmaster.page.startPush.toggle();
     });
 });
 

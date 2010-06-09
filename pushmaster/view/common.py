@@ -37,6 +37,8 @@ def navbar(current=None):
     nav = T.div(class_='nav')(
         T.a(id='new-request', href='#')('Make Request'),
         T.span(class_='sep')('|'),
+        T.a(id='new-push', href='#')('Start Push'),
+        T.span(class_='sep')('|'),
         T.a(href='/push/current')(T.span('Current Push')),
         T.span(class_='sep')('|'),
         T.a(href='/requests')('Requests'),
@@ -46,8 +48,6 @@ def navbar(current=None):
         T.a(href='/reports')('Reports'),
         T.span(class_='sep')('|'),
         T.a(href='/lastweek')('Last Week'),
-        T.span(class_='sep')('|'),
-        new_push_form(),
         )
     
     return nav
@@ -153,10 +153,12 @@ def new_request_form(push=None, subject='', message=''):
     return form
 
 def new_push_form():
-    return T.form(action='/pushes', method='post', class_='small')(
+    return T.form(action='/pushes', method='post', class_='new-push')(
         T.div(class_='fields')(
             T.input(type='hidden', name='action', value='new_push'),
-            T.button(type='submit')('Start New Push'),
+            T.div(T.label(for_='new-push-name')('Name:')),
+            T.div(T.input(type='text', name='name', class_='push-name', id='new-push-name')),
+            T.div(T.button(type='submit', class_='submit')('Start New Push')),
             ),
         )
 
@@ -217,9 +219,14 @@ class Document(XHTML):
             )
 
         self.dialogs = T.div(id='dialogs')
+
         request_form = new_request_form()
         request_form(id='new-request-form')
         self.dialogs(request_form)
+
+        push_form = new_push_form()
+        push_form(id='new-push-form')
+        self.dialogs(push_form)
 
         self.body = T.body(session(), navbar(), self.dialogs)
         self.html(self.head, self.body)

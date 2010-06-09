@@ -23,7 +23,11 @@ log = logging.getLogger('pushmaster.view.push')
 
 def push_item(push):
     return T.li(class_='push')(
-        T.a(href=push.uri)(common.display_datetime(push.ptime)),
+        T.a(href=push.uri)(
+            common.display_datetime(push.ptime),
+            T.span(' '),
+            T.span(push.name or ''),
+            ),
         common.user_home_link(push.owner),
         T.span(class_='state')(common.display_push_state(push)),
     )
@@ -44,7 +48,8 @@ class Pushes(RequestHandler):
         action = self.request.get('action')
         
         if action == 'new_push':
-            push = logic.create_push()
+            name = self.request.get('name')
+            push = logic.create_push(name=name)
             self.redirect(push.uri)
         else:
             raise HTTPStatusCode(httplib.BAD_REQUEST)
@@ -185,7 +190,7 @@ class EditPush(RequestHandler):
         elif push.state != 'live':
             push_div(common.take_ownership_form(push)(class_='small push-action'))
             
-        header = T.h1(common.display_datetime(push.ptime), common.user_home_link(push.owner))
+        header = T.h1(common.display_datetime(push.ptime), T.span(class_='name')(push.name or ''), common.user_home_link(push.owner))
         push_div(header)
 
         requests_div = T.div(class_='requests')

@@ -89,11 +89,7 @@ a:hover {
 
 /* general styles */
 
-h1 .datetime {
-    margin-right: 0.5em;
-}
-
-h1 .email {
+h1 .datetime, h1 .email, h1 .name {
     margin-right: 0.5em;
 }
 
@@ -169,8 +165,12 @@ form.small div.fields {
     display: inline;
 }
 
-form.new-push {
-    display: inline;
+form.new-push input.push-name {
+    width: 30em;
+}
+
+form.new-push button.submit {
+    text-align: right;
 }
 
 form.request {
@@ -242,11 +242,7 @@ div.requests {
 
 /* push list */
 
-li.push .datetime {
-    margin-right: 0.5em;
-}
-
-li.push .email {
+li.push >* {
     margin-right: 0.5em;
 }
 

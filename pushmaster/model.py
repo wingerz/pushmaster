@@ -14,6 +14,7 @@ class Push(db.Model):
     owner = db.UserProperty(auto_current_user_add=True)
     state = db.StringProperty(choices=('accepting', 'onstage', 'live', 'abandoned'), default='accepting')
     ltime = db.DateTimeProperty()
+    name = db.StringProperty()
 
     @property
     def ptime(self):
@@ -65,6 +66,7 @@ class Push(db.Model):
         open_pushes = memcache.get('push-open')
         if open_pushes is None:
             open_pushes = cls.all().filter('state in', ('accepting', 'onstage', 'live')).order('-ctime').fetch(20)
+            open_pushes = sorted(open_pushes, key=lambda p: p.ptime, reverse=True)
             memcache.add('push-open', open_pushes, 60 * 60)
         return open_pushes
 
