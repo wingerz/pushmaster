@@ -1,5 +1,3 @@
-var PAGE_RELOAD_DELAY = 15 * 1000; // ms
-
 pushmaster.provide('xhr');
 
 pushmaster.xhr.get = function(options) {
@@ -9,12 +7,14 @@ pushmaster.xhr.get = function(options) {
 
 pushmaster.provide('push');
 
+pushmaster.push.pageReloadDelay = 15 * 1000; // ms
+
 pushmaster.push.retrievePushData = function() {
     if (push.state !== 'live') {
         pushmaster.push.retrieveTimeout = setTimeout(function() {
             pushmaster.push.retrieveTimeout = null;
-            pushmaster.xhr.get({'success': pushmaster.push.loadPushData});
-        }, PAGE_RELOAD_DELAY);
+            pushmaster.xhr.get({'success': pushmaster.push.loadPushData, 'error': pushmaster.push.retrievePushData});
+        }, pushmaster.push.pageReloadDelay);
     }
 };
 
