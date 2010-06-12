@@ -23,9 +23,10 @@ def static_host(path):
     return '%d.%s' % (hash(path) % static_host_count, hostname)
 
 report_users = (
-    ('Consumer/I18n', (
+    ('Consumer', (
             'abhinav',
             'alan',
+            'ayust',
             'edmund',
             'hannah',
             'jeffmicklos',
@@ -48,6 +49,7 @@ report_users = (
             'anthony',
             'lenza',
             'minh',
+            'ostrowski',
             ), (
             'kyle',
             'mallen',
@@ -66,6 +68,7 @@ report_users = (
             'shivaram',
             'smg',
             'timr',
+            'zeke',
             ), (
             'eric',
             )),
@@ -86,6 +89,15 @@ report_users = (
             ), (
             'eric',
             )),
+    ('Infra', (
+            'bigo',
+            'dchen',
+            'eskil',
+            'evan',
+            'jbrown',
+            'mtytel',
+            'rhett',
+            ), tuple()),
     )
 
 def gen_report_user_to_team():
