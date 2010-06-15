@@ -6,10 +6,10 @@ is_prod = not is_dev
 debug = is_dev
 
 timezone = timezone.Pacific
-jquery = 'http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'
-jquery_ui = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.0/jquery-ui.min.js'
-reset_css = 'http://developer.yahoo.com/yui/build/reset/reset.css'
-favicon = 'http://static.px.yelp.com/favicon.ico'
+jquery = 'https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'
+jquery_ui = 'https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.0/jquery-ui.min.js'
+reset_css = 'https://developer.yahoo.com/yui/build/reset/reset.css'
+favicon = 'https://images.yelp.com/favicon.ico'
 mail_to = 'push+pushmaster@yelp.com'
 hostname = 'yelp-pushmaster.appspot.com' if is_prod else 'localhost:8080'
 protocol = 'http'
