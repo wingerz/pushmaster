@@ -199,17 +199,21 @@ class EditPush(RequestHandler):
         if push.state == 'live':
             requests_div(accepted_list(push.live_requests))
         else:
+            requests = list(push.requests)
+
+            def requests_with_state(state):
+                return filter(lambda r: r.state == state, requests)
+
             request_states = [
-                ('Tested on Stage', push.tested_requests, withdrawable_request_item),
-                ('On Stage', push.onstage_requests, onstage_request_item),
-                ('Checked In', push.checkedin_requests, withdrawable_request_item),
-                ('Accepted', push.accepted_requests, accepted_request_item),
+                ('Tested on Stage', requests_with_state('tested'), withdrawable_request_item),
+                ('On Stage', requests_with_state('onstage'), onstage_request_item),
+                ('Checked In', requests_with_state('checkedin'), withdrawable_request_item),
+                ('Accepted', requests_with_state('accepted'), accepted_request_item),
                 ]
-            for label, query, request_item in request_states:
-                subrequests = list(query)
+            for label, subrequests, request_item in request_states:
                 if subrequests:
                     requests_div(T.h3(label), accepted_list(subrequests, request_item=request_item))
-
+                    
         if push.state in ('accepting', 'onstage'):
             if pending_requests:
                 push_div(T.h2(class_='pending')('Pending Requests'), push_pending_list(push, pending_requests))
