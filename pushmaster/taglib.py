@@ -30,18 +30,16 @@ def iterattrs(attrs):
 
         yield (key, value)
 
-def write_attribute(f, aname, avalue):
-    f.write(' ')
-    f.write(cgi.escape(aname))
-    f.write('=')
-    f.write('"')
-    f.write(cgi.escape(avalue, quote=True))
-    f.write('"')
-
 class StrSerializable(object):
-    def __str__(self):
+    def __unicode__(self):
         from StringIO import StringIO
-        return self.serialize(StringIO()).getvalue()
+        f = self.serialize(StringIO())
+        strval = f.getvalue()
+        f.close()
+        return strval
+
+    def __str__(self):
+        return unicode(self).encode('utf-8')
     
     __repr__ = __str__
 
@@ -64,35 +62,30 @@ class _Tag(StrSerializable):
         return self
 
     def serialize(self, f):
-        # open tag
-        f.write('<')
-        f.write(self.tagname)
-
-        # attributes
-        for key, value in iterattrs(self.attrs):
-            write_attribute(f, key, value)
-
-        if self.tagname in self.empty:
+        is_empty = self.tagname in self.empty
+        open_tag_end = '>'
+        if is_empty:
             assert not self.children, 'empty tag %s has children' % self.tagname
-            f.write('/>')
-        else:
-            f.write('>')
-        
-            for child in self.children:
-                if hasattr(child, 'serialize'):
-                    child.serialize(f)
-                else:
-                    f.write(cgi.escape(unicode(child)))
+            open_tag_end = '/>'
 
-            f.write('</')
-            f.write(self.tagname)
-            f.write('>')
+        # open tag
+        formatted_attrs = ''.join([' %s="%s"' % (cgi.escape(key), cgi.escape(value, quote=True)) for key, value in iterattrs(self.attrs)])
+        f.write('<%s%s%s' % (self.tagname, formatted_attrs, open_tag_end))
+
+        for child in self.children:
+            if hasattr(child, 'serialize'):
+                child.serialize(f)
+            else:
+                f.write(cgi.escape(unicode(child)))
+        
+        if not is_empty:
+            f.write('</%s>' % self.tagname)
 
         return f
 
 class Literal(StrSerializable):
     def __init__(self, html):
-        self.html = html
+        self.html = unicode(html)
 
     def serialize(self, f):
         f.write(self.html)
@@ -100,7 +93,7 @@ class Literal(StrSerializable):
 
 class Text(StrSerializable):
     def __init__(self, text):
-        self.text = text
+        self.text = unicode(text)
 
     def serialize(self, f):
         f.write(cgi.escape(self.text))
@@ -111,7 +104,7 @@ class CData(StrSerializable):
     end = ']]>'
 
     def __init__(self, value):
-        self.value = value
+        self.value = unicode(value)
 
     def serialize(self, f):
         f.write(self.begin)

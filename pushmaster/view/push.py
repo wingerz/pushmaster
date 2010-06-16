@@ -73,20 +73,20 @@ def push_pending_list(push, requests):
         ol(map(request_item, requests))
     return ol
 
-def push_actions_form(push):
+def push_actions_form(push, requests):
     form = T.form(action=push.uri, method='post', class_='small')
     fields = T.div(class_='fields')
     form(fields)
 
     button_count = 0
 
-    if push.state in ('accepting', 'onstage') and push.checkedin_requests.fetch(1):
+    if push.state in ('accepting', 'onstage') and filter(lambda r: r.state == 'checkedin', requests):
         if button_count:
             fields(T.span(' or '))
         fields(T.button(type='submit', name='action', value='sendtostage')('Mark Deployed to Stage'))
         button_count +=1
 
-    if push.state == 'onstage' and push.tested:
+    if push.state == 'onstage' and requests and all(r.state == 'tested' for r in requests):
         if button_count:
             fields(T.span(' or '))
         fields(T.button(type='submit', name='action', value='sendtolive')('Mark Live'))
@@ -157,10 +157,10 @@ class EditPush(RequestHandler):
         current_user = users.get_current_user()        
         pending_requests = model.Request.current(not_after=datetime.date.today()) if current_user == push.owner else []
 
-
         if 'application/json' in self.get_request_header_list('Accept', default='*/*'):
-            push_div = self.render_push_div(current_user, push, pending_requests)
-            response = {'push': dict(key=str(push.key()), state=push.state), 'html': unicode(push_div)}
+            requests = list(push.requests)
+            push_div = self.render_push_div(current_user, push, requests, pending_requests)
+            response = {'push': dict(key=unicode(push.key()), state=push.state), 'html': unicode(push_div)}
             self.response.headers['Vary'] = 'Accept'
             self.response.headers['Content-Type'] = 'application/json'
             self.response.headers['Cache-Control'] = 'no-store'
@@ -168,12 +168,12 @@ class EditPush(RequestHandler):
 
         else:
             doc = self.render_doc(current_user, push, pending_requests)
-            doc.serialize(self.response.out)
+            self.response.out.write(unicode(doc))
 
     def render_doc(self, current_user, push, pending_requests):
         doc = common.Document(title='pushmaster: push: ' + logic.format_datetime(push.ptime))
-
-        push_div = self.render_push_div(current_user, push, pending_requests)
+        requests = list(push.requests)
+        push_div = self.render_push_div(current_user, push, requests, pending_requests)
         doc.body(push_div)
 
         doc.body(common.jquery_js, common.jquery_ui_js, common.pushmaster_js, common.script('/js/push.js'))
@@ -182,11 +182,11 @@ class EditPush(RequestHandler):
 
         return doc
 
-    def render_push_div(self, current_user, push, pending_requests):
+    def render_push_div(self, current_user, push, requests, pending_requests):
         push_div = T.div(class_='push')
 
         if current_user == push.owner:
-            push_div(push_actions_form(push)(class_='small push-action'))
+            push_div(push_actions_form(push, requests)(class_='small push-action'))
         elif push.state != 'live':
             push_div(common.take_ownership_form(push)(class_='small push-action'))
             
@@ -199,8 +199,6 @@ class EditPush(RequestHandler):
         if push.state == 'live':
             requests_div(accepted_list(push.live_requests))
         else:
-            requests = list(push.requests)
-
             def requests_with_state(state):
                 return filter(lambda r: r.state == state, requests)
 
