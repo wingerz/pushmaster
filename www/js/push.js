@@ -7,7 +7,7 @@ pushmaster.xhr.get = function(options) {
 
 pushmaster.provide('push');
 
-pushmaster.push.pageReloadDelay = 15 * 1000; // ms
+pushmaster.push.pageReloadDelay = 30 * 1000; // ms
 
 pushmaster.push.retrievePushData = function() {
     if (push.state !== 'live') {
