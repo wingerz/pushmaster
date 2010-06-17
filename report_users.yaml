@@ -1,0 +1,86 @@
+report_users:
+  - 
+    name: Consumer
+    dev:
+      - abhinav
+      - alan
+      - ayust
+      - edmund
+      - hannah
+      - jeffmicklos
+      - jlatt
+      - jon
+      - rohan
+      - wing
+    prod:
+      - benb
+      - vivek
+  - 
+    name: Ads
+    dev:
+      - bchess
+      - julian
+      - mtai
+    prod:
+      - bryan
+  -
+    name: Biz
+    dev:
+      - adamb
+      - anthony
+      - lenza
+      - minh
+      - ostrowski
+    prod:
+      - kyle
+      - mallen
+  -
+    name: Internal Apps
+    dev:
+      - derwiki
+      - duncan
+      - evrhet
+      - kmitton
+    prod:
+      - bryan
+  - 
+    name: Search
+    dev:
+      - aditya
+      - daniel
+      - jfennell
+      - shivaram
+      - smg
+      - timr
+      - zeke
+    prod:
+      - eric
+  - 
+    name: Spam
+    dev:
+      - dave
+      - pwais
+    prod:
+      - jeremy
+  -
+    name: Mobile
+    dev:
+      - alexd
+      - gabe
+      - garrick
+      - greg
+      - johnb
+      - mattj
+      - pretz
+    prod:
+      - eric
+  -
+    name: Infra
+    dev:
+      - bigo
+      - dchen
+      - eskil
+      - evan
+      - jbrown
+      - mtytel
+      - rhett

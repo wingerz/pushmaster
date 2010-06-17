@@ -1,6 +1,8 @@
 import timezone
 import util
 
+import yaml
+
 is_dev = util.is_dev()
 is_prod = not is_dev
 debug = is_dev
@@ -22,86 +24,10 @@ def url(path):
 def static_host(path):
     return '%d.%s' % (hash(path) % static_host_count, hostname)
 
-report_users = (
-    ('Consumer', (
-            'abhinav',
-            'alan',
-            'ayust',
-            'edmund',
-            'hannah',
-            'jeffmicklos',
-            'jlatt',
-            'jon',
-            'rohan',
-            'wing',
-            ), (
-            'benb',
-            'vivek',
-            )),
-    ('Ads', (
-            'julian',
-            'mtai',
-            ), (
-            'bryan',
-            )),
-    ('Biz', (
-            'adamb',
-            'anthony',
-            'lenza',
-            'minh',
-            'ostrowski',
-            ), (
-            'kyle',
-            'mallen',
-            )),
-    ('Internal Apps', (
-            'derwiki',
-            'duncan',
-            'kmitton',
-            ), (
-            'bryan',
-            )),
-    ('Search', (
-            'aditya',
-            'daniel',
-            'jfennell',
-            'shivaram',
-            'smg',
-            'timr',
-            'zeke',
-            ), (
-            'eric',
-            )),
-    ('Spam', (
-            'dave',
-            'pwais',
-            ), (
-            'jeremy',
-            )),
-    ('Mobile', (
-            'alexd',
-            'gabe',
-            'garrick',
-            'greg',
-            'johnb',
-            'mattj',
-            'pretz',
-            ), (
-            'eric',
-            )),
-    ('Infra', (
-            'bigo',
-            'dchen',
-            'eskil',
-            'evan',
-            'jbrown',
-            'mtytel',
-            'rhett',
-            ), tuple()),
-    )
+report_users = yaml.load(file('report_users.yaml'))['report_users']
 
 def gen_report_user_to_team():
-    for team, devs, pms in report_users:
-        for dev in devs:
-            yield (dev, team)
+    for team in report_users:
+        for dev in team['dev']:
+            yield (dev, team['name'])
 report_user_to_team = dict(gen_report_user_to_team())

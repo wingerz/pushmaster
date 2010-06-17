@@ -83,13 +83,13 @@ class LastWeek(RequestHandler):
         teams_list = T.ul(class_='teams')
         doc(teams_list)
 
-        for team_name, devs, pms in config.report_users:
-            team_item = T.li(class_='team')(T.h3(team_name))
+        for team in config.report_users:
+            team_item = T.li(class_='team')(T.h3(team['name']))
             teams_list(team_item)
 
             devs_list = T.ul(class_='devs')
             team_item(devs_list)
-            for dev in devs:
+            for dev in team['dev']:
                 dev_item = T.li(class_='dev')(T.h4(dev))
                 devs_list(dev_item)
                 dev_requests = filter(lambda r: r.owner.nickname() == dev, requests)
@@ -97,6 +97,8 @@ class LastWeek(RequestHandler):
                     requests_list = T.ol(class_='requests')(map(common.request_item, dev_requests))
                     dev_item(requests_list)
 
-            team_item(T.h4('PM: ' if len(pms) == 1 else 'PMs: ', ', '.join(pms), class_='pm'))
+            if 'prod' in team:
+                
+                team_item(T.h4('PM: ' if len(team['prod']) == 1 else 'PMs: ', ', '.join(team['prod']), class_='pm'))
         
         doc.serialize(self.response.out)

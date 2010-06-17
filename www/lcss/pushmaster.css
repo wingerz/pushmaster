@@ -255,7 +255,7 @@ h2.pending {
 
 li.request {
     padding: 0.25em;
-    background-color: #FAFAFA;
+    background-color: rgba(250, 250, 250, 0.75);
     margin: 0.25em 0;
 }
 
@@ -271,11 +271,11 @@ li.request .email {
 }
 
 li.request.own {
-    background-color: #DEF;
+    background-color: rgba(221, 238, 255, 0.75);
 }
 
 ol.my.requests li.request.own {
-    background-color: #FAFAFA;
+    background-color: rgba(250, 250, 250, 0.75);
 }
 
 li.request.future {
@@ -343,12 +343,8 @@ ol.pushes {
 
 /* last week */
 
-ul.teams ul.devs {
-    margin-left: 1em;
-}
-
-ul.teams h4.pm {
-    margin-left: 1em;
+ul.teams {
+    margin-bottom: 50em;
 }
 
 ul.teams li.dev ol.requests {
@@ -356,9 +352,14 @@ ul.teams li.dev ol.requests {
 }
 
 ul.teams li.dev ol.requests li.own {
-    background-color: #FAFAFA;
+    background-color: rgba(250, 250, 250, 0.75);
 }
 
 ul.teams li.dev ol.requests li.request span.email {
     display: none;
+}
+
+ul.teams h3 {
+    background-color: rgba(224, 248, 224, 0.75);
+    padding: 0.1em 0;
 }

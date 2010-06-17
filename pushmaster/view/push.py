@@ -6,6 +6,7 @@ from django.utils import simplejson as json
 from google.appengine.api import users
 from google.appengine.api.datastore_errors import BadKeyError
 from google.appengine.ext import db
+import yaml
 
 from pushmaster.taglib import T, ScriptCData
 from pushmaster import config
