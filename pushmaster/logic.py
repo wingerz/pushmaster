@@ -174,25 +174,7 @@ def accept_request(push, request):
     request.push = push
     request.state = 'accepted'
 
-    owner_email = request.owner.email()
-
-    mail.send_mail(
-        sender=users.get_current_user().email(),
-        to=owner_email,
-        cc=config.mail_to,
-        subject='Re: ' + request.subject,
-        body='Please check this in.\n' + config.url(push.uri))
-    
-    im_fields = dict(
-        pushmaster_email=escape(push.owner.email()),
-        pushmaster_name=escape(push.owner.nickname()), 
-        request_subject=escape(request.subject), 
-        uri=escape(config.url(push.uri)),
-        )
-    maybe_send_im(owner_email, '<a href="mailto:%(pushmaster_email)s">%(pushmaster_name)s</a> requests that you check <a href="%(uri)s">%(request_subject)s</a> in.' % im_fields)
-
     request.put()
-    
     Request.bust_caches()
 
     return request
