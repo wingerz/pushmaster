@@ -30,7 +30,7 @@ report_users:
       - anthony
       - lenza
       - minh
-      - ostrowski
+      - ostro
     prod:
       - kyle
       - mallen
