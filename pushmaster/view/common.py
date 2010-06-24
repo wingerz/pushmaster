@@ -70,11 +70,14 @@ def user_home_link(user):
 def display_user_email(user):
     return T.span(class_='email')(user_email(user)),
 
-def push_plans_link():
+def push_plans_badge():
     return T.a(class_='push-plans', href=config.push_plans_url, title='This request has push plans.')('P')
 
 def no_testing_badge():
     return T.span(class_='no-testing', title='This request requires no testing on stage.')('N')
+
+def js_serials_badge():
+    return T.span(class_='js-serials', title='This request requires the pushmaster to bump JS serials.')('J')
 
 def request_item(request):
     li = T.li(class_='request')(
@@ -97,7 +100,10 @@ def request_item(request):
         li(no_testing_badge())
 
     if request.push_plans:
-        li(push_plans_link())
+        li(push_plans_badge())
+
+    if request.js_serials:
+        li(js_serials_badge())
 
     return li
 
@@ -143,6 +149,10 @@ def new_request_form(push=None, subject='', message=''):
                 T.div(
                     T.input(id='new-request-push-plans', type='checkbox', name='push_plans', class_='checkbox'),
                     T.label(class_='checkbox', for_='new-request-push-plans')('Push Plans'),
+                    ),
+                T.div(
+                    T.input(id='new-request-js-serials', type='checkbox', name='js_serials', class_='checkbox'),
+                    T.label(class_='checkbox', for_='new-request-js-serials')('Bump JS Serials'),
                     ),
                 T.button(type='submit')('Create')
                 ),

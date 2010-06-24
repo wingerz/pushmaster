@@ -101,6 +101,7 @@ class Request(db.Model):
                               default='requested')
     push_plans = db.BooleanProperty(default=False)
     no_testing = db.BooleanProperty(default=False)
+    js_serials = db.BooleanProperty(default=False)
     urgent = db.BooleanProperty(default=False)
     target_date = db.DateProperty(required=True)
 

@@ -69,11 +69,11 @@ def maybe_send_request_im(request):
                 )
             maybe_send_im(current_push.owner.email(), '<a href="mailto:%(requester_email)s">%(requester_name)s</a> requests to check in <a href="%(uri)s">%(request_subject)s</a>.' % im_fields)
 
-def create_request(subject, message=None, push_plans=False, no_testing=False, urgent=False, target_date=None):
+def create_request(subject, message=None, push_plans=False, no_testing=False, urgent=False, js_serials=False, target_date=None):
     assert len(subject) > 0
     target_date = target_date or datetime.date.today()
 
-    request = Request(subject=subject, push_plans=push_plans, no_testing=no_testing, urgent=urgent, target_date=target_date)
+    request = Request(subject=subject, push_plans=push_plans, no_testing=no_testing, urgent=urgent, js_serials=js_serials, target_date=target_date)
     if message:
         assert len(message) > 0
         request.message = message
@@ -85,7 +85,7 @@ def create_request(subject, message=None, push_plans=False, no_testing=False, ur
 
     return request
 
-def edit_request(request, subject, message=None, push_plans=False, no_testing=False, urgent=False, target_date=None):
+def edit_request(request, subject, message=None, push_plans=False, no_testing=False, urgent=False, js_serials=False, target_date=None):
     assert request.state in ('requested', 'accepted')
     target_date = target_date or datetime.date.today()
 
@@ -94,6 +94,7 @@ def edit_request(request, subject, message=None, push_plans=False, no_testing=Fa
     request.subject = subject
     request.push_plans = push_plans
     request.no_testing = no_testing
+    request.js_serials = js_serials
     request.urgent = urgent
     request.target_date = target_date
     if message:

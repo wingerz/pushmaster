@@ -132,8 +132,12 @@ ol.submissions {
     margin-left: 0.5em;
 }
 
-h2.subject {
+h2.request-title {
 	margin-bottom: 0.5em;
+}
+
+h2.request-title >* {
+    margin-right: 0.5em;
 }
 
 div.owner {
@@ -286,21 +290,25 @@ li.request.future .date {
     display: inline;
 }
 
-li.request a.push-plans {
-	color: #F00;
-	font-weight: bold;
-}
-
 li.request a.request-subject {
     margin-right: 0.5em;
 }
 
-li.request a.push-plans {
+a.push-plans {
+	color: #F00;
+	font-weight: bold;
     margin-right: 0.5em;
 }
 
-li.request span.no-testing {
+span.no-testing {
     color: #FF7722;
+    font-weight: bold;
+    cursor: help;
+    margin-right: 0.5em;
+}
+
+span.js-serials {
+    color: rgb(36, 102, 207);
     font-weight: bold;
     cursor: help;
     margin-right: 0.5em;

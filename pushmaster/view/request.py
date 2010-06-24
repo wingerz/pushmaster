@@ -47,6 +47,10 @@ def edit_request_form(request):
                     T.label(for_='edit-request-push-plans-'+request_id, class_='checkbox')('Push Plans'),
                     ),
                 T.div(
+                    T.input(id='edit-request-js-serials-'+request_id, type='checkbox', name='js_serials', checked=request.js_serials, class_='checkbox'),
+                    T.label(for_='edit-request-js-serials-'+request_id, class_='checkbox')('Bump JS Serials'),
+                    ),
+                T.div(
                     T.button(type='submit', name='action', value='edit')('Save'),
                     ),
                 ),
@@ -83,13 +87,24 @@ def request_actions_form(request):
     return form
 
 def request_display(request):
+    title = T.h2(class_='request-title')(
+        T.span(class_='subject')(request.subject),
+        common.user_home_link(request.owner),
+        common.display_date(request.target_date),
+        )
     div = T.div(class_='request')(
-        T.h2(class_='subject')(
-            request.subject, ' ', 
-            common.user_home_link(request.owner), ' ',
-            common.display_date(request.target_date)),
+        title,
         T.div(class_='message')(common.linkify(request.message or '')),
         )
+
+    if request.urgent:
+        title.attrs['class'] += ' urgent'
+    if request.no_testing:
+        title(common.no_testing_badge())
+    if request.push_plans:
+        title(common.push_plans_badge())
+    if request.js_serials:
+        title(common.js_serials_badge())
 
     if request.push_plans or request.no_testing or request.urgent:
         attrs = T.div(class_='attributes')
@@ -135,6 +150,7 @@ class Requests(RequestHandler):
         push_plans = self.request.get('push_plans', 'off')
         no_testing = self.request.get('no_testing', 'off')
         urgent = self.request.get('urgent', 'off')
+        js_serials = self.request.get('js_serials', 'off')
         target_date = self.request.get('target_date')
         target_date = datetime.datetime.strptime(target_date, '%Y-%m-%d').date() if target_date else None
 
@@ -142,6 +158,7 @@ class Requests(RequestHandler):
             assert push_plans in ('on', 'off'), 'push_plans must be either on or off'
             assert no_testing in ('on', 'off'), 'no_testing must be either on or off'
             assert urgent in ('on', 'off'), 'urgent must be either on or off'
+            assert js_serials in ('on', 'off'), 'js_serials must be on or off'
             assert len(subject) > 0, 'subject is required'
         except AssertionError, e:
             self.log.info('bad request: %s', e.message)
@@ -153,6 +170,7 @@ class Requests(RequestHandler):
             push_plans=(push_plans == 'on'),
             no_testing=(no_testing == 'on'),
             urgent=(urgent == 'on'),
+            js_serials=(js_serials == 'on'),
             target_date=target_date,
             )
 
@@ -208,7 +226,9 @@ class EditRequest(RequestHandler):
             assert no_testing in ('on', 'off'), 'no testing must be on or off'
             urgent = self.request.get('urgent', 'off')
             assert urgent in ('on', 'off'), 'urgent must be on or off'
-            logic.edit_request(request, subject=subject, message=message, push_plans=push_plans == 'on', no_testing=no_testing == 'on', urgent=urgent == 'on', target_date=target_date)
+            js_serials = self.request.get('js_serials', 'off')
+            assert js_serials in ('on', 'off'), 'js_serials must be on or off'
+            logic.edit_request(request, subject=subject, message=message, push_plans=push_plans == 'on', no_testing=no_testing == 'on', urgent=urgent == 'on', js_serials=js_serials == 'on', target_date=target_date)
             self.redirect(request.uri)
 
         elif action == 'accept':
