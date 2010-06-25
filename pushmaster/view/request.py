@@ -27,6 +27,10 @@ def edit_request_form(request):
                     T.input(name='subject', id='edit-request-subject-'+request_id, value=request.subject),
                     ),
                 T.div(
+                    T.label(for_='edit-request-branch-'+request_id)('Branch'),
+                    T.input(name='branch', id='edit-request-branch-'+request_id, value=request.branch or ''),
+                    ),
+                T.div(
                     T.label(for_='edit-request-message-'+request_id)('Message'),
                     T.textarea(name='message', id='edit-request-message-'+request_id)(request.message or ''),
                     ),
@@ -92,10 +96,10 @@ def request_display(request):
         common.user_home_link(request.owner),
         common.display_date(request.target_date),
         )
-    div = T.div(class_='request')(
-        title,
-        T.div(class_='message')(common.linkify(request.message or '')),
-        )
+    div = T.div(class_='request')(title)
+    if request.branch:
+        div(T.h3(T.span('Branch: '), T.span(request.branch)))
+    div(T.div(class_='message')(common.linkify(request.message or '')))
 
     if request.urgent:
         title.attrs['class'] += ' urgent'
@@ -105,18 +109,6 @@ def request_display(request):
         title(common.push_plans_badge())
     if request.js_serials:
         title(common.js_serials_badge())
-
-    if request.push_plans or request.no_testing or request.urgent:
-        attrs = T.div(class_='attributes')
-
-        if request.push_plans:
-            attrs(T.div(class_='attribute')('This request has push plans.'))
-        if request.no_testing:
-            attrs(T.div(class_='attribute')('This request requires no stage testing.'))
-        if request.urgent:
-            attrs(T.div(class_='attribute')('This request is urgent.'))
-
-        div(attrs)
 
     if common.can_edit_request(request):
         div(request_actions_form(request))
@@ -147,6 +139,7 @@ class Requests(RequestHandler):
     def post(self):
         subject = self.request.get('subject')
         message = self.request.get('message')
+        branch = self.request.get('branch') or None
         push_plans = self.request.get('push_plans', 'off')
         no_testing = self.request.get('no_testing', 'off')
         urgent = self.request.get('urgent', 'off')
@@ -172,6 +165,7 @@ class Requests(RequestHandler):
             urgent=(urgent == 'on'),
             js_serials=(js_serials == 'on'),
             target_date=target_date,
+            branch=branch,
             )
 
         push = None
@@ -218,6 +212,7 @@ class EditRequest(RequestHandler):
             subject = self.request.get('subject')
             assert len(subject) > 0, 'subject must have a value'
             message = self.request.get('message')
+            branch = self.request.get('branch') or None
             target_date = self.request.get('target_date')
             target_date = datetime.datetime.strptime(target_date, '%Y-%m-%d').date() if target_date else None
             push_plans = self.request.get('push_plans', 'off')
@@ -228,7 +223,7 @@ class EditRequest(RequestHandler):
             assert urgent in ('on', 'off'), 'urgent must be on or off'
             js_serials = self.request.get('js_serials', 'off')
             assert js_serials in ('on', 'off'), 'js_serials must be on or off'
-            logic.edit_request(request, subject=subject, message=message, push_plans=push_plans == 'on', no_testing=no_testing == 'on', urgent=urgent == 'on', js_serials=js_serials == 'on', target_date=target_date)
+            logic.edit_request(request, subject=subject, message=message, push_plans=push_plans == 'on', no_testing=no_testing == 'on', urgent=urgent == 'on', js_serials=js_serials == 'on', target_date=target_date, branch=branch)
             self.redirect(request.uri)
 
         elif action == 'accept':

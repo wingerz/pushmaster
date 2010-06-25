@@ -118,7 +118,7 @@ def take_ownership_form(object):
         )
     return form
 
-def new_request_form(push=None, subject='', message=''):
+def new_request_form(push=None, subject='', message='', branch=''):
     label = T.a(class_='toggle', href='#')('New Request') if push else 'New Request'
     class_ = 'push request' if push else 'request'
     content = T.div(class_='content')
@@ -129,6 +129,10 @@ def new_request_form(push=None, subject='', message=''):
                 T.div(
                     T.label(for_='new-request-subject')('Subject'),
                     T.input(name='subject', id='new-request-subject', value=subject),
+                    ),
+                T.div(
+                    T.label(for_='new-request-branch')('Branch'),
+                    T.input(name='branch', id='new-request-branch', value=branch),
                     ),
                 T.div(
                     T.label(for_='new-request-message')('Message'),
