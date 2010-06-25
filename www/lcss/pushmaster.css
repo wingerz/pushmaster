@@ -104,7 +104,7 @@ h1 .datetime, h1 .email, h1 .name {
 }
 
 ol.requests {
-	margin: 0.5em 0 1em 0;
+	margin: 0.5em 0;
 }
 
 ol.requests li {
@@ -370,4 +370,12 @@ ul.teams li.dev ol.requests li.request span.email {
 ul.teams h3 {
     background-color: rgba(224, 248, 224, 0.75);
     padding: 0.1em 0;
+}
+
+pre.code {
+    padding: 0.25em;
+    font-family: Monaco, "Courier New", mono;
+    border: 1px solid #CCC;
+    color: #333;
+    background-color: #EEE;
 }

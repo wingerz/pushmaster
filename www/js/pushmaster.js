@@ -83,15 +83,15 @@ pushmaster.dialog.MakeRequest = function() {
     if (location.search) {
         var query = pushmaster.location.queryToObject(location.search);
 
-        if (query.subject) {
-            this.form.find('[name=subject]').val(query.subject);
-        }
+        var shouldOpen = false;
+        ['subject', 'message', 'branch'].forEach(function(param) {
+            if (query[param]) {
+                this.form.find('[name=' + param + ']').val(query[param]);
+                shouldOpen = true;
+            }
+        }, this);
 
-        if (query.message) {
-            this.form.find('[name=message]').val(query.message);
-        }
-
-        if (query.message || query.subject) {
+        if (shouldOpen) {
             this.open();
         }
     }

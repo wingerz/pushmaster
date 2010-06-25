@@ -23,14 +23,7 @@
         }
         message.push(tickets.length == 1 ? 'Ticket: ' : 'Tickets: ', tickets.join(', '));
     }
-    if (branch) {
-        if (message.length > 0) {
-            message.push('\n\n');
-        }
-        message.push('Branch: ', branch);
-    }
-
     message = message.join('');
 
-    location.href = 'http://yelp-pushmaster.appspot.com/requests?' + $.param({'subject': summary, 'message': message});
+    location.href = 'http://yelp-pushmaster.appspot.com/requests?' + $.param({'subject': summary, 'message': message, 'branch': branch});
 })();
