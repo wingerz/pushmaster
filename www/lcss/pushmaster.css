@@ -181,20 +181,26 @@ form.request {
 	margin: 0.5em 0;
 }
 
-#new-request-form legend {
+#new-request-form fieldset.container >legend {
     display: none;
 }
 
-#new-request-form fieldset {
+#new-request-form fieldset.container {
     border: none;
     margin: 0;
     padding: 0;
 }
 
-form.request fieldset {
+form.request fieldset.container {
 	border: 1px solid #CCC;
 	padding: 0.5em;
 	margin-bottom: 0.5em;
+}
+
+form.request fieldset.flags {
+    border: 1px solid #CCC;
+    padding: 0.5em;
+    margin-bottom: 0.5em;
 }
 
 form.request fieldset legend {

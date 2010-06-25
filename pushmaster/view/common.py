@@ -123,7 +123,7 @@ def new_request_form(push=None, subject='', message='', branch=''):
     class_ = 'push request' if push else 'request'
     content = T.div(class_='content')
     form = T.form(action='/requests', method='post', class_=class_)(
-        T.fieldset(
+        T.fieldset(class_='container')(
             T.legend(label),
             content(
                 T.div(
@@ -142,21 +142,24 @@ def new_request_form(push=None, subject='', message='', branch=''):
                     T.label(for_='new-request-target-date')('Push Date'),
                     T.input(name='target_date', id='new-request-target-date', class_='date', value=logic.tznow().date().strftime('%Y-%m-%d')),
                     ),
-                T.div(
-                    T.input(id='new-request-urgent', type='checkbox', name='urgent', class_='checkbox'),
-                    T.label(for_='new-request-urgent', class_='checkbox')('Urgent (e.g. P0)'),
-                    ),
-                T.div(
-                    T.input(id='new-request-no-testing', type='checkbox', name='no_testing', class_='checkbox'),
-                    T.label(for_='new-request-no-testing', class_='checkbox')('No Testing Required'),
-                    ),
-                T.div(
-                    T.input(id='new-request-push-plans', type='checkbox', name='push_plans', class_='checkbox'),
-                    T.label(class_='checkbox', for_='new-request-push-plans')('Push Plans'),
-                    ),
-                T.div(
-                    T.input(id='new-request-js-serials', type='checkbox', name='js_serials', class_='checkbox'),
-                    T.label(class_='checkbox', for_='new-request-js-serials')('Bump JS Serials'),
+                T.fieldset(class_='flags')(
+                    T.legend('Flags'),
+                    T.div(
+                        T.input(id='new-request-urgent', type='checkbox', name='urgent', class_='checkbox'),
+                        T.label(for_='new-request-urgent', class_='checkbox')('Urgent (e.g. P0)'),
+                        ),
+                    T.div(
+                        T.input(id='new-request-no-testing', type='checkbox', name='no_testing', class_='checkbox'),
+                        T.label(for_='new-request-no-testing', class_='checkbox')('No Testing Required'),
+                        ),
+                    T.div(
+                        T.input(id='new-request-push-plans', type='checkbox', name='push_plans', class_='checkbox'),
+                        T.label(class_='checkbox', for_='new-request-push-plans')('Push Plans'),
+                        ),
+                    T.div(
+                        T.input(id='new-request-js-serials', type='checkbox', name='js_serials', class_='checkbox'),
+                        T.label(class_='checkbox', for_='new-request-js-serials')('Bump JS Serials'),
+                        ),
                     ),
                 T.button(type='submit')('Create')
                 ),

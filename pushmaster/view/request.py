@@ -19,7 +19,7 @@ __all__ = ('Requests', 'EditRequest')
 def edit_request_form(request):
     request_id = str(request.key())
     return T.form(action=request.uri, method='post', class_='edit request')(
-        T.fieldset(
+        T.fieldset(class_='container')(
             T.legend(T.a(class_='toggle', href='#')('Edit Request')),
             T.div(class_='content')(
                 T.div(
@@ -38,21 +38,24 @@ def edit_request_form(request):
                     T.label(for_='edit-request-target-date-'+request_id)('Push Date'),
                     T.input(name='target_date', id='edit-request-target-date-'+request_id, class_='date', value=request.target_date.strftime('%Y-%m-%d') if request.target_date else ''),
                     ),
-                T.div(
-                    T.input(id='edit-request-urgent-'+request_id, type='checkbox', name='urgent', class_='checkbox', checked=request.urgent),
-                    T.label(for_='edit-request-urgent-'+request_id, class_='checkbox')('Urgent (e.g. P0)'),
-                    ),
-                T.div(
-                    T.input(id='edit-request-no-testing-'+request_id, type='checkbox', name='no_testing', checked=request.no_testing, class_='checkbox'),
-                    T.label(for_='edit-request-no-testing-'+request_id, class_='checkbox')('No Testing (batch-only)'),
-                    ),
-                T.div(
-                    T.input(id='edit-request-push-plans-'+request_id, type='checkbox', name='push_plans', checked=request.push_plans, class_='checkbox'),
-                    T.label(for_='edit-request-push-plans-'+request_id, class_='checkbox')('Push Plans'),
-                    ),
-                T.div(
-                    T.input(id='edit-request-js-serials-'+request_id, type='checkbox', name='js_serials', checked=request.js_serials, class_='checkbox'),
-                    T.label(for_='edit-request-js-serials-'+request_id, class_='checkbox')('Bump JS Serials'),
+                T.fieldset(class_='flags')(
+                    T.legend('Flags'),
+                    T.div(
+                        T.input(id='edit-request-urgent-'+request_id, type='checkbox', name='urgent', class_='checkbox', checked=request.urgent),
+                        T.label(for_='edit-request-urgent-'+request_id, class_='checkbox')('Urgent (e.g. P0)'),
+                        ),
+                    T.div(
+                        T.input(id='edit-request-no-testing-'+request_id, type='checkbox', name='no_testing', checked=request.no_testing, class_='checkbox'),
+                        T.label(for_='edit-request-no-testing-'+request_id, class_='checkbox')('No Testing (batch-only)'),
+                        ),
+                    T.div(
+                        T.input(id='edit-request-push-plans-'+request_id, type='checkbox', name='push_plans', checked=request.push_plans, class_='checkbox'),
+                        T.label(for_='edit-request-push-plans-'+request_id, class_='checkbox')('Push Plans'),
+                        ),
+                    T.div(
+                        T.input(id='edit-request-js-serials-'+request_id, type='checkbox', name='js_serials', checked=request.js_serials, class_='checkbox'),
+                        T.label(for_='edit-request-js-serials-'+request_id, class_='checkbox')('Bump JS Serials'),
+                        ),
                     ),
                 T.div(
                     T.button(type='submit', name='action', value='edit')('Save'),
