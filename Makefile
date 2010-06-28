@@ -4,7 +4,6 @@ all: www
 
 clean:
 	find . -name '*.py[co]' -delete
-	rm -f app.yaml
 	cd www && make clean
 
 www:
