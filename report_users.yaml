@@ -12,6 +12,7 @@ report_users:
       - jon
       - rohan
       - wing
+      - tamir
     prod:
       - benb
       - vivek
@@ -31,6 +32,7 @@ report_users:
       - lenza
       - minh
       - ostro
+      - bryce
     prod:
       - kyle
       - mallen
