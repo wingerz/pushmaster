@@ -197,12 +197,12 @@ class EditPush(RequestHandler):
         requests_div = T.div(class_='requests')
         push_div(requests_div)
 
+        def requests_with_state(state):
+            return filter(lambda r: r.state == state, requests)
+
         if push.state == 'live':
             requests_div(accepted_list(push.live_requests))
         else:
-            def requests_with_state(state):
-                return filter(lambda r: r.state == state, requests)
-
             request_states = [
                 ('Tested on Stage', requests_with_state('tested'), withdrawable_request_item),
                 ('On Stage', requests_with_state('onstage'), onstage_request_item),
