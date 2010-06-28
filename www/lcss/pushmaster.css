@@ -361,10 +361,6 @@ ul.teams {
     margin-bottom: 50em;
 }
 
-ul.teams li.dev ol.requests {
-    margin-left: 1em;
-}
-
 ul.teams li.dev ol.requests li.own {
     background-color: rgba(250, 250, 250, 0.75);
 }
@@ -375,7 +371,12 @@ ul.teams li.dev ol.requests li.request span.email {
 
 ul.teams h3 {
     background-color: rgba(224, 248, 224, 0.75);
-    padding: 0.1em 0;
+    padding: 0.25em;
+}
+
+ul.teams h4 {
+    background-color: rgba(221, 238, 255, 0.75);
+    padding: 0.25em;
 }
 
 pre.code {
