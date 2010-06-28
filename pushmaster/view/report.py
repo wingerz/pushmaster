@@ -89,7 +89,7 @@ class LastWeek(RequestHandler):
 
             devs_list = T.ul(class_='devs')
             team_item(devs_list)
-            for dev in team['dev']:
+            for dev in sorted(team['dev']):
                 dev_item = T.li(class_='dev')(T.h4(dev))
                 devs_list(dev_item)
                 dev_requests = filter(lambda r: r.owner.nickname() == dev, requests)
@@ -98,7 +98,6 @@ class LastWeek(RequestHandler):
                     dev_item(requests_list)
 
             if 'prod' in team:
-                
                 team_item(T.h4('PM: ' if len(team['prod']) == 1 else 'PMs: ', ', '.join(team['prod']), class_='pm'))
         
         doc.serialize(self.response.out)
