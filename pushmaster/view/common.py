@@ -188,10 +188,10 @@ def bookmarklet(hostname):
 def hidden(**kw):
     return [T.input(type='hidden', name=name, value=value) for name, value in kw.items()]
 
-def can_edit_request(request):
+def can_edit_request(request, push=None):
     current_user = users.get_current_user()
-    return (request.owner == current_user) or (request.push and (request.push.owner == current_user))
-
+    push = push or request.push
+    return (request.owner == current_user) or (push and (push.owner == current_user))
 
 display_push_state_map = {
     'accepting': 'Accepting',

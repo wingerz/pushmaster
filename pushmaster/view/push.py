@@ -119,24 +119,6 @@ def mark_tested_form(request):
             T.button(type='submit')('Mark Tested'), 
             common.hidden(push='true', action='marktested')))
 
-def onstage_request_item(request):
-    li = common.request_item(request)
-    if common.can_edit_request(request):
-        li(T.div(class_='actions')(mark_tested_form(request), T.span('or', class_='sep'), withdraw_form(request)))
-    return li
-
-def withdrawable_request_item(request):
-    li = common.request_item(request)
-    if common.can_edit_request(request):
-        li(T.div(class_='actions')(withdraw_form(request)))
-    return li
-
-def accepted_request_item(request):
-    li = common.request_item(request)
-    if common.can_edit_request(request):
-        li(T.div(class_='actions')(mark_checked_in_form(request), T.span('or', class_='sep'),  withdraw_form(request)))
-    return li
-
 class EditPush(RequestHandler):
     def get_request_header_list(self, header, default=''):
         hval = self.request.headers.get(header, default)
@@ -203,6 +185,24 @@ class EditPush(RequestHandler):
         if push.state == 'live':
             requests_div(accepted_list(push.live_requests))
         else:
+            def onstage_request_item(request):
+                li = common.request_item(request)
+                if common.can_edit_request(request, push):
+                    li(T.div(class_='actions')(mark_tested_form(request), T.span('or', class_='sep'), withdraw_form(request)))
+                return li
+
+            def withdrawable_request_item(request):
+                li = common.request_item(request)
+                if common.can_edit_request(request, push):
+                    li(T.div(class_='actions')(withdraw_form(request)))
+                return li
+
+            def accepted_request_item(request):
+                li = common.request_item(request)
+                if common.can_edit_request(request, push):
+                    li(T.div(class_='actions')(mark_checked_in_form(request), T.span('or', class_='sep'),  withdraw_form(request)))
+                return li
+
             request_states = [
                 ('Tested on Stage', requests_with_state('tested'), withdrawable_request_item),
                 ('On Stage', requests_with_state('onstage'), onstage_request_item),
