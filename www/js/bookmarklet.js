@@ -9,7 +9,7 @@
 
     var summary = $('#summary').text();
     var codeReview = location.href.split('#')[0];
-    var reviewers = $.makeArray($('#target_people a').map(elementToText));
+    var reviewers = $('div.shipit').closest('div[id^=review]').find('a[href^=/users/]').map(elementToText).get();
     var tickets = $('#bugs_closed').text().split(',').filter(Boolean).map(ticketNumberToURL);
     var branch = $('#branch').text();
     
