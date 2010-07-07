@@ -386,3 +386,7 @@ pre.code {
     color: #333;
     background-color: #EEE;
 }
+
+.nothing {
+    padding: 0.25em 0;
+}

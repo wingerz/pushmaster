@@ -64,6 +64,29 @@ class ViewReport(RequestHandler):
 
         doc.serialize(self.response.out)
 
+nothing_messages = (
+    'Zip.',
+    'Zero.',
+    'Zilch.',
+    'Nada.',
+    'Bupkiss.',
+    'Nothing to see here, move along.',
+    'Nope.',
+    'Void.',
+    'None.',
+    'Naught.',
+    'This area left intentionally blank.',
+    'Diddly.',
+    'Nix.',
+    'Nothing.',
+    'Zippo.',
+    'Zot.',
+    'Null.',
+    'Nil.',
+    'Crickets.',
+    'Empty.',
+    )
+
 class LastWeek(RequestHandler):
     def get(self, datestr=None):
         if datestr:
@@ -83,6 +106,8 @@ class LastWeek(RequestHandler):
         teams_list = T.ul(class_='teams')
         doc(teams_list)
 
+        nothing_messages_list = None
+
         for team in config.report_users:
             team_item = T.li(class_='team')(T.h3(team['name']))
             teams_list(team_item)
@@ -96,6 +121,15 @@ class LastWeek(RequestHandler):
                 if dev_requests:
                     requests_list = T.ol(class_='requests')(map(common.request_item, dev_requests))
                     dev_item(requests_list)
+                else:
+                    # lazy (re)initialize random messages
+                    if not nothing_messages_list:
+                        nothing_messages_list = list(nothing_messages)
+                        import random
+                        random.shuffle(nothing_messages_list)
+
+                    dev_item(T.div(nothing_messages_list.pop(), class_='nothing'))
+
 
             if 'prod' in team:
                 team_item(T.h4('PM: ' if len(team['prod']) == 1 else 'PMs: ', ', '.join(team['prod']), class_='pm'))
