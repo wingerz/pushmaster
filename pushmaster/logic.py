@@ -57,18 +57,6 @@ def choose_date_strftime_format(d):
 def format_date(d):
     return d.strftime(choose_date_strftime_format(d))
 
-def maybe_send_request_im(request):
-    if request.target_date <= datetime.date.today():
-        current_push = Push.current()
-        if current_push:
-            im_fields = dict(
-                requester_email=escape(request.owner.email()),
-                requester_name=escape(request.owner.nickname()),
-                request_subject=escape(request.subject),
-                uri=escape(config.url(current_push.uri)),
-                )
-            maybe_send_im(current_push.owner.email(), '<a href="mailto:%(requester_email)s">%(requester_name)s</a> requests to check in <a href="%(uri)s">%(request_subject)s</a>.' % im_fields)
-
 def create_request(subject, message=None, push_plans=False, no_testing=False, urgent=False, js_serials=False, target_date=None, branch=None):
     assert len(subject) > 0
     target_date = target_date or datetime.date.today()
@@ -81,7 +69,6 @@ def create_request(subject, message=None, push_plans=False, no_testing=False, ur
     request.put()
     Request.bust_caches()
     send_request_mail(request)
-    maybe_send_request_im(request)
 
     return request
 
@@ -105,7 +92,6 @@ def edit_request(request, subject, message=None, push_plans=False, no_testing=Fa
     request.put()
     Request.bust_caches()
     send_request_mail(request)
-    maybe_send_request_im(request)
 
     return request
 
