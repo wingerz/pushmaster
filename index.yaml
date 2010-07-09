@@ -12,6 +12,13 @@ indexes:
 
 - kind: Push
   properties:
+  - name: cuser
+  - name: state
+  - name: ctime
+    direction: desc
+
+- kind: Push
+  properties:
   - name: owner
   - name: state
   - name: ctime
@@ -47,6 +54,13 @@ indexes:
 
 - kind: Request
   properties:
+  - name: cuser
+  - name: state
+  - name: target_date
+    direction: desc
+
+- kind: Request
+  properties:
   - name: owner
   - name: state
   - name: target_date
@@ -55,7 +69,21 @@ indexes:
 - kind: Request
   properties:
   - name: owner
+  - name: state
   - name: target_date
+    direction: desc
+  - name: ctime
+    direction: desc
+
+- kind: Request
+  properties:
+  - name: owner
+  - name: target_date
+
+- kind: Request
+  properties:
+  - name: push
+  - name: mtime
 
 - kind: Request
   properties:
@@ -83,6 +111,12 @@ indexes:
   properties:
   - name: state
   - name: target_date
+
+- kind: Request
+  properties:
+  - name: state
+  - name: target_date
+  - name: ctime
 
 - kind: Request
   properties:

@@ -155,7 +155,7 @@ class EditPush(RequestHandler):
 
     def render_doc(self, current_user, push, pending_requests):
         doc = common.Document(title='pushmaster: push: ' + logic.format_datetime(push.ptime))
-        requests = list(push.requests)
+        requests = list(push.requests.order('mtime'))
         push_div = self.render_push_div(current_user, push, requests, pending_requests)
         doc.body(push_div)
 
@@ -183,7 +183,7 @@ class EditPush(RequestHandler):
             return filter(lambda r: r.state == state, requests)
 
         if push.state == 'live':
-            requests_div(accepted_list(push.live_requests))
+            requests_div(accepted_list(requests_with_state('live')))
         else:
             def onstage_request_item(request):
                 li = common.request_item(request)

@@ -8,9 +8,13 @@ from pushmaster import urls
 
 __author__ = 'Jeremy Latt <jlatt@yelp.com>'
 
-class Push(db.Model):
+class TrackedModel(db.Model):
+    cuser = db.UserProperty(auto_current_user_add=True)
     ctime = db.DateTimeProperty(auto_now_add=True)
+    muser = db.UserProperty(auto_current_user=True)
     mtime = db.DateTimeProperty(auto_now=True)
+
+class Push(TrackedModel):
     owner = db.UserProperty(auto_current_user_add=True)
     state = db.StringProperty(choices=('accepting', 'onstage', 'live', 'abandoned'), default='accepting')
     ltime = db.DateTimeProperty()
@@ -84,20 +88,20 @@ class Push(db.Model):
     def bust_caches(cls):
         memcache.delete_multi(['push-current', 'push-open'])
 
-class Request(db.Model):
-    ctime = db.DateTimeProperty(auto_now_add=True)
-    mtime = db.DateTimeProperty(auto_now=True)
+class Request(TrackedModel):
     owner = db.UserProperty(auto_current_user_add=True)
     subject = db.StringProperty(required=True)
+    branch = db.StringProperty()
     message = db.TextProperty()
-    push = db.ReferenceProperty(Push, collection_name='requests')
     state = db.StringProperty(choices=('requested', 'accepted', 'checkedin', 'onstage', 'tested', 'live', 'abandoned'), default='requested')
+
     push_plans = db.BooleanProperty(default=False)
     no_testing = db.BooleanProperty(default=False)
     js_serials = db.BooleanProperty(default=False)
     urgent = db.BooleanProperty(default=False)
     target_date = db.DateProperty(required=True)
-    branch = db.StringProperty()
+
+    push = db.ReferenceProperty(Push, collection_name='requests')
 
     @property
     def uri(self):
@@ -107,7 +111,7 @@ class Request(db.Model):
     def current(cls, not_after=None):
         current_requests = memcache.get('request-current')
         if current_requests is None:
-            current_requests = list(cls.all().filter('state =', 'requested').order('target_date').order('subject'))
+            current_requests = list(cls.all().filter('state =', 'requested').order('target_date').order('ctime'))
             memcache.add('request-current', current_requests, 60 * 10)
 
         if not_after:
@@ -118,7 +122,7 @@ class Request(db.Model):
     @classmethod
     def for_user(cls, user):
         states = ('requested', 'accepted', 'checkedin', 'onstage', 'tested', 'live')
-        return cls.all().filter('owner =', user).filter('state in', states).order('-target_date')
+        return cls.all().filter('owner =', user).filter('state in', states).order('-target_date').order('-ctime')
 
     @classmethod
     def bust_caches(cls):
