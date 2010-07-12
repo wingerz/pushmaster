@@ -64,29 +64,6 @@ class ViewReport(RequestHandler):
 
         doc.serialize(self.response.out)
 
-nothing_messages = (
-    'Zip.',
-    'Zero.',
-    'Zilch.',
-    'Nada.',
-    'Bupkiss.',
-    'Nothing to see here, move along.',
-    'Nope.',
-    'Void.',
-    'None.',
-    'Naught.',
-    'This area left intentionally blank.',
-    'Diddly.',
-    'Nix.',
-    'Nothing.',
-    'Zippo.',
-    'Zot.',
-    'Null.',
-    'Nil.',
-    'Crickets.',
-    'Empty.',
-    )
-
 class LastWeek(RequestHandler):
     def get(self, datestr=None):
         if datestr:
@@ -124,7 +101,7 @@ class LastWeek(RequestHandler):
                 else:
                     # lazy (re)initialize random messages
                     if not nothing_messages_list:
-                        nothing_messages_list = list(nothing_messages)
+                        nothing_messages_list = list(config.nothing_messages)
                         import random
                         random.shuffle(nothing_messages_list)
 

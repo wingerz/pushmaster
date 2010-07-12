@@ -31,3 +31,30 @@ def gen_report_user_to_team():
         for dev in team['dev']:
             yield (dev, team['name'])
 report_user_to_team = dict(gen_report_user_to_team())
+
+nothing_messages = (
+    'Zip.',
+    'Zero.',
+    'Zilch.',
+    'Nada.',
+    'Bupkiss.',
+    'Nothing to see here, move along.',
+    'Nope.',
+    'Void.',
+    'None.',
+    'Naught.',
+    'This area left intentionally blank.',
+    'Diddly.',
+    'Nix.',
+    'Nothing.',
+    'Zippo.',
+    'Zot.',
+    'Null.',
+    'Nil.',
+    'Crickets.',
+    'Empty.',
+    'Tumbleweeds.',
+    'A cricket riding a tumbleweed.',
+    'The sound of one hand clapping.',
+    'Guru Meditation #00000004 0000AAC0',
+    )
