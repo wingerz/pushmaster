@@ -89,18 +89,23 @@ class Push(TrackedModel):
         memcache.delete_multi(['push-current', 'push-open'])
 
 class Request(TrackedModel):
+    all_states = ('requested', 'accepted', 'checkedin', 'onstage', 'tested', 'live', 'abandoned', 'rejected')
+    default_state = 'requested'
+
     owner = db.UserProperty(auto_current_user_add=True)
     subject = db.StringProperty(required=True)
     branch = db.StringProperty()
     message = db.TextProperty()
-    state = db.StringProperty(choices=('requested', 'accepted', 'checkedin', 'onstage', 'tested', 'live', 'abandoned'), default='requested')
+    state = db.StringProperty(choices=all_states, default=default_state)
+    reject_reason = db.TextProperty()
+    target_date = db.DateProperty(required=True)
 
     push_plans = db.BooleanProperty(default=False)
     no_testing = db.BooleanProperty(default=False)
     js_serials = db.BooleanProperty(default=False)
     img_serials = db.BooleanProperty(default=False)
     urgent = db.BooleanProperty(default=False)
-    target_date = db.DateProperty(required=True)
+
 
     push = db.ReferenceProperty(Push, collection_name='requests')
 
@@ -122,7 +127,7 @@ class Request(TrackedModel):
 
     @classmethod
     def for_user(cls, user):
-        states = ('requested', 'accepted', 'checkedin', 'onstage', 'tested', 'live')
+        states = ('requested', 'accepted', 'checkedin', 'onstage', 'tested', 'live', 'rejected')
         return cls.all().filter('owner =', user).filter('state in', states).order('-target_date').order('-ctime')
 
     @classmethod

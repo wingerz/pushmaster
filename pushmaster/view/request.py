@@ -62,7 +62,7 @@ def edit_request_form(request):
                         ),
                     ),
                 T.div(
-                    T.button(type='submit', name='action', value='edit')('Save'),
+                    T.button(type='submit', name='act', value='edit')('Save'),
                     ),
                 ),
             ),
@@ -73,26 +73,26 @@ def request_actions_form(request):
 
     button_count = 0
 
-    if request.state == 'requested':
-        form(T.button(type='submit', name='action', value='abandon')('Abandon'))
+    if request.state in ('requested', 'rejected'):
+        form(T.button(type='submit', name='act', value='abandon')('Abandon'))
         button_count += 1
 
     elif request.state == 'accepted':
         if button_count:
             form(T.span(' or '))
-        form(T.button(type='submit', name='action', value='markcheckedin')('Mark Checked In'))
+        form(T.button(type='submit', name='act', value='markcheckedin')('Mark Checked In'))
         button_count += 1
 
     elif request.state == 'onstage':
         if button_count:
             form(T.span(' or '))
-        form(T.button(type='submit', name='action', value='marktested')('Mark Tested'))
+        form(T.button(type='submit', name='act', value='marktested')('Mark Tested'))
         button_count += 1
 
     if request.state in ('accepted', 'checkedin', 'onstage', 'tested'):
         if button_count:
             form(T.span(' or '))
-        form(T.button(type='submit', name='action', value='withdraw')('Withdraw'))
+        form(T.button(type='submit', name='act', value='withdraw')('Withdraw'))
         button_count += 1
         
     return form
@@ -106,6 +106,13 @@ def request_display(request):
     div = T.div(class_='request')(title)
     if request.branch:
         div(T.h3(T.span('Branch: '), T.span(request.branch)))
+
+    if request.reject_reason:
+        div(
+            T.h3('Reject Reason:'),
+            T.p(request.reject_reason, class_='reject-reason'),
+            )
+
     div(T.div(class_='message')(common.linkify(request.message or '')))
 
     if request.urgent:
@@ -118,6 +125,8 @@ def request_display(request):
         title(common.js_serials_badge())
     if request.img_serials:
         title(common.img_serials_badge())
+
+    title(T.span(request.state, class_='state'))
 
     if common.can_edit_request(request):
         div(request_actions_form(request))
@@ -203,7 +212,7 @@ class EditRequest(RequestHandler):
         doc.body(rdisplay)
         
         if common.can_edit_request(request):
-            if request.state == 'requested':
+            if request.state in ('requested', 'rejected'):
                 doc.body(edit_request_form(request))
         else:
             rdisplay(common.take_ownership_form(request))
@@ -217,7 +226,7 @@ class EditRequest(RequestHandler):
         except BadKeyError:
             raise HTTPStatusCode(httplib.NOT_FOUND)
 
-        action = self.request.get('action')
+        action = self.request.get('act')
         redirect_to_push = self.request.get('push') == 'true'
 
         if action == 'edit':
@@ -279,6 +288,12 @@ class EditRequest(RequestHandler):
         elif action == 'take_ownership':
             push_uri = request.push.uri if request.push else None
             logic.take_ownership(request)
+            self.redirect(push_uri if (redirect_to_push and push_uri) else request.uri)
+
+        elif action == 'reject':
+            push_uri = request.push.uri if request.push else None
+            reason = self.request.get('reason')
+            logic.reject_request(request, users.get_current_user(), reason)
             self.redirect(push_uri if (redirect_to_push and push_uri) else request.uri)
         
         else:

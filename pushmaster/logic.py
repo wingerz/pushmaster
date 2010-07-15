@@ -1,4 +1,4 @@
-from cgi import escape
+from cgi import escape as html_escape
 import datetime
 from google.appengine.api import mail
 from google.appengine.api import users
@@ -73,10 +73,11 @@ def create_request(subject, message=None, push_plans=False, no_testing=False, ur
     return request
 
 def edit_request(request, subject, message=None, push_plans=False, no_testing=False, urgent=False, js_serials=False, target_date=None, branch=None, img_serials=False):
-    assert request.state in ('requested', 'accepted')
+    assert request.state in ('requested', 'rejected')
     target_date = target_date or datetime.date.today()
 
     request.state = 'requested'
+    request.reject_reason = None
     request.push = None
     request.subject = subject
     request.branch = branch
@@ -112,7 +113,7 @@ def send_request_mail(request):
         body='\n'.join(body))
 
 def abandon_request(request):
-    assert request.state in ('requested', 'accepted')
+    assert request.state in ('requested', 'accepted', 'rejected')
     request.state = 'abandoned'
     request.push = None
     
@@ -214,10 +215,10 @@ def send_to_stage(push):
                     body='Please check your changes on stage.\n' + config.url(push.uri))
 
                 im_fields = dict(
-                    pushmaster_email=escape(push.owner.email()),
-                    pushmaster_name=escape(push.owner.nickname()),
-                    request_subject=escape(request.subject),
-                    uri=escape(config.url(push.uri)),
+                    pushmaster_email=html_escape(push.owner.email()),
+                    pushmaster_name=html_escape(push.owner.nickname()),
+                    request_subject=html_escape(request.subject),
+                    uri=html_escape(config.url(push.uri)),
                     )
                 maybe_send_im(owner_email, '<a href="mailto:%(pushmaster_email)s">%(pushmaster_name)s</a> requests that you check your changes on stage for <a href="%(uri)s">%(request_subject)s</a>.' % im_fields)
                 request.put()
@@ -305,3 +306,31 @@ def force_live(push):
     Push.bust_caches()
     
     return push
+
+def reject_request(request, rejector, reason=None):
+    request.push = None
+    request.state = 'rejected'
+    if reason:
+        request.reject_reason = reason
+
+    request.put()
+    Request.bust_caches()
+
+    im_fields = dict(
+        rejector_email=html_escape(rejector.email()),
+        rejector_name=html_escape(rejector.nickname()),
+        request_subject=html_escape(request.subject),
+        uri=html_escape(config.url(request.uri)),
+        reason=html_escape(reason),
+        )
+    maybe_send_im(request.owner.email(), '<a href="mailto:%(rejector_email)s">%(rejector_name)s</a> rejected your request <a href="%(uri)s">%(request_subject)s</a>: %(reason)s' % im_fields)
+
+    mail.send_mail(
+        sender=rejector,
+        to=request.owner.email(),
+        cc=config.mail_to,
+        subject='Re: ' + request.subject,
+        body="""This request was rejected.\n\n%s\n\n%s""" % (reason, config.url(request.uri)),
+        )
+
+    return request

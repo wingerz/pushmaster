@@ -60,12 +60,14 @@ pushmaster.dialog.Dialog.prototype = {
         if (!this.form.dialog('isOpen')) {
             this.form.dialog('open');
         }
+        return this;
     },
 
     close: function() {
         if (this.initialized && this.form.dialog('isOpen')) {
             this.form.dialog('close');
         }
+        return this;
     },
 
     toggle: function() {
@@ -74,6 +76,7 @@ pushmaster.dialog.Dialog.prototype = {
         } else {
             this.open();
         }
+        return this;
     }
 };
 
@@ -119,6 +122,26 @@ pushmaster.dialog.StartPush.prototype = $.extend(new pushmaster.dialog.Dialog(),
     }
 });
 
+pushmaster.dialog.RejectRequest = function() {
+    this.form = $('#reject-request-form');
+    this.constructor.prototype.constructor.call(this);
+};
+pushmaster.dialog.RejectRequest.prototype = $.extend(new pushmaster.dialog.Dialog(), {
+    dialogOptions: {
+        'title': 'Reject Request',
+        'width': 500,
+        'height': 300,
+        'position': ['center', 100]
+    },
+
+    setRequest: function(request) {
+        console.log(request);
+        this.form.attr('action', request.uri);
+        this.form.find('.subject').text(request.subject);
+        return this;
+    }
+});
+
 pushmaster.provide('event');
 
 pushmaster.event.preventDefaultEmptyHref = function(e) {
@@ -149,6 +172,15 @@ $(function() {
     pushmaster.page.startPush = new pushmaster.dialog.StartPush();
     $('#new-push').click(function(e) {
         pushmaster.page.startPush.toggle();
+    });
+
+    pushmaster.page.rejectRequest = new pushmaster.dialog.RejectRequest();
+    $('a.reject-request').live('click', function(e) {
+        e.preventDefault();
+        var link = $(e.target).closest('a');
+        pushmaster.page.rejectRequest
+            .setRequest({'uri': link.attr('href'), 'subject': link.attr('title')})
+            .toggle();
     });
 });
 

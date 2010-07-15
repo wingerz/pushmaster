@@ -46,7 +46,7 @@ class Pushes(RequestHandler):
         doc.serialize(self.response.out)
 
     def post(self):
-        action = self.request.get('action')
+        action = self.request.get('act')
         
         if action == 'new_push':
             name = self.request.get('name')
@@ -67,7 +67,12 @@ def push_pending_list(push, requests):
                     T.form(class_='small', action=request.uri, method='post')(
                         T.div(class_='fields')(
                             T.button(type='submit')('Accept'),
-                            common.hidden(push=str(push.key()), action='accept')))))
+                            common.hidden(push=str(push.key()), act='accept')),
+                        ),
+                    T.span('or', class_='sep'),
+                    reject_request_link(request),
+                    ),
+               )
         return li
     ol = T.ol(class_='requests')
     if requests:
@@ -84,19 +89,19 @@ def push_actions_form(push, requests):
     if push.state in ('accepting', 'onstage') and filter(lambda r: r.state == 'checkedin', requests):
         if button_count:
             fields(T.span(' or '))
-        fields(T.button(type='submit', name='action', value='sendtostage')('Mark Deployed to Stage'))
+        fields(T.button(type='submit', name='act', value='sendtostage')('Mark Deployed to Stage'))
         button_count +=1
 
     if push.state == 'onstage' and requests and all(r.state == 'tested' for r in requests):
         if button_count:
             fields(T.span(' or '))
-        fields(T.button(type='submit', name='action', value='sendtolive')('Mark Live'))
+        fields(T.button(type='submit', name='act', value='sendtolive')('Mark Live'))
         button_count +=1
 
     if push.state in ('accepting', 'onstage'):
         if button_count:
             fields(T.span(' or '))
-        fields(T.button(type='submit', name='action', value='abandon')('Abandon'))
+        fields(T.button(type='submit', name='act', value='abandon')('Abandon'))
         button_count +=1
         
     return form
@@ -105,19 +110,22 @@ def mark_checked_in_form(request):
     return T.form(class_='small', method='post', action=request.uri)(
         T.div(class_='fields')(
             T.button(type='submit')('Mark Checked In'), 
-            common.hidden(push='true', action='markcheckedin')))
+            common.hidden(push='true', act='markcheckedin')))
 
 def withdraw_form(request):
     return T.form(class_='small', method='post', action=request.uri)(
         T.div(class_='fields')(
             T.button(type='submit')('Withdraw'),
-            common.hidden(push='true', action='withdraw')))
+            common.hidden(push='true', act='withdraw')))
 
 def mark_tested_form(request):
     return T.form(class_='small', method='post', action=request.uri)(
         T.div(class_='fields')(
             T.button(type='submit')('Mark Tested'), 
-            common.hidden(push='true', action='marktested')))
+            common.hidden(push='true', act='marktested')))
+
+def reject_request_link(request):
+    return T.a('Reject', class_='reject-request', href=request.uri, title=request.subject)
 
 class EditPush(RequestHandler):
     def get_request_header_list(self, header, default=''):
@@ -210,7 +218,13 @@ class EditPush(RequestHandler):
             def accepted_request_item(request):
                 li = common.request_item(request)
                 if common.can_edit_request(request, push):
-                    li(T.div(class_='actions')(mark_checked_in_form(request), T.span('or', class_='sep'),  withdraw_form(request)))
+                    li(T.div(class_='actions')(
+                            mark_checked_in_form(request), 
+                            T.span('or', class_='sep'),  
+                            withdraw_form(request),
+                            T.span('or', class_='sep'),
+                            reject_request_link(request),
+                            ))
                 return li
 
             request_states = [
@@ -240,7 +254,7 @@ class EditPush(RequestHandler):
         except BadKeyError:
             raise HTTPStatusCode(httplib.NOT_FOUND)
 
-        action = self.request.get('action')
+        action = self.request.get('act')
 
         if action == 'sendtostage':
             logic.send_to_stage(push)

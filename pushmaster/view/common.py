@@ -119,7 +119,7 @@ def request_list(requests):
 def take_ownership_form(object):
     form = T.form(class_='small', action=object.uri, method='post')(
         T.div(class_='fields')(
-            T.button(type='submit', name='action', value='take_ownership')('Take Ownership'),
+            T.button(type='submit', name='act', value='take_ownership')('Take Ownership'),
             ),
         )
     return form
@@ -182,10 +182,23 @@ def new_request_form(push=None, subject='', message='', branch=''):
 def new_push_form():
     return T.form(action='/pushes', method='post', class_='new-push')(
         T.div(class_='fields')(
-            T.input(type='hidden', name='action', value='new_push'),
+            T.input(type='hidden', name='act', value='new_push'),
             T.div(T.label(for_='new-push-name')('Name:')),
             T.div(T.input(type='text', name='name', class_='push-name', id='new-push-name')),
             T.div(T.button(type='submit', class_='submit')('Start New Push')),
+            ),
+        )
+
+def reject_request_form():
+    return T.form(action='#', method='post', class_='reject-request', id='reject-request-form')(
+        T.div(class_='fields')(
+            hidden(act='reject', push='true'),
+            T.h2(class_='subject'),
+            T.label(for_='reject-request-reason')(
+                T.span('Reason:'),
+                T.div(T.textarea(name='reason', id='reject-request-reason')),
+                ),
+            T.div(T.button(type='submit', class_='submit')('Reject')),
             ),
         )
 
@@ -254,6 +267,9 @@ class Document(XHTML):
         push_form = new_push_form()
         push_form(id='new-push-form')
         self.dialogs(push_form)
+
+        reject_form = reject_request_form()
+        self.dialogs(reject_form)
 
         self.body = T.body(session(), navbar(), self.dialogs)
         self.html(self.head, self.body)

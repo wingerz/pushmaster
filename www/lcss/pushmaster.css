@@ -397,3 +397,12 @@ pre.code {
 .nothing {
     padding: 0.25em 0;
 }
+
+#reject-request-reason {
+    height: 8em;
+    width: 100%;
+}
+
+.reject-reason {
+    margin-bottom: 1em;
+}
