@@ -101,7 +101,7 @@ pushmaster.dialog.MakeRequest.prototype = $.extend(new pushmaster.dialog.Dialog(
     dialogOptions: {
         'title': 'Make Request',
         'width': 700,
-        'height': 450,
+        'height': 500,
         'position': ['center', 100]
     }
 });

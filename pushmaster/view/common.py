@@ -77,7 +77,10 @@ def no_testing_badge():
     return T.span(class_='no-testing', title='This request requires no testing on stage.')('N')
 
 def js_serials_badge():
-    return T.span(class_='js-serials', title='This request requires the pushmaster to bump JS serials.')('J')
+    return T.span(class_='js-serials', title='This request requires the pushmaster to bump Javascript serials.')('J')
+
+def img_serials_badge():
+    return T.span(class_='img-serials', title='This request requires the pushmaster to bump image serials.')('I')
 
 def request_item(request):
     li = T.li(class_='request')(
@@ -104,6 +107,9 @@ def request_item(request):
 
     if request.js_serials:
         li(js_serials_badge())
+
+    if request.img_serials:
+        li(img_serials_badge())
 
     return li
 
@@ -158,7 +164,11 @@ def new_request_form(push=None, subject='', message='', branch=''):
                         ),
                     T.div(
                         T.input(id='new-request-js-serials', type='checkbox', name='js_serials', class_='checkbox'),
-                        T.label(class_='checkbox', for_='new-request-js-serials')('Bump JS Serials'),
+                        T.label(class_='checkbox', for_='new-request-js-serials')('Bump Javascript Serials'),
+                        ),
+                    T.div(
+                        T.input(id='new-request-img-serials', type='checkbox', name='img_serials', class_='checkbox'),
+                        T.label(class_='checkbox', for_='new-request-img-serials')('Bump Image Serials'),
                         ),
                     ),
                 T.button(type='submit')('Create')

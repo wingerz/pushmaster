@@ -174,6 +174,16 @@ class EditPush(RequestHandler):
             push_div(common.take_ownership_form(push)(class_='small push-action'))
             
         header = T.h1(common.display_datetime(push.ptime), T.span(class_='name')(push.name or ''), common.user_home_link(push.owner))
+
+        if any(request.push_plans for request in requests):
+            header(common.push_plans_badge())
+
+        if any(request.js_serials for request in requests):
+            header(common.js_serials_badge())
+
+        if any(request.img_serials for request in requests):
+            header(common.img_serials_badge())
+
         push_div(header)
 
         requests_div = T.div(class_='requests')

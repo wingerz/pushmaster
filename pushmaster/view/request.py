@@ -54,7 +54,11 @@ def edit_request_form(request):
                         ),
                     T.div(
                         T.input(id='edit-request-js-serials-'+request_id, type='checkbox', name='js_serials', checked=request.js_serials, class_='checkbox'),
-                        T.label(for_='edit-request-js-serials-'+request_id, class_='checkbox')('Bump JS Serials'),
+                        T.label(for_='edit-request-js-serials-'+request_id, class_='checkbox')('Bump Javascript Serials'),
+                        ),
+                    T.div(
+                        T.input(id='edit-request-img-serials-'+request_id, type='checkbox', name='img_serials', checked=request.img_serials, class_='checkbox'),
+                        T.label(for_='edit-request-img-serials-'+request_id, class_='checkbox')('Bump Image Serials'),
                         ),
                     ),
                 T.div(
@@ -112,6 +116,8 @@ def request_display(request):
         title(common.push_plans_badge())
     if request.js_serials:
         title(common.js_serials_badge())
+    if request.img_serials:
+        title(common.img_serials_badge())
 
     if common.can_edit_request(request):
         div(request_actions_form(request))
@@ -147,6 +153,7 @@ class Requests(RequestHandler):
         no_testing = self.request.get('no_testing', 'off')
         urgent = self.request.get('urgent', 'off')
         js_serials = self.request.get('js_serials', 'off')
+        img_serials = self.request.get('img_serials', 'off')
         target_date = self.request.get('target_date')
         target_date = datetime.datetime.strptime(target_date, '%Y-%m-%d').date() if target_date else None
 
@@ -155,6 +162,7 @@ class Requests(RequestHandler):
             assert no_testing in ('on', 'off'), 'no_testing must be either on or off'
             assert urgent in ('on', 'off'), 'urgent must be either on or off'
             assert js_serials in ('on', 'off'), 'js_serials must be on or off'
+            assert img_serials in ('on', 'off'), 'img_serials must be on or off'
             assert len(subject) > 0, 'subject is required'
         except AssertionError, e:
             self.log.info('bad request: %s', e.message)
@@ -167,6 +175,7 @@ class Requests(RequestHandler):
             no_testing=(no_testing == 'on'),
             urgent=(urgent == 'on'),
             js_serials=(js_serials == 'on'),
+            img_serials=(img_serials == 'on'),
             target_date=target_date,
             branch=branch,
             )
@@ -226,7 +235,20 @@ class EditRequest(RequestHandler):
             assert urgent in ('on', 'off'), 'urgent must be on or off'
             js_serials = self.request.get('js_serials', 'off')
             assert js_serials in ('on', 'off'), 'js_serials must be on or off'
-            logic.edit_request(request, subject=subject, message=message, push_plans=push_plans == 'on', no_testing=no_testing == 'on', urgent=urgent == 'on', js_serials=js_serials == 'on', target_date=target_date, branch=branch)
+            img_serials = self.request.get('img_serials', 'off')
+            assert img_serials in ('on', 'off'), 'img_serials must be on or off'
+            logic.edit_request(
+                request, 
+                subject=subject, 
+                message=message, 
+                push_plans=push_plans == 'on', 
+                no_testing=no_testing == 'on', 
+                urgent=urgent == 'on', 
+                js_serials=js_serials == 'on', 
+                img_serials=img_serials == 'on',
+                target_date=target_date, 
+                branch=branch,
+                )
             self.redirect(request.uri)
 
         elif action == 'accept':

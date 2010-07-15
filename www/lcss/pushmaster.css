@@ -320,6 +320,13 @@ span.js-serials {
     margin-right: 0.5em;
 }
 
+span.img-serials {
+    color: rgb(119, 173, 27);
+    font-weight: bold;
+    cursor: help;
+    margin-right: 0.5em;
+}
+
 li.request .actions {
     margin: 0.25em 0;
 }
