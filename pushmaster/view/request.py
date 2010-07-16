@@ -45,6 +45,10 @@ def edit_request_form(request):
                         T.label(for_='edit-request-urgent-'+request_id, class_='checkbox')('Urgent (e.g. P0)'),
                         ),
                     T.div(
+                        T.input(id='edit-request-tests-pass-'+request_id, type='checkbox', name='tests_pass', checked=request.tests_pass, class_='checkbox'),
+                        T.label(for_='edit-request-tests-pass-'+request_id, class_='checkbox')('Passes Buildbot'),
+                        ),
+                    T.div(
                         T.input(id='edit-request-no-testing-'+request_id, type='checkbox', name='no_testing', checked=request.no_testing, class_='checkbox'),
                         T.label(for_='edit-request-no-testing-'+request_id, class_='checkbox')('No Testing (batch-only)'),
                         ),
@@ -117,14 +121,8 @@ def request_display(request):
 
     if request.urgent:
         title.attrs['class'] += ' urgent'
-    if request.no_testing:
-        title(common.no_testing_badge())
-    if request.push_plans:
-        title(common.push_plans_badge())
-    if request.js_serials:
-        title(common.js_serials_badge())
-    if request.img_serials:
-        title(common.img_serials_badge())
+
+    title(common.request_badges(request))
 
     title(T.span(request.state, class_='state'))
 
@@ -172,6 +170,7 @@ class Requests(RequestHandler):
             assert urgent in ('on', 'off'), 'urgent must be either on or off'
             assert js_serials in ('on', 'off'), 'js_serials must be on or off'
             assert img_serials in ('on', 'off'), 'img_serials must be on or off'
+            assert tests_pass in ('on', 'off'), 'tests_pass must be on or off'
             assert len(subject) > 0, 'subject is required'
         except AssertionError, e:
             self.log.info('bad request: %s', e.message)
@@ -185,6 +184,7 @@ class Requests(RequestHandler):
             urgent=(urgent == 'on'),
             js_serials=(js_serials == 'on'),
             img_serials=(img_serials == 'on'),
+            tests_pass=(tests_pass == 'on'),
             target_date=target_date,
             branch=branch,
             )
@@ -246,6 +246,8 @@ class EditRequest(RequestHandler):
             assert js_serials in ('on', 'off'), 'js_serials must be on or off'
             img_serials = self.request.get('img_serials', 'off')
             assert img_serials in ('on', 'off'), 'img_serials must be on or off'
+            tests_pass = self.request.get('tests_pass', 'off')
+            assert tests_pass in ('on', 'off'), 'tests_pass must be on or off'
             logic.edit_request(
                 request, 
                 subject=subject, 
@@ -255,6 +257,7 @@ class EditRequest(RequestHandler):
                 urgent=urgent == 'on', 
                 js_serials=js_serials == 'on', 
                 img_serials=img_serials == 'on',
+                tests_pass=(tests_pass == 'on'),
                 target_date=target_date, 
                 branch=branch,
                 )

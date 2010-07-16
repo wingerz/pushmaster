@@ -105,7 +105,7 @@ class Request(TrackedModel):
     js_serials = db.BooleanProperty(default=False)
     img_serials = db.BooleanProperty(default=False)
     urgent = db.BooleanProperty(default=False)
-
+    tests_pass = db.BooleanProperty(default=False)
 
     push = db.ReferenceProperty(Push, collection_name='requests')
 

@@ -57,23 +57,15 @@ def choose_date_strftime_format(d):
 def format_date(d):
     return d.strftime(choose_date_strftime_format(d))
 
-def create_request(subject, message=None, push_plans=False, no_testing=False, urgent=False, js_serials=False, target_date=None, branch=None, img_serials=False):
-    assert len(subject) > 0
-    target_date = target_date or datetime.date.today()
+def create_request(subject, **kw):
+    return set_request_properties(Request(), subject, **kw)
 
-    request = Request(subject=subject, push_plans=push_plans, no_testing=no_testing, urgent=urgent, js_serials=js_serials, target_date=target_date, branch=branch, img_serials=img_serials)
-    if message:
-        assert len(message) > 0
-        request.message = message
-
-    request.put()
-    Request.bust_caches()
-    send_request_mail(request)
-
-    return request
-
-def edit_request(request, subject, message=None, push_plans=False, no_testing=False, urgent=False, js_serials=False, target_date=None, branch=None, img_serials=False):
+def edit_request(request, subject, **kw):
     assert request.state in ('requested', 'rejected')
+    return set_request_properties(request, subject, **kw)
+
+def set_request_properties(request, subject, message=None, push_plans=False, no_testing=False, urgent=False, js_serials=False, target_date=None, branch=None, img_serials=False, tests_pass=False):
+    assert len(subject) > 0
     target_date = target_date or datetime.date.today()
 
     request.state = 'requested'
@@ -85,6 +77,7 @@ def edit_request(request, subject, message=None, push_plans=False, no_testing=Fa
     request.no_testing = no_testing
     request.js_serials = js_serials
     request.img_serials = img_serials
+    request.tests_pass = tests_pass
     request.urgent = urgent
     request.target_date = target_date
     if message:

@@ -82,6 +82,20 @@ def js_serials_badge():
 def img_serials_badge():
     return T.span(class_='img-serials', title='This request requires the pushmaster to bump image serials.')('I')
 
+def tests_pass_badge():
+    return T.span(class_='tests-pass', title='All Buildbot tests pass for this request.')('B')
+
+request_flags_badge_map = (
+    ('no_testing', no_testing_badge),
+    ('push_plans', push_plans_badge),
+    ('tests_pass', tests_pass_badge),
+    ('js_serials', js_serials_badge),
+    ('img_serials', img_serials_badge),
+    )
+
+def request_badges(request):
+    return [badge() for flag, badge in request_flags_badge_map if getattr(request, flag)]
+
 def request_item(request):
     li = T.li(class_='request')(
         display_date(request.target_date),
@@ -99,17 +113,7 @@ def request_item(request):
     if request.owner == users.get_current_user():
         li.attrs['class'] += ' own'
 
-    if request.no_testing:
-        li(no_testing_badge())
-
-    if request.push_plans:
-        li(push_plans_badge())
-
-    if request.js_serials:
-        li(js_serials_badge())
-
-    if request.img_serials:
-        li(img_serials_badge())
+    li(request_badges(request))
 
     return li
 
@@ -153,6 +157,10 @@ def new_request_form(push=None, subject='', message='', branch=''):
                     T.div(
                         T.input(id='new-request-urgent', type='checkbox', name='urgent', class_='checkbox'),
                         T.label(for_='new-request-urgent', class_='checkbox')('Urgent (e.g. P0)'),
+                        ),
+                    T.div(
+                        T.input(id='new-request-tests-pass', type='checkbox', name='tests_pass', class_='checkbox'),
+                        T.label(for_='new-request-tests-pass', class_='checkbox')('Passes Buildbot'),
                         ),
                     T.div(
                         T.input(id='new-request-no-testing', type='checkbox', name='no_testing', class_='checkbox'),
