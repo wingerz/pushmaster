@@ -6,7 +6,7 @@ body {
 	max-width: 55em;
 	margin: 1em auto;
 	padding: 0 1em 1em 1em;
-	font-family: "Helvetica", "Arial", sans;
+	font-family: Helvetica, Arial, sans;
 	font-size: 14px;
 	color: #333;
 }
@@ -300,38 +300,32 @@ li.request a.request-subject {
     margin-right: 0.5em;
 }
 
+.badge {
+    font-weight: bold;
+    cursor: help;
+    margin-right: 0.5em;
+    font-family: serif;
+}
+
 a.push-plans {
 	color: #F00;
-	font-weight: bold;
-    margin-right: 0.5em;
+    cursor: pointer;
 }
 
 span.no-testing {
     color: #FF7722;
-    font-weight: bold;
-    cursor: help;
-    margin-right: 0.5em;
 }
 
 span.js-serials {
     color: rgb(36, 102, 207);
-    font-weight: bold;
-    cursor: help;
-    margin-right: 0.5em;
 }
 
 span.img-serials {
     color: rgb(36, 102, 207);
-    font-weight: bold;
-    cursor: help;
-    margin-right: 0.5em;
 }
 
 span.tests-pass {
     color: rgb(119, 173, 27);
-    font-weight: bold;
-    cursor: help;
-    margin-right: 0.5em;
 }
 
 li.request .actions {
