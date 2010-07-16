@@ -7,6 +7,7 @@ from google.appengine.api.datastore_errors import BadKeyError
 
 from pushmaster import config
 from pushmaster import logic
+from pushmaster import query
 from pushmaster.model import *
 from pushmaster.taglib import T
 from pushmaster.view import common
@@ -135,13 +136,13 @@ class Requests(RequestHandler):
     def get(self):
         doc = common.Document(title='pushmaster: requests')
 
-        requests = Request.current()
+        requests = query.current_requests()
 
         subject = self.request.get('subject')
         message = self.request.get('message')        
 
         if requests:
-            doc.body(T.h2('Pending Requests'), common.request_list(requests))
+            doc.body(T.h2('Current Requests'), common.request_list(requests))
 
         doc.body(
             T.div(common.bookmarklet(self.hostname)),
@@ -295,8 +296,10 @@ class EditRequest(RequestHandler):
             self.redirect(push_uri if (redirect_to_push and push_uri) else request.uri)
 
         elif action == 'reject':
-            push_uri = request.push.uri if request.push else None
             reason = self.request.get('reason')
+            push_uri = request.push.uri if request.push else None
+            if not push_uri:
+                push_uri = self.request.get('return_url')
             logic.reject_request(request, users.get_current_user(), reason)
             self.redirect(push_uri if (redirect_to_push and push_uri) else request.uri)
         

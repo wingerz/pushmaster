@@ -2,7 +2,7 @@ import datetime, httplib, logging
 
 from google.appengine.api import users
 
-from pushmaster import config, model, timezone, urls
+from pushmaster import config, model, query, timezone, urls
 from pushmaster.view import common, RequestHandler
 from pushmaster.taglib import T
 
@@ -42,7 +42,7 @@ class ViewReport(RequestHandler):
         doc = common.Document(title='pushmaster: reports')
         doc.body(T.h1('Report for ', from_date.strftime('%e %b %Y'), ' - ', to_date.strftime('%e %b %Y')))
 
-        pushes = model.Push.for_week_of(from_date)
+        pushes = query.pushes_for_the_week_of(from_date)
         for push in pushes:
             pushdiv = T.div(class_='push')
             pushdiv(T.h2(
@@ -55,7 +55,7 @@ class ViewReport(RequestHandler):
                     common.display_user_email(push.owner),
                     ))
             reqlist = T.ol(class_='requests')
-            for request in push.requests:
+            for request in query.push_requests(push):
                 reqlist(common.request_item(request))
             pushdiv(reqlist)
             doc.body(pushdiv)
@@ -71,11 +71,11 @@ class LastWeek(RequestHandler):
         else:
             for_date = last_monday_datetime() - datetime.timedelta(days=7)
             return self.redirect('/lastweek/' + for_date.strftime('%Y%m%d'))
-        
-        pushes = model.Push.for_week_of(from_date)        
+
+        pushes = query.pushes_for_the_week_of(from_date)
         requests = []
         for push in pushes:
-            requests.extend(push.requests)
+            requests.extend(query.push_requests(push))
         requests = sorted(requests, key=lambda r: r.mtime)
 
         doc = common.Document(title='pushmaster: weekly report: ' + datestr)

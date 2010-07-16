@@ -284,10 +284,6 @@ li.request.own {
     background-color: rgba(221, 238, 255, 0.75);
 }
 
-ol.my.requests li.request.own {
-    background-color: rgba(250, 250, 250, 0.75);
-}
-
 li.request.future {
     opacity: 0.5;
 }
@@ -298,6 +294,10 @@ li.request.future .date {
 
 li.request a.request-subject {
     margin-right: 0.5em;
+}
+
+li.request.rejected {
+    background-color: rgba(255, 227, 227, 0.75);
 }
 
 .badge {

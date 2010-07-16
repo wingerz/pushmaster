@@ -7,6 +7,7 @@ from google.appengine.runtime.apiproxy_errors import OverQuotaError
 from pushmaster import config
 from pushmaster.model import *
 from pushmaster import timezone
+from pushmaster import query
 
 __author__ = 'Jeremy Latt <jlatt@yelp.com>'
 
@@ -68,7 +69,7 @@ def set_request_properties(request, subject, message=None, push_plans=False, no_
     assert len(subject) > 0
     target_date = target_date or datetime.date.today()
 
-    request.state = 'requested'
+    request.state = request.default_state
     request.reject_reason = None
     request.push = None
     request.subject = subject
@@ -85,7 +86,8 @@ def set_request_properties(request, subject, message=None, push_plans=False, no_
         request.message = message
 
     request.put()
-    Request.bust_caches()
+    query.bust_request_caches()
+
     send_request_mail(request)
 
     return request
@@ -108,28 +110,20 @@ def send_request_mail(request):
 def abandon_request(request):
     assert request.state in ('requested', 'accepted', 'rejected')
     request.state = 'abandoned'
+    push = request.push
     request.push = None
     
     request.put()
-    
-    Request.bust_caches()
+    query.bust_request_caches()
+    if push is not None:
+        push.bust_requests_cache()
 
     return request
 
-def create_push(name=None, parent=None):
+def create_push(name=None):
     push = Push(name=name)
 
-    if parent:
-        assert parent.state in ('accepting', 'onstage')
-        for request in parent.requests:
-            request.push = push
-            request.put()
-        parent.state = 'abandoned'
-        parent.put()
-
     push.put()
-
-    Push.bust_caches()
 
     return push
 
@@ -137,15 +131,14 @@ def abandon_push(push):
     assert push.state in ('accepting', 'onstage')
 
     push.state = 'abandoned'
-    for request in push.requests:
+    for request in query.push_requests(push):
         request.state = 'requested'
         request.push = None
         request.put()
 
     push.put()
-
-    Request.bust_caches()
-    Push.bust_caches()
+    query.bust_request_caches()
+    push.bust_requests_cache()
 
     return push
 
@@ -158,18 +151,24 @@ def accept_request(push, request):
     request.state = 'accepted'
 
     request.put()
-    Request.bust_caches()
+    query.bust_request_caches()
+    push.bust_requests_cache()
 
     return request
 
 def withdraw_request(request):
     assert request.state in ('accepted', 'checkedin', 'onstage', 'tested')
-    assert request.push
+    push = request.push
+    assert push
     assert request.push.state in ('accepting', 'onstage')
 
     push_owner_email = request.push.owner.email()
     request.push = None
     request.state = 'requested'
+
+    request.put()
+    query.bust_request_caches()
+    push.bust_requests_cache()
 
     mail.send_mail(
         sender=users.get_current_user().email(),
@@ -178,25 +177,22 @@ def withdraw_request(request):
         subject='Re: ' + request.subject,
         body='I withdrew my request.\n' + config.url(request.uri))
 
-    request.put()
-    
-    Request.bust_caches()
-
     return request
 
 def send_to_stage(push):
     assert push.state in ('accepting', 'onstage')
 
-    push.state = 'onstage'
-    push.put()
-    
-    Push.bust_caches()
+    checkedin_requests = query.push_requests(push, state='checkedin')
+    if checkedin_requests:
+        if push.state != 'onstage':
+            push.state = 'onstage'
 
-    for request in push.requests:
-        if request.state == 'checkedin':
+            push.put()
+
+        for request in checkedin_requests:
             request.state = 'onstage'
             if request.no_testing:
-                set_request_tested(request)
+                set_request_tested(request, bust_caches=False)
             else:
                 owner_email = request.owner.email()
 
@@ -216,16 +212,20 @@ def send_to_stage(push):
                 maybe_send_im(owner_email, '<a href="mailto:%(pushmaster_email)s">%(pushmaster_name)s</a> requests that you check your changes on stage for <a href="%(uri)s">%(request_subject)s</a>.' % im_fields)
                 request.put()
 
+        push.bust_requests_cache()
+
     return push
 
-def set_request_tested(request):
+def set_request_tested(request, bust_caches=True):
     assert request.state == 'onstage'
-    assert request.push
-
     push = request.push
+    assert push
 
     request.state = 'tested'
     request.put()
+
+    if bust_caches:
+        push.bust_requests_cache()
     
     push_owner_email = push.owner.email()
     
@@ -236,14 +236,14 @@ def set_request_tested(request):
         subject='Re: ' + request.subject,
         body='Looks good to me.\n' + config.url(push.uri))
 
-    if all(request.state == 'tested' for request in push.requests):
+    if all(request.state == 'tested' for request in query.push_requests(push)):
         maybe_send_im(push_owner_email, 'All changes for <a href="%s">the push</a> are tested on stage.' % config.url(push.uri))
 
     return request
 
 def send_to_live(push):
     assert push.state == 'onstage'
-    requests = list(push.requests)
+    requests = query.push_requests(push)
     for request in requests:
         assert request.state in ('tested', 'live')
 
@@ -253,61 +253,68 @@ def send_to_live(push):
 
     push.state = 'live'
     push.ltime = datetime.datetime.utcnow()
+
     push.put()
-    
-    Push.bust_caches()
+    push.bust_requests_cache()
 
     return push
 
 def set_request_checkedin(request):
     assert request.state == 'accepted'
-    assert request.push
+    push = request.push
+    assert push
 
     request.state = 'checkedin'
-        
+
+    request.put()
+    push.bust_requests_cache()
+
     mail.send_mail(
         sender=users.get_current_user().email(),
         to=request.push.owner.email(),
         cc=config.mail_to,
         subject='Re: ' + request.subject,
-        body='My changes are checked in.\n' + config.url(request.push.uri))
-
-    request.put()
+        body='My changes are checked in.\n' + config.url(push.uri))
 
     return request
 
 def take_ownership(object):
     object.owner = users.get_current_user()
-    object.put()
 
-    if isinstance(object, Push):
-        Push.bust_caches()
-    elif isinstance(object, Request):
-        Request.bust_caches()
+    object.put()
+    type(object).bust_caches()
+
+    if isinstance(object, Request):
+        object.push.bust_requests_cache()
     
     return object
 
 def force_live(push):
-    for request in push.requests:
+    for request in query.push_requests(push):
         request.state = 'live'
+
         request.put()
+    push.bust_requests_cache()
 
     push.state = 'live'
     push.ltime = push.mtime
-    push.put()
 
-    Push.bust_caches()
+    push.put()
     
     return push
 
 def reject_request(request, rejector, reason=None):
+    push = request.push
+
     request.push = None
     request.state = 'rejected'
     if reason:
         request.reject_reason = reason
 
     request.put()
-    Request.bust_caches()
+    query.bust_request_caches()
+    if push is not None:
+        push.bust_requests_cache()
 
     im_fields = dict(
         rejector_email=html_escape(rejector.email()),
@@ -319,7 +326,7 @@ def reject_request(request, rejector, reason=None):
     maybe_send_im(request.owner.email(), '<a href="mailto:%(rejector_email)s">%(rejector_name)s</a> rejected your request <a href="%(uri)s">%(request_subject)s</a>: %(reason)s' % im_fields)
 
     mail.send_mail(
-        sender=rejector,
+        sender=rejector.email(),
         to=request.owner.email(),
         cc=config.mail_to,
         subject='Re: ' + request.subject,

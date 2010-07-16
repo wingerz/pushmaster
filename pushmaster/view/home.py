@@ -5,6 +5,7 @@ from google.appengine.api import users
 
 from pushmaster import config
 from pushmaster import model
+from pushmaster import query
 from pushmaster.taglib import T, XHTML
 from pushmaster.view import common
 from pushmaster.view import RequestHandler, HTTPStatusCode
@@ -30,7 +31,7 @@ def request_item(request):
 
 class Root(RequestHandler):
     def get(self):
-        push = model.Push.current()
+        push = query.current_push()
         if push:
             return self.redirect(push.uri)
         else:
@@ -46,14 +47,14 @@ class UserHome(RequestHandler):
 
         user = users.User(email)
 
-        requests = model.Request.for_user(user).fetch(50)
+        requests = query.requests_for_user(user)
         if requests:
             doc.body(
                 T.h3('Recent Requests'),
                 T.ol(class_='my requests')(map(request_item, requests)),
                 )
 
-        pushes = model.Push.for_user(user).fetch(20)
+        pushes = query.pushes_for_user(user)
         if pushes:
             doc.body(
                 T.h3('Recent Pushes'),

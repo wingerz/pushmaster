@@ -137,6 +137,7 @@ pushmaster.dialog.RejectRequest.prototype = $.extend(new pushmaster.dialog.Dialo
     setRequest: function(request) {
         console.log(request);
         this.form.attr('action', request.uri);
+        this.form.find('[name=return_url]').val(location.href);
         this.form.find('.subject').text(request.subject);
         return this;
     }

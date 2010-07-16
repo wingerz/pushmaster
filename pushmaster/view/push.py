@@ -12,6 +12,7 @@ from pushmaster.taglib import T, ScriptCData
 from pushmaster import config
 from pushmaster import logic
 from pushmaster import model
+from pushmaster import query
 from pushmaster import urls
 from pushmaster.view import common
 from pushmaster.view import HTTPStatusCode
@@ -37,10 +38,11 @@ class Pushes(RequestHandler):
     def get(self):
         doc = common.Document(title='pushmaster: pushes')
         
-        pushes = model.Push.open()
+        pushes = query.open_pushes()
 
         push_list = T.ol(map(push_item, pushes))
         
+        doc.body(T.h1('Recent Pushes'))
         doc.body(push_list)
         doc.body(common.jquery_js, common.jquery_ui_js, common.pushmaster_js)
         doc.serialize(self.response.out)
@@ -136,7 +138,7 @@ class EditPush(RequestHandler):
         push = None
 
         if push_id == 'current':
-            push = model.Push.current()
+            push = query.current_push()
             self.redirect(push.uri if push else '/pushes')
             return
 
@@ -146,10 +148,10 @@ class EditPush(RequestHandler):
             raise HTTPStatusCode(httplib.NOT_FOUND)
 
         current_user = users.get_current_user()        
-        pending_requests = model.Request.current(not_after=datetime.date.today()) if current_user == push.owner else []
+        pending_requests = query.pending_requests(not_after=datetime.date.today()) if current_user == push.owner else []
 
         if 'application/json' in self.get_request_header_list('Accept', default='*/*'):
-            requests = list(push.requests)
+            requests = query.push_requests(push)
             push_div = self.render_push_div(current_user, push, requests, pending_requests)
             response = {'push': dict(key=unicode(push.key()), state=push.state), 'html': unicode(push_div)}
             self.response.headers['Vary'] = 'Accept'
@@ -163,7 +165,7 @@ class EditPush(RequestHandler):
 
     def render_doc(self, current_user, push, pending_requests):
         doc = common.Document(title='pushmaster: push: ' + logic.format_datetime(push.ptime))
-        requests = list(push.requests.order('mtime'))
+        requests = query.push_requests(push)
         push_div = self.render_push_div(current_user, push, requests, pending_requests)
         doc.body(push_div)
 

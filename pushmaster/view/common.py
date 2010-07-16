@@ -108,7 +108,9 @@ def request_item(request):
 
     if request.urgent:
         li.attrs['class'] += ' urgent'
-        li(title='Urgent!')
+
+    if request.state == 'rejected':
+        li.attrs['class'] += ' rejected'
 
     if request.owner == users.get_current_user():
         li.attrs['class'] += ' own'
@@ -200,7 +202,7 @@ def new_push_form():
 def reject_request_form():
     return T.form(action='#', method='post', class_='reject-request', id='reject-request-form')(
         T.div(class_='fields')(
-            hidden(act='reject', push='true'),
+            hidden(act='reject', push='true', return_url=''),
             T.h2(class_='subject'),
             T.label(for_='reject-request-reason')(
                 T.span('Reason:'),
@@ -233,7 +235,6 @@ display_push_state_map = {
 
 def display_push_state(push):
     return display_push_state_map.get(push.state, 'Unknown')
-
 
 favicon = T.link(rel='shortcut icon', type='image/x-icon', href=config.favicon)
 meta_content_type = T.meta(**{ 'http-equiv': 'Content-type', 'content': 'text/html;charset=UTF-8' })
