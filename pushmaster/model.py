@@ -93,12 +93,12 @@ class Request(TrackedModel):
     default_state = 'requested'
 
     owner = db.UserProperty(auto_current_user_add=True)
-    subject = db.StringProperty(required=True)
+    subject = db.StringProperty()
     branch = db.StringProperty()
     message = db.TextProperty()
     state = db.StringProperty(choices=all_states, default=default_state)
     reject_reason = db.TextProperty()
-    target_date = db.DateProperty(required=True)
+    target_date = db.DateProperty()
 
     push_plans = db.BooleanProperty(default=False)
     no_testing = db.BooleanProperty(default=False)

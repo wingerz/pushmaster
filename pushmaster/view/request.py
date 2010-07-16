@@ -161,6 +161,7 @@ class Requests(RequestHandler):
         urgent = self.request.get('urgent', 'off')
         js_serials = self.request.get('js_serials', 'off')
         img_serials = self.request.get('img_serials', 'off')
+        tests_pass = self.request.get('tests_pass', 'off')
         target_date = self.request.get('target_date')
         target_date = datetime.datetime.strptime(target_date, '%Y-%m-%d').date() if target_date else None
 
