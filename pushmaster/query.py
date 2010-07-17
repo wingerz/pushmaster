@@ -42,7 +42,7 @@ def open_pushes():
 
 def pushes_for_user(user, limit=25):
     states = ('accepting', 'onstage', 'live')
-    pushes = model.Push.all().filter('owner =', user).filter('state in', states).fetch(limit)
+    pushes = model.Push.all().filter('owner =', user).filter('state in', states).order('-mtime').fetch(limit)
     pushes = sorted(pushes, key=lambda p: p.ptime, reverse=True)
     return pushes
 
@@ -75,7 +75,7 @@ def pending_requests(not_after=None):
 
 def requests_for_user(user, limit=25):
     states = ('requested', 'accepted', 'checkedin', 'onstage', 'tested', 'live', 'rejected')
-    requests = model.Request.all().filter('state in', states).filter('owner =', user).fetch(limit)
+    requests = model.Request.all().filter('state in', states).filter('owner =', user).order('-mtime').fetch(limit)
     requests = sorted(requests, key=lambda r: (r.target_date, r.ctime), reverse=True)
     return requests
 

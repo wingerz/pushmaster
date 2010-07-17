@@ -296,8 +296,8 @@ li.request a.request-subject {
     margin-right: 0.5em;
 }
 
-li.request.rejected {
-    background-color: rgba(255, 227, 227, 0.75);
+li.request.rejected .request-subject {
+    text-decoration: line-through;
 }
 
 .badge {
