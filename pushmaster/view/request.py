@@ -115,7 +115,7 @@ def request_display(request):
     if request.reject_reason:
         div(
             T.h3('Reject Reason:'),
-            T.p(request.reject_reason, class_='reject-reason'),
+            T.p(common.linkify(request.reject_reason), class_='reject-reason'),
             )
 
     div(T.div(class_='message')(common.linkify(request.message or '')))
