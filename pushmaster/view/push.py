@@ -207,19 +207,19 @@ class EditPush(RequestHandler):
         else:
             def onstage_request_item(request):
                 li = common.request_item(request)
-                if common.can_edit_request(request, push):
+                if current_user == push.owner:
                     li(T.div(class_='actions')(mark_tested_form(request), T.span('or', class_='sep'), withdraw_form(request)))
                 return li
 
             def withdrawable_request_item(request):
                 li = common.request_item(request)
-                if common.can_edit_request(request, push):
+                if current_user == push.owner:
                     li(T.div(class_='actions')(withdraw_form(request)))
                 return li
 
             def accepted_request_item(request):
                 li = common.request_item(request)
-                if common.can_edit_request(request, push):
+                if current_user == push.owner:
                     li(T.div(class_='actions')(
                             mark_checked_in_form(request), 
                             T.span('or', class_='sep'),  

@@ -102,7 +102,7 @@ def request_actions_form(request):
         
     return form
 
-def request_display(request):
+def request_display(request, push):
     title = T.h2(class_='request-title')(
         T.span(class_='subject')(request.subject),
         common.user_home_link(request.owner),
@@ -127,7 +127,7 @@ def request_display(request):
 
     title(T.span(request.state, class_='state'))
 
-    if common.can_edit_request(request):
+    if not push or users.get_current_user() == push.owner:
         div(request_actions_form(request))
 
     return div
@@ -202,12 +202,12 @@ class EditRequest(RequestHandler):
             raise HTTPStatusCode(httplib.NOT_FOUND)
 
         doc = common.Document(title='pushmaster: request: ' + request.subject)
-        
-        rdisplay = request_display(request)
 
+        push = request.push
+        rdisplay = request_display(request, push)
         doc.body(rdisplay)
-        
-        if common.can_edit_request(request):
+
+        if request.owner == users.get_current_user():
             if request.state in ('requested', 'rejected'):
                 doc.body(edit_request_form(request))
         else:
