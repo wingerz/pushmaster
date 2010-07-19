@@ -207,7 +207,7 @@ class EditPush(RequestHandler):
         else:
             def onstage_request_item(request):
                 li = common.request_item(request)
-                if current_user == push.owner:
+                if current_user == push.owner or current_user == request.owner:
                     li(T.div(class_='actions')(mark_tested_form(request), T.span('or', class_='sep'), withdraw_form(request)))
                 return li
 
