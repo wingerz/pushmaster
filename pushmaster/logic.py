@@ -1,19 +1,28 @@
 from cgi import escape as html_escape
 import datetime
-from google.appengine.api import mail
+
 from google.appengine.api import users
-from google.appengine.api import xmpp
+from google.appengine.api.labs import taskqueue
 from google.appengine.runtime.apiproxy_errors import OverQuotaError
+
 from pushmaster import config
 from pushmaster.model import *
+from pushmaster import tasks
 from pushmaster import timezone
 from pushmaster import query
 
 __author__ = 'Jeremy Latt <jlatt@yelp.com>'
 
-def maybe_send_im(to, msg):
-    if xmpp.get_presence(to):
-        xmpp.send_message(to, '<html xmlns="http://jabber.org/protocol/xhtml-im"><body xmlns="http://www.w3.org/1999/xhtml">%s</body></html>' % msg, raw_xml=True)
+def send_mail(to=None, subject=None, body=None):
+    assert to
+    assert subject
+    assert body
+    taskqueue.Queue(name='mail').add(taskqueue.Task(url=tasks.mail_task_url, params=dict(to=to, subject=subject, body=body)))
+
+def send_im(to=None, message=None):
+    assert to
+    assert message
+    taskqueue.Queue(name='xmpp').add(taskqueue.Task(url=tasks.xmpp_task_url, params=dict(to=to, message=message)))
 
 def tznow(tz=config.timezone):
     return datetime.datetime.now(tz)
@@ -101,8 +110,7 @@ def send_request_mail(request):
         body.append('This request requires no stage testing.')
     body.append(config.url(request.uri))
 
-    mail.send_mail(
-        sender=users.get_current_user().email(),
+    send_mail(
         to=config.mail_to,
         subject=request.subject,
         body='\n'.join(body))
@@ -170,10 +178,8 @@ def withdraw_request(request):
     query.bust_request_caches()
     push.bust_requests_cache()
 
-    mail.send_mail(
-        sender=users.get_current_user().email(),
-        to=push_owner_email,
-        cc=config.mail_to,
+    send_mail(
+        to=[push_owner_email, config.mail_to],
         subject='Re: ' + request.subject,
         body='I withdrew my request.\n' + config.url(request.uri))
 
@@ -196,10 +202,8 @@ def send_to_stage(push):
             else:
                 owner_email = request.owner.email()
 
-                mail.send_mail(
-                    sender=users.get_current_user().email(),
-                    to=owner_email,
-                    cc=config.mail_to,
+                send_mail(
+                    to=[owner_email, config.mail_to],
                     subject='Re: ' + request.subject,
                     body='Please check your changes on stage.\n' + config.url(push.uri))
 
@@ -209,7 +213,7 @@ def send_to_stage(push):
                     request_subject=html_escape(request.subject),
                     uri=html_escape(config.url(push.uri)),
                     )
-                maybe_send_im(owner_email, '<a href="mailto:%(pushmaster_email)s">%(pushmaster_name)s</a> requests that you check your changes on stage for <a href="%(uri)s">%(request_subject)s</a>.' % im_fields)
+                send_im(owner_email, '<a href="mailto:%(pushmaster_email)s">%(pushmaster_name)s</a> requests that you check your changes on stage for <a href="%(uri)s">%(request_subject)s</a>.' % im_fields)
                 request.put()
 
         push.bust_requests_cache()
@@ -229,15 +233,13 @@ def set_request_tested(request, bust_caches=True):
     
     push_owner_email = push.owner.email()
     
-    mail.send_mail(
-        sender=users.get_current_user().email(),
-        to=push_owner_email,
-        cc=config.mail_to,
+    send_mail(
+        to=[push_owner_email, config.mail_to],
         subject='Re: ' + request.subject,
         body='Looks good to me.\n' + config.url(push.uri))
 
     if all(request.state == 'tested' for request in query.push_requests(push)):
-        maybe_send_im(push_owner_email, 'All changes for <a href="%s">the push</a> are tested on stage.' % config.url(push.uri))
+        send_im(push_owner_email, 'All changes for <a href="%s">the push</a> are tested on stage.' % config.url(push.uri))
 
     return request
 
@@ -269,10 +271,8 @@ def set_request_checkedin(request):
     request.put()
     push.bust_requests_cache()
 
-    mail.send_mail(
-        sender=users.get_current_user().email(),
-        to=request.push.owner.email(),
-        cc=config.mail_to,
+    send_mail(
+        to=[push.owner.email(), config.mail_to],
         subject='Re: ' + request.subject,
         body='My changes are checked in.\n' + config.url(push.uri))
 
@@ -325,12 +325,10 @@ def reject_request(request, rejector, reason=None):
         uri=html_escape(config.url(request.uri)),
         reason=html_escape(reason),
         )
-    maybe_send_im(request.owner.email(), '<a href="mailto:%(rejector_email)s">%(rejector_name)s</a> rejected your request <a href="%(uri)s">%(request_subject)s</a>: %(reason)s' % im_fields)
+    send_im(request.owner.email(), '<a href="mailto:%(rejector_email)s">%(rejector_name)s</a> rejected your request <a href="%(uri)s">%(request_subject)s</a>: %(reason)s' % im_fields)
 
-    mail.send_mail(
-        sender=rejector.email(),
-        to=request.owner.email(),
-        cc=config.mail_to,
+    send_mail(
+        to=[request.owner.email(), config.mail_to],
         subject='Re: ' + request.subject,
         body="""This request was rejected.\n\n%s\n\n%s""" % (reason, config.url(request.uri)),
         )

@@ -13,6 +13,10 @@ handlers:
   script: $PYTHON_LIB/google/appengine/ext/admin
   login: admin
 
+- url: /tasks/.*
+  script: pushmaster/tasks.py
+  login: admin
+
 - url: .*
   script: main.py
   login: required
