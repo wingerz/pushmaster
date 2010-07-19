@@ -49,6 +49,7 @@ report_users:
     name: Search
     dev:
       - aditya
+      - benjamin
       - daniel
       - jfennell
       - shivaram
