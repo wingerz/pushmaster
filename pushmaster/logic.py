@@ -282,10 +282,12 @@ def take_ownership(object):
     object.owner = users.get_current_user()
 
     object.put()
-    type(object).bust_caches()
 
     if isinstance(object, Request):
+        query.bust_request_caches()
         object.push.bust_requests_cache()
+    elif isinstance(object, Push):
+        query.bust_push_caches()
     
     return object
 
