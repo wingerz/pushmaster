@@ -134,23 +134,17 @@ def request_display(request):
 
 class Requests(RequestHandler):
     def get(self):
-        doc = common.Document(title='pushmaster: requests')
-
         requests = query.current_requests()
 
-        subject = self.request.get('subject')
-        message = self.request.get('message')        
-
-        if requests:
-            doc.body(T.h2('Current Requests'), common.request_list(requests))
-
+        doc = common.Document(title='pushmaster: requests')
         doc.body(
+            T.h2(('Current Requests (%d)' % len(requests)) if len(requests) > 5 else 'Current Requests'),
+            common.request_list(requests) if requests else T.span('There are no requests at present.'),
             T.div(common.bookmarklet(self.hostname)),
             common.jquery_js,
             common.jquery_ui_js,
             common.pushmaster_js,
             )
-
         doc.serialize(self.response.out)
         
     def post(self):

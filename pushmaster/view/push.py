@@ -237,6 +237,8 @@ class EditPush(RequestHandler):
                 ]
             for label, subrequests, request_item in request_states:
                 if subrequests:
+                    if len(subrequests) > 5:
+                        label = '%(label)s (%(count)d)' % {'label': label, 'count': len(subrequests)}
                     requests_div(T.h3(label), accepted_list(subrequests, request_item=request_item))
 
         if current_user == push.owner:
@@ -246,7 +248,8 @@ class EditPush(RequestHandler):
                     
         if push.state in ('accepting', 'onstage'):
             if pending_requests:
-                push_div(T.h2(class_='pending')('Pending Requests'), push_pending_list(push, pending_requests))
+                pending_requests_title = ('Pending Requests (%d)' % len(pending_requests)) if len(pending_requests) > 5 else 'Pending Requests'
+                push_div(T.h2(class_='pending')(pending_requests_title), push_pending_list(push, pending_requests))
 
         return push_div
 
