@@ -19,6 +19,7 @@ hostname = 'yelp-pushmaster.appspot.com' if is_prod else 'localhost:8080'
 protocol = 'http'
 push_plans_url = 'https://trac.yelpcorp.com/wiki/YelpPushPlans'
 static_host_count = 4
+git_branch_url = 'https://gitweb.yelpcorp.com/?p=yelp-main.git;a=log;h=refs/heads/%(branch)s'
 
 def url(path):
     return '%s://%s%s' % (protocol, hostname, path)

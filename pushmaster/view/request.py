@@ -110,7 +110,7 @@ def request_display(request, push):
         )
     div = T.div(class_='request')(title)
     if request.branch:
-        div(T.h3(T.span('Branch: '), T.span(request.branch)))
+        div(T.h3(T.span('Branch: '), T.a(request.branch, href=config.git_branch_url % dict(branch=request.branch))))
 
     if request.reject_reason:
         div(
