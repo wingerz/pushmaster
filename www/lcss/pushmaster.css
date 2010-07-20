@@ -6,7 +6,7 @@ body {
 	max-width: 55em;
 	margin: 1em auto;
 	padding: 0 1em 1em 1em;
-	font-family: Helvetica, Arial, sans;
+	font-family: sans;
 	font-size: 14px;
 	color: #333;
 }
@@ -301,31 +301,43 @@ li.request.rejected .request-subject {
 }
 
 .badge {
+    font-size: 0.9em;
     font-weight: bold;
-    cursor: help;
+    text-transform: lowercase;
+
+    padding: 0 0.25em;
     margin-right: 0.5em;
-    font-family: serif;
+
+    cursor: help;
+    border-radius: 0.3em;
+    -moz-border-radius: 0.3em;
+    -webkit-border-radius: 0.3em;
 }
 
 a.push-plans {
-	color: #F00;
+    color: #000;
+    background-color: #F00;
     cursor: pointer;
 }
 
 span.no-testing {
-    color: #FF7722;
+    color: #000;
+    background-color: #FF7722;
 }
 
 span.js-serials {
-    color: rgb(36, 102, 207);
+    color: #EEE;
+    background-color: rgb(36, 102, 207);
 }
 
 span.img-serials {
-    color: rgb(36, 102, 207);
+    color: #EEE;
+    background-color: rgb(36, 102, 207);
 }
 
 span.tests-pass {
-    color: rgb(119, 173, 27);
+    color: #EEE;
+    background-color: rgb(119, 173, 27);
 }
 
 li.request .actions {

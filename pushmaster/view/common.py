@@ -71,19 +71,19 @@ def display_user_email(user):
     return T.span(class_='email')(user_email(user)),
 
 def push_plans_badge():
-    return T.a(class_='push-plans badge', href=config.push_plans_url, title='This request has push plans.')('P')
+    return T.a(class_='push-plans badge', href=config.push_plans_url, title='This request has push plans.')('Push Plans')
 
 def no_testing_badge():
-    return T.span(class_='no-testing badge', title='This request requires no testing on stage.')('N')
+    return T.span(class_='no-testing badge', title='This request requires no testing on stage.')('No Testing')
 
 def js_serials_badge():
-    return T.span(class_='js-serials badge', title='This request requires the pushmaster to bump Javascript serials.')('J')
+    return T.span(class_='js-serials badge', title='This request requires the pushmaster to bump Javascript serials.')('JS')
 
 def img_serials_badge():
-    return T.span(class_='img-serials badge', title='This request requires the pushmaster to bump image serials.')('I')
+    return T.span(class_='img-serials badge', title='This request requires the pushmaster to bump image serials.')('Image')
 
 def tests_pass_badge():
-    return T.span(class_='tests-pass badge', title='All Buildbot tests pass for this request.')('B')
+    return T.span(class_='tests-pass badge', title='All Buildbot tests pass for this request.')('Tested')
 
 request_flags_badge_map = (
     ('no_testing', no_testing_badge),
