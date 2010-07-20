@@ -22,13 +22,17 @@ def push_requests(push, state=None):
 
 CURRENT_PUSH_CACHE_KEY = 'push-current'
 OPEN_PUSHES_CACHE_KEY = 'push-open'
+NO_CURRENT_PUSH = 'no-current-push'
 
 def current_push():
     current_push = memcache.get(CURRENT_PUSH_CACHE_KEY)
     if current_push is None:
         states = ('accepting', 'onstage')
         current_push = model.Push.all().filter('state in', states).order('-ctime').get()
-        memcache.add(CURRENT_PUSH_CACHE_KEY, current_push, CACHE_SECONDS)
+        memcache.add(CURRENT_PUSH_CACHE_KEY, current_push or NO_CURRENT_PUSH, CACHE_SECONDS)
+    elif current_push == NO_CURRENT_PUSH:
+        return None
+
     return current_push
 
 def open_pushes():
