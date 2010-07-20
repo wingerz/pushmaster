@@ -135,7 +135,6 @@ pushmaster.dialog.RejectRequest.prototype = $.extend(new pushmaster.dialog.Dialo
     },
 
     setRequest: function(request) {
-        console.log(request);
         this.form.attr('action', request.uri);
         this.form.find('[name=return_url]').val(location.href);
         this.form.find('.subject').text(request.subject);
@@ -199,8 +198,6 @@ pushmaster.provide('shortcuts');
 pushmaster.shortcuts.lastKeys = [];
 
 pushmaster.shortcuts.keyup = function(e) {
-    console.debug('pushmaster.shortcuts.keyup', e.which);
-
     var lastKeys = pushmaster.shortcuts.lastKeys;
     lastKeys.push(e.which);
     while (lastKeys.length > 3) {
