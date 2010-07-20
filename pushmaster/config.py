@@ -1,3 +1,4 @@
+import os
 import timezone
 import util
 
@@ -25,7 +26,7 @@ def url(path):
 def static_host(path):
     return '%d.%s' % (hash(path) % static_host_count, hostname)
 
-report_users = yaml.load(file('report_users.yaml'))['report_users']
+report_users = yaml.load(file(os.path.join(os.path.dirname(__file__), '..', 'report_users.yaml')))['report_users']
 
 def gen_report_user_to_team():
     for team in report_users:
