@@ -280,8 +280,8 @@ li.request .email {
     margin-left: 2em;
 }
 
-li.request.own {
-    background-color: rgba(221, 238, 255, 0.75);
+li.request.own .email {
+    font-weight: bold;
 }
 
 li.request.future {
@@ -379,10 +379,6 @@ ol.pushes {
 
 ul.teams {
     margin-bottom: 50em;
-}
-
-ul.teams li.dev ol.requests li.own {
-    background-color: rgba(250, 250, 250, 0.75);
 }
 
 ul.teams li.dev ol.requests li.request span.email {
