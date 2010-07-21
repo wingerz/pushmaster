@@ -244,7 +244,7 @@ class EditPush(RequestHandler):
         if current_user == push.owner:
             accepted_requests = requests_with_state('accepted')
             if accepted_requests:
-                requests_div(T.pre('rebase-pull-branches %s' % (' '.join(['"%s"' % request.branch for request in accepted_requests if request.branch]),), class_='code'))
+                requests_div(T.div('rebase-pull-branches %s' % (' '.join(['"%s"' % request.branch for request in accepted_requests if request.branch]),), class_='code'))
                     
         if push.state in ('accepting', 'onstage'):
             if pending_requests:

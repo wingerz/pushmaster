@@ -395,9 +395,9 @@ ul.teams h4 {
     padding: 0.25em;
 }
 
-pre.code {
+div.code {
     padding: 0.25em;
-    font-family: Monaco, "Courier New", mono;
+    font-family: monospace;
     border: 1px solid #CCC;
     color: #333;
     background-color: #EEE;
