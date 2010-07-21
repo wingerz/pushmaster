@@ -281,7 +281,7 @@ li.request .email {
 }
 
 li.request.own {
-    list-style-type: disc;
+    background-color: rgba(181, 226, 255, 0.50);
 }
 
 li.request.future {
