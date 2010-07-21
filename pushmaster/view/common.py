@@ -83,7 +83,7 @@ def img_serials_badge():
     return T.span(class_='img-serials badge', title='This request requires the pushmaster to bump image serials.')('Image')
 
 def tests_pass_badge():
-    return T.span(class_='tests-pass badge', title='All Buildbot tests pass for this request.')('Tested')
+    return T.span(class_='tests-pass badge', title='All Buildbot tests pass for this request.')('BB Tested')
 
 request_flags_badge_map = (
     ('no_testing', no_testing_badge),
