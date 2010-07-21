@@ -12,6 +12,12 @@ def push(p):
 def request(r):
     return '/request/' + str(r.key())
 
+def api_push(p):
+    return '/api/push/' + str(p.key())
+
+def api_request(r):
+    return '/api/request/' + str(r.key())
+
 def user_home(u):
     return '/user/' + u.email()
 

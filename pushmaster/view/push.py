@@ -279,3 +279,4 @@ class EditPush(RequestHandler):
 
         else:
             raise HTTPStatusCode(httplib.BAD_REQUEST)
+

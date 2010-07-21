@@ -36,11 +36,21 @@ class Push(TrackedModel):
     def uri(self):
         return urls.push(self)
 
+    @property
+    def api_uri(self):
+        return urls.api_push(self)
+
     def put(self):
         try:
             return super(Push, self).put()
         finally:
             query.bust_push_caches()
+
+    @property
+    def json(self):
+        return {'key': unicode(self.key()),
+                'state': self.state,
+                'owner': self.owner.email()}
 
 class Request(TrackedModel):
     all_states = ('requested', 'accepted', 'checkedin', 'onstage', 'tested', 'live', 'abandoned', 'rejected')
@@ -66,3 +76,19 @@ class Request(TrackedModel):
     @property
     def uri(self):
         return urls.request(self)
+
+    @property
+    def api_uri(self):
+        return urls.api_request(self)
+
+    @property
+    def json(self):
+        return {'key': unicode(self.key()),
+                'owner': self.owner.email(),
+                'subject': self.subject,
+                'branch': self.branch,
+                'message': self.message,
+                'state': self.state,
+                'reject_reason': self.reject_reason,
+                'target_date': self.target_date.strftime("%D")}
+

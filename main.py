@@ -6,6 +6,7 @@ from pushmaster import tweaks
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 from pushmaster import config
+from pushmaster.view import api
 from pushmaster.view import home
 from pushmaster.view import request
 from pushmaster.view import push
@@ -24,8 +25,10 @@ class LoggingWSGIApplication(webapp.WSGIApplication):
 application = LoggingWSGIApplication([
         ('/requests', request.Requests),
         ('/pushes', push.Pushes),
+        ('/api/pushes', api.Pushes),
         ('/request/([^/]+)', request.EditRequest),
         ('/push/(.+)', push.EditPush),
+        ('/api/push/(.+)', api.EditPush),
         ('/report/(\d+)', report.ViewReport),
         ('/reports', report.Reports),
         ('/lastweek/(\d+)', report.LastWeek),
