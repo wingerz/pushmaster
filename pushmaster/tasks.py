@@ -15,12 +15,19 @@ class AsyncMailHandler(RequestHandler):
         to = self.request.get_all('to')
         subject = self.request.get('subject')
         body = self.request.get('body')
+        html = self.request.get('html')
+        reply_to = self.request.get('reply_to')
 
         assert to
         assert subject
         assert body
 
-        mail.send_mail(sender=config.mail_sender, to=to, subject=subject, body=body)
+        kw = dict(sender=config.mail_sender, to=to, subject=subject, body=body)
+        if reply_to:
+            kw['reply_to'] = reply_to
+        if html:
+            kw['html'] = html
+        mail.send_mail(**kw)
 
 def maybe_send_im(to, msg):
     if xmpp.get_presence(to):

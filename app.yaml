@@ -3,6 +3,9 @@ version: none
 runtime: python
 api_version: 1
 
+inbound_services:
+- mail
+
 handlers:
 - url: /static/(.+)
   static_files: www/static/\1
@@ -13,8 +16,12 @@ handlers:
   script: $PYTHON_LIB/google/appengine/ext/admin
   login: admin
 
-- url: /tasks/.*
+- url: /tasks/.+
   script: pushmaster/tasks.py
+  login: admin
+
+- url: /_ah/mail/.+ 
+  script: pushmaster/mail.py
   login: admin
 
 - url: .*

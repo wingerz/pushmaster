@@ -195,7 +195,7 @@ class EditPush(RequestHandler):
             header(common.img_serials_badge())
 
         push_div(header)
-
+        push_div(T.div(common.push_email(push, 'Mail Requesters')))
         requests_div = T.div(class_='requests')
         push_div(requests_div)
 

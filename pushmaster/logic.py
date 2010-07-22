@@ -13,11 +13,13 @@ from pushmaster import query
 
 __author__ = 'Jeremy Latt <jlatt@yelp.com>'
 
-def send_mail(to=None, subject=None, body=None):
+def send_mail(to=None, subject=None, body=None, html_body=None, reply_to=None):
     assert to
     assert subject
     assert body
-    taskqueue.Queue(name='mail').add(taskqueue.Task(url=tasks.mail_task_url, params=dict(to=to, subject=subject, body=body)))
+
+    params = dict(to=to, subject=subject, body=body, html_body=html_body, reply_to=reply_to)
+    taskqueue.Queue(name='mail').add(taskqueue.Task(url=tasks.mail_task_url, params=params))
 
 def send_im(to=None, message=None):
     assert to

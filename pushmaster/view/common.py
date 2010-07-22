@@ -61,6 +61,10 @@ def session():
     )
     return div
 
+def push_email(push, children):
+    mailto = 'mailto:push-%(key)s@%(host)s' % {'key': push.key(), 'host': config.mail_host}
+    return T.a(children, href=mailto, class_='push-email')
+
 def user_email(user):
     return T.a(href='mailto:' + user.email())(user.nickname())
 
