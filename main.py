@@ -33,6 +33,7 @@ application = LoggingWSGIApplication([
         ('/reports', report.Reports),
         ('/lastweek/(\d+)', report.LastWeek),
         ('/lastweek/?', report.LastWeek),
+        ('/flush', home.FlushMemcache),
         ('/user/(.+)', home.UserHome),
         ('/favicon.ico', home.Favicon),
         ('/bookmarklet', home.Bookmarklet),

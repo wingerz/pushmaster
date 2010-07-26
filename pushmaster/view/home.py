@@ -1,7 +1,7 @@
 import httplib
 import urllib
 
-from google.appengine.api import users
+from google.appengine.api import memcache, users
 
 from pushmaster import config
 from pushmaster import model
@@ -36,6 +36,10 @@ class Root(RequestHandler):
             return self.redirect(push.uri)
         else:
             return self.redirect('/user/' + users.get_current_user().email())
+
+class FlushMemcache(RequestHandler):
+	def get(self):
+		memcache.flush_all()
 
 class UserHome(RequestHandler):
     def get(self, email):
