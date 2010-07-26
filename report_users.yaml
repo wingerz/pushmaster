@@ -29,6 +29,7 @@ report_users:
     dev:
       - adamb
       - anthony
+      - chao
       - lenza
       - minh
       - ostro
